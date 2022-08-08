@@ -6404,3 +6404,26 @@ com.microsoft.sqlserver.jdbc.SQLServerException: 연결이 닫혔습니다.
 2022-08-08 23:35:48,052 INFO [http-nio-8080-exec-5] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] ==================== END ======================
 2022-08-08 23:35:48,053 INFO [http-nio-8080-exec-2] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] ==================== END ======================
 2022-08-08 23:45:32,923 WARN [HikariPool-1 housekeeper] c.z.h.p.HikariPool [HikariPool.java:780] HikariPool-1 - Retrograde clock change detected (housekeeper delta=27s883ms), soft-evicting connections from pool.
+2022-08-09 00:02:00,202 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] =================preHandle========================
+2022-08-09 00:02:00,203 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] url: http://localhost:8080/_new/expertpool/searchList?pagingPage=1&keyword=%EA%B9%80%EC%9A%94%EC%84%AD&pagingNumberPer=10
+2022-08-09 00:02:00,204 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] form method:GET
+2022-08-09 00:02:00,204 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: host:localhost:8080
+2022-08-09 00:02:00,204 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: connection:keep-alive
+2022-08-09 00:02:00,204 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: cache-control:max-age=0
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-ch-ua:".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-ch-ua-mobile:?0
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-ch-ua-platform:"macOS"
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: upgrade-insecure-requests:1
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: user-agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+2022-08-09 00:02:00,205 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-fetch-site:same-origin
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-fetch-mode:navigate
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-fetch-user:?1
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: sec-fetch-dest:document
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: referer:http://localhost:8080/_new/expertpool/searchList
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: accept-encoding:gzip, deflate, br
+2022-08-09 00:02:00,206 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: accept-language:ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7
+2022-08-09 00:02:00,207 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] header: cookie:remember-me=bG9rYWwwNzoxNjYxMTc3ODYwMjIwOjE2ZmY0OGUxYzkzNDU0NWRhMzk3MGIwMGI2YzM1NTBh; JSESSIONID=7AB0671CD7D6031B4C5E65DE11A1A8DC
+2022-08-09 00:02:00,207 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] Parameter: pagingPage= 1
+2022-08-09 00:02:00,207 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] Parameter: keyword= 김요섭
+2022-08-09 00:02:00,207 INFO [http-nio-8080-exec-6] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] Parameter: pagingNumberPer= 10
