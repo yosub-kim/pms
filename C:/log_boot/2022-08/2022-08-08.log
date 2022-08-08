@@ -6403,3 +6403,4 @@ com.microsoft.sqlserver.jdbc.SQLServerException: 연결이 닫혔습니다.
 2022-08-08 23:35:48,037 INFO [http-nio-8080-exec-5] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] Parameter: pagingNumberPer= 10
 2022-08-08 23:35:48,052 INFO [http-nio-8080-exec-5] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] ==================== END ======================
 2022-08-08 23:35:48,053 INFO [http-nio-8080-exec-2] k.c.k.p.LoggerInterceptor [LoggerInterceptor.java:21] ==================== END ======================
+2022-08-08 23:45:32,923 WARN [HikariPool-1 housekeeper] c.z.h.p.HikariPool [HikariPool.java:780] HikariPool-1 - Retrograde clock change detected (housekeeper delta=27s883ms), soft-evicting connections from pool.
