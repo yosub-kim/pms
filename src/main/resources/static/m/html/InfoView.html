@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>고객정보</p>
+                </div>
+                <ul>
+                    <li><button type="button" class="btn c-red" title="삭제"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                    <li><button type="button" class="btn c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="작성"><i class="mdi mdi-message-reply-text-outline"></i></button></li>
+                </ul>
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="tbl-wrap">
+                    <table class="tbl view">							
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div>
+                                            <div class="subject"><p>[잠재니즈] 기관장 라운드테이블 운영 및 컨설팅 니즈발굴</p></div>
+                                            <ul class="info">
+                                                <li><i class="mdi mdi-badge-account-horizontal-outline"></i><p>한국전력기술㈜</p></li>
+                                                <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>                            
+                            </tr>                            
+                        </tbody>
+                    </table>
+                    <div class="bg-wt">
+                        <div class="info_area">
+                            <div>
+                                <p class="tit">비즈니스타입</p>
+                                <p class="text">컨설팅</p>
+                            </div>
+                            <div>
+                                <p class="tit">주요상담영역</p>
+                                <p class="text"></p>
+                            </div>
+                            <div>
+                                <p class="tit">기타</p>
+                                <p class="text">
+                                    1. 일시 및 장소 : 2021년 8월 3일(화) 10:00~14:00 나주 본사
+                                    <br /><br />
+                                    2. 참석자 : 전력거래소 정동희 이사장, 박중환 기획본부장, 조강욱<br /> 
+                                    개발본부장 외 3명, 김완희, 이립
+                                    <br /><br />
+                                    3. 내용 : 정동희 이사장은 전 한국산업기술시험원 원장에서 전력거래소<br /> 
+                                    이사장으로 부임<br />
+                                    시험원은 강소형기관이여서 준정부 경영평가 대응에 경험은 부족<br />
+                                    경영평가 대응에 있어 필요한 사항에 대한 라운드테이블 진행
+                                    <br /><br />
+                                    세가지 프로젝트 제안을 함
+                                    <br /><br />
+                                    1. 전략체계 수립 또는 롤링
+                                    <br /><br />
+                                    2. 경영평가 관리체계 재정비
+                                    <br /><br />
+                                    3. 전력데이터 거버넌스 체계 구축
+                                </p>
+                            </div>
+                        </div>
+                    </div>                                
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

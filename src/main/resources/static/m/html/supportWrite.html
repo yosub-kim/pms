@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>출장비신청</p>
+                </div>
+                <ul>
+                    <li><button type="button" class="btn c-red" title="알림" onclick="javascript:layer_open(this,'pop_notice');"><i class="mdi mdi-bell-badge-outline"></i></button></li><!-- 알림이 있을 경우 .c-red -->
+                    <li><button type="button" class="btn c-disable" title="알림"><i class="mdi mdi-bell-badge-outline"></i></button></li><!-- 알림이 없을 경우 .disable  -->
+                    <li><button type="button" class="btn c-sub" title="마이 페이지" onclick="javascript:layer_open(this,'pop_support_my');"><p>MY</p></button></li>
+                    <li><button type="button" class="btn c-main" title="작성"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                </ul>
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="inner">
+                    
+                    <div class="write">
+                        <div class="write_group">
+                            <select name="" id="">
+                                <option value="프로젝트게시판">프로젝트게시판</option>
+                            </select>
+                            <div class="search">
+                                <input type="text" placeholder="검색어 입력" />
+                                <button type="button" class="btn c-bk" title="검색" onclick="javascript:layer_open(this,'pop_pj_search');"><i class="mdi mdi-magnify"></i></button>
+                            </div>                            
+                        </div>
+                        <select name="" id="">
+                            <option value="집행팀 선택">집행팀 선택</option>
+                        </select>
+                        <ul class="accordions bg sc"><!-- 출장비 신청 페이지 스크롤바 .support_sc -->
+                            <li>
+                                <input type="checkbox" id="chck1">
+                                <label class="accordion-label" for="chck1">출장비 입력(계: <p><input type="text" placeholder="0" /></p>원)</label>
+                                <div class="accordion-content">
+                                    <div>
+                                        <ul class="chek_ui">
+                                            <li>
+                                                <input type="checkbox" id="checkAll" name="" class="btn_check" />
+                                                <label for="checkAll"><p>전체 영수증 없음</p></label>       
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit1">
+                                            <label class="accordion-label" for="edit1">교통비</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <p>현금</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>개인카드</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>영수증</p>
+                                                        <select name="" id="">
+                                                            <option value="선택">선택</option>
+                                                        </select>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>동행</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit2">
+                                            <label class="accordion-label" for="edit2">교통비</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <p>현금</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>개인카드</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>영수증</p>
+                                                        <select name="" id="">
+                                                            <option value="선택">선택</option>
+                                                        </select>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>동행</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit3">
+                                            <label class="accordion-label" for="edit3">교통비</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <p>현금</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>개인카드</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>영수증</p>
+                                                        <select name="" id="">
+                                                            <option value="선택">선택</option>
+                                                        </select>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>동행</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit4">
+                                            <label class="accordion-label" for="edit4">교통비</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <p>현금</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>개인카드</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>영수증</p>
+                                                        <select name="" id="">
+                                                            <option value="선택">선택</option>
+                                                        </select>
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>동행</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit5">
+                                            <label class="accordion-label" for="edit5">유류비</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <p>왕복거리(KM)</p>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                    <li>
+                                                        <p>지급액</p>
+                                                        <input type="text" disabled />
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>리터거리</p>
+                                                        <input type="text" disabled />
+                                                    </li>
+                                                    <li>
+                                                        <p>유류단가</p>
+                                                        <input type="text" disabled />
+                                                    </li>
+                                                    <li>
+                                                        <p>감가상각비</p>
+                                                        <input type="text" disabled />
+                                                    </li>
+                                                </ul>
+                                                <ul>
+                                                    <li>
+                                                        <p>이동경로</p>
+                                                        <input type="text" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>                                        
+                                    </ul>
+                                    <ul class="accordions edit">
+                                        <li>
+                                            <input type="checkbox" id="edit6">
+                                            <label class="accordion-label" for="edit6">비고(작성자)</label>
+                                            <div class="accordion-content">
+                                                <ul>
+                                                    <li>
+                                                        <input type="text" placeholder="0" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>                    
+
+                </div>
+
+                <!-- 알림 팝업 -->
+                <div id="pop_notice" class="popup_layer pop_schedule notice"><!-- 알림 창 .notice -->
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="head">                           
+                            <p>공지사항</p>
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_notice');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>
+                        <div class="view">
+                            <ul>
+                                <li><p>간이영수증 : 처리안됨</p></li>
+                                <li><p>출장비를 제외한 기타비용은 영수증만 제출 ex)자녀 학자금, 원가성 경비 등</p></li>
+                                <li><p>식비 : 1식 8천원 / 조,중식 지원 안됨 (숙박 후 조식만 지원)</p></li>
+                                <li><p>영수증은 A4용지에 출장일별로 풀로 붙여서 출장비번호 반드시 기입</p></li>
+                            </ul>
+                            <p class="a-r">* 등록 시 문의사항 : 667번 이현도</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- // 알림 팝업 -->
+
+                <!-- 나의 신청 리스트 팝업 -->
+                <div id="pop_support_my" class="popup_layer pop_schedule">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner my"><!-- 내 정보 .my -->
+                        <div class="head">
+                            <div>
+                                <p>저장 리스트</p>
+                            </div>					
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_support_my');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>
+                        <div class="view">
+                            <ul>
+                                <li>
+                                    <div class="title">
+                                        <p>21-9244-153337<span class="c-main">(출장비 계: <span>200,000</span>원)</span></p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-projector-screen-outline"></i>(1904228) 19 서일대학교, 중장기 프로젝트</p>
+                                        <p><i class="mdi mdi-account"></i>김병구</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021월 9월 9일</p>                                        
+                                        <div>
+                                            <i class="mdi mdi-account"></i>
+                                            <ul>
+                                                <li><p>교통비: <span>10,000원</span></p></li>
+                                                <li><p>식비: <span>10,000원</span></p></li>
+                                                <li><p>숙박비: <span>100,000원</span></p></li>
+                                                <li><p>유류비: <span>30,000원</span></p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p>21-9244-153337<span class="c-main">(출장비 계: <span>200,000</span>원)</span></p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-projector-screen-outline"></i>(1904228) 19 서일대학교, 중장기 프로젝트</p>
+                                        <p><i class="mdi mdi-account"></i>김병구</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021월 9월 9일</p>                                        
+                                        <div>
+                                            <i class="mdi mdi-account"></i>
+                                            <ul>
+                                                <li><p>교통비: <span>10,000원</span></p></li>
+                                                <li><p>식비: <span>10,000원</span></p></li>
+                                                <li><p>숙박비: <span>100,000원</span></p></li>
+                                                <li><p>유류비: <span>30,000원</span></p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="btn_area">
+                                <button type="button" class="btn c-main" onclick="location.href='javascript:;'">신청하기</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- // 나의 신청 리스트 팝업 -->
+
+                <!-- 프로젝트 검색 팝업 -->
+                <div id="pop_pj_search" class="popup_layer pop_schedule">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="head">
+                            <div>
+                                <p>프로젝트 검색</p>
+                            </div>					
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_pj_search');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>
+                        <div class="view">
+                            <div class="write_group_box">
+                                <div class="write_group">                           
+                                    <div class="datepicker">
+                                        <input type="text" placeholder="정보수집 시작일 입력" />
+                                        <button type="button" class="btn_datepicker" title="캘린더오픈"><i class="mdi mdi-calendar-month"></i></button>
+                                    </div>
+                                    <p>~</p>
+                                    <div class="datepicker">
+                                        <input type="text" placeholder="정보수집 종료일 입력" />
+                                        <button type="button" class="btn_datepicker" title="캘린더오픈"><i class="mdi mdi-calendar-month"></i></button>
+                                    </div>
+                                </div>
+                                <div class="write_group">   
+                                    <select name="" id="">
+                                        <option value="전체">전체</option>
+                                    </select>
+                                    <div class="search">
+                                        <input type="text" placeholder="검색어 입력" />
+                                        <button type="button" class="btn c-bk" title="검색"><i class="mdi mdi-magnify"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul>
+                                <li>
+                                    <div class="title">
+                                        <p>연세대 신촌캠퍼스 전공능력기반 교육과정개발 연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발</p>
+                                        <ul class="chek_ui">
+                                            <li>
+                                                <input type="checkbox" id="check_1" name="" class="btn_check" />
+                                                <label for="check_1"></label>       
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-projector-screen-outline"></i>(1904228) 19 서일대학교, 중장기 프로젝트</p>
+                                        <p><i class="mdi mdi-account"></i>김병구</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021월 9월 9일</p>                                        
+                                        <div>
+                                            <i class="mdi mdi-account"></i>
+                                            <ul>
+                                                <li><p>교통비: <span>10,000원</span></p></li>
+                                                <li><p>식비: <span>10,000원</span></p></li>
+                                                <li><p>숙박비: <span>100,000원</span></p></li>
+                                                <li><p>유류비: <span>30,000원</span></p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p>연세대 신촌캠퍼스 전공능력기반 교육과정개발 연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발연세대 신촌캠퍼스 전공능력기반 교육과정개발</p>
+                                        <ul class="chek_ui">
+                                            <li>
+                                                <input type="checkbox" id="check_2" name="" class="btn_check" />
+                                                <label for="check_2"></label>       
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-projector-screen-outline"></i>(1904228) 19 서일대학교, 중장기 프로젝트</p>
+                                        <p><i class="mdi mdi-account"></i>김병구</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021월 9월 9일</p>                                        
+                                        <div>
+                                            <i class="mdi mdi-account"></i>
+                                            <ul>
+                                                <li><p>교통비: <span>10,000원</span></p></li>
+                                                <li><p>식비: <span>10,000원</span></p></li>
+                                                <li><p>숙박비: <span>100,000원</span></p></li>
+                                                <li><p>유류비: <span>30,000원</span></p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="btn_area">
+                                <button type="button" class="btn c-sub" onclick="location.href='javascript:;'">선택하기</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- // 프로젝트 검색 팝업 -->
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

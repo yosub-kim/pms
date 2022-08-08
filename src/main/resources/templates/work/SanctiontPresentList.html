@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/work/SanctiontPresentList?"+query;
+	}
+
+
+function doSearch(){
+	var query = $("input").serialize() + "&" + $("select").serialize();
+	 var url ="/_new/work/SanctiontPresentList?"+query;
+	 location.href = url;
+}
+function getGroupList(groupFlag,divCode) {
+		jQuery.ajax({
+			 type : 'post',
+			url : '/_new/common/getGroupList',
+			data : JSON.stringify({groupFlag:groupFlag}),
+			dataType : 'json',
+			contentType: 'application/json',
+			error: function(xhr, status, error){				
+				alert("부서 목록을 조회 할 수 없습니다.");
+			},
+			success : function(json){
+				var html ="";
+				html += "<option value=\"\">전체</option>"
+				for(var i = 0;i<json.length;i++){
+					html += `<option value="${json[i].id}" ${json[i].id == divCode ? 'selected' : ''}> ${json[i].description}</option>`
+				}
+				
+				$("#divCode").html(html)
+				
+			}
+		});	
+}
+
+function goDetail(projectCode, approvalType, seq, workType, woriTypeUrl){
+	location.href = woriTypeUrl+"&readonly=true&projectCode="+projectCode+"&approvalType="+approvalType+"&seq="+seq;
+}
+
+$(document).ready(function () {
+ 		/*<![CDATA[*/
+			var getGeoupList = [[${getGeoupList}]];
+			var divCode = '[[${divCode}]]';
+			getGroupList(getGeoupList,divCode);
+		/*]]>*/		
+});
+</script> 
+</head>
+<body>
+	
+	<div id="sub_location">
+		<div class="location">
+			<p class="menu_title">
+				<td width="100%" align="left"><span class="mainTitle">결재현황</span></td>
+			</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>전자결재</li>
+				<li>
+					<td width="100%" align="left"><span class="mainTitle">결재현황</span></td>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- // location -->
+	
+	<form name="frm" method="GET">
+		<!-- 서브 페이지 .sub -->
+		<div class="contents sub" style="max-height: 800px">
+			<!-- 검색 영역 -->
+			<!-- 검색 창 -->
+			<div class="box">
+			<div class="search_box total">
+				<div class="select_group">
+					<div class="select_box">
+						<div class="label_group">
+							<p>결재유형</p>
+							<select name='approvalType' id='approvalType' class='select' style='width: 100%;'>
+								<option value="">전체</option>
+								<option th:each="val : ${ApprovalList}"
+										th:value="${val?.ApprovalType}"
+										th:utext="${val?.ApprovalName}"
+										th:selected="${val?.ApprovalType}==${approvalType}" ></option>
+							</select>
+							
+							
+						</div>
+						<div class="label_group">
+							<p>조직단위 (과거 조직 : 
+							<input type="radio" style="vertical-align:-2px;" name="getGeoupList" id="prevDiv2" class="btn_check"  title="21년도 조직 선택" value="2022" onclick="getGroupList('2022');" th:checked="${getGeoupList}=='2022'"><label for="prevDiv2"></label> 21년도
+							<input type="radio" style="vertical-align:-2px;" name="getGeoupList" id="prevDiv3" class="btn_check" title="20년도 조직 선택" value="2020" onclick="getGroupList('2020');" th:checked="${getGeoupList}=='2020'"><label for="prevDiv3"></label> 20년도
+							<input type="radio" style="vertical-align:-2px;" name="getGeoupList" id="prevDiv" class="btn_check"  title="과거 조직 선택" value="2019" onclick="getGroupList('2019');" th:checked="${getGeoupList}=='2019'"><label for="prevDiv"></label> 20년도 이전)</p>
+							<div id="currDivList">
+								<select  name='divCode'  id='divCode'  class='select' >
+									
+								</select>
+							</div>
+							
+						</div>
+						<div class="label_group">
+							<p>구분</p>
+							<select name="ing" id="ing" class="select" style="width: 100%"   th:value="${ing}">
+							<option value="">전체</option>
+							<option th:selected="${ing}=='진행'">진행</option>
+							<option th:selected="${ing}=='종료'">종료</option>
+							<option th:selected="${ing}=='반려'">반려</option>
+						</select> 
+						</div>
+					</div>
+					<div class="select_box">
+						<div class="label_group">
+							<p>기안일</p>
+							<script>
+								jQuery(function(){jQuery( "#startDate" ).datepicker({});});
+								jQuery(function(){jQuery( "#endDate" ).datepicker({});});
+							</script>
+							<input type="text" name="startDate" id="startDate" readonly="readonly" size="7" style="width: 40%" th:value="${startDate}" />&nbsp
+							<input type="text" name="endDate" id="endDate" readonly="readonly" size="7" style="width: 40%"  th:value="${endDate}" />
+						</div>
+						<div class="label_group">
+							<p>기안자</p>
+							<input type="text" name="name" id="name" th:value="${name}" onkeydown = "if(event.keyCode==13) doSearch();">					
+						</div>
+						<div class="label_group">
+							<p>제목</p>
+							<input type="text" name="projectName" id="projectName" th:value="${projectName}" onkeydown = "if(event.keyCode==13) doSearch();">					
+						</div>
+					</div>
+				</div>
+				<div><button type="button" class="btn btn_blue" onclick="doSearch();">검색<i class="mdi mdi-magnify"></i></button></div>
+			</div>
+		</div>
+			<!-- // 검색 창 -->
+			<!-- 본문 리스트 시작 -->
+			<div class="box">
+				<div class="a-both total">
+					<p>
+						총<span th:text="${TotalCnt.CNT}"></span>건
+					</p>
+					<button type="button" class="btn btn_aqua"onclick="location.href='/_new/board/CeoTalkWrite?saveMode=INSERT'">등록</button>
+				</div>
+
+				<div class="tbl-wrap sc" style="overflow: hidden;">
+					<table class="tbl-list all">
+						<thead>
+						<tr>
+							<th>결재유형</th>
+							<th>제목</th>
+							<th>소속</th>
+							<th>기안자</th>
+							<th>기안일</th>
+							<th colspan="2">진행상태</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="rs : ${list}" style="cursor: hand;" onmouseover="row_over(this)" onmouseout="row_out(this)" >
+								<td th:text="${rs.approvalName}"></td>
+								<td class="subject" th:onclick="javascript:goDetail([[${rs.projectCode}]],[[${rs.approvalType}]],[[${rs.seq}]],[[${rs.worktype}]],[[${rs.workTypeUrl}]])"><p th:text="${rs.projectName}"></p></td>
+								<td th:text="${rs.registerDeptName}"></td>
+								<td th:text="${rs.registerName}"></td>
+								<td th:if="${rs.registerDate} == null or ${rs.registerDate} == ''">-</td>
+								<td th:if="${rs.registerDate} != null and ${rs.registerDate} != ''" th:text="${#dates.format(rs.registerDate, 'yyyy-MM-dd')}"></td>
+								<td th:if="${rs.present} == '반려'"><font color="#F290A5">반려&nbsp<span class="ico-progress"></span></td>
+								<td th:if="${rs.present} == '종료'" colspan="2">종료</td>
+								<td th:if="${rs.present} != '종료' and ${rs.present} != '반려'" th:text="${rs.present}"></td>
+										  
+										  
+								<td th:if="${rs.present} != '종료'" th:text="${rs.presentName}"></td>
+							</tr>
+							
+							
+							
+						</tbody>
+					</table>
+							
+				<div class="paging_area">
+					<SCRIPT LANGUAGE="JavaScript">
+				
+					 /*<![CDATA[*/
+					 	var pagingPage = [[${pagingPage}]];
+					 	var getBoardTotalCNT = [[${TotalCnt.CNT}]];
+							document.write( makePageHtml2( 
+									pagingPage, 
+									10, 
+									getBoardTotalCNT, 
+									10)
+							) ;
+					/*]]>*/		
+					</SCRIPT>
+				</div>
+				</div>
+				
+				<input type="hidden" name="pagingPage" id="pagingPage"	th:value="${pagingPage}">
+				
+			</div>
+			<!-- // box -->
+
+			<!-- // contents_are -->
+		</div>
+	</form>
+</body>
+</html>	
+

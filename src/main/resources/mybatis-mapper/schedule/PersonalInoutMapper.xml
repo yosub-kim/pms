@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.schedule.mapper.PersonalInoutMapper">
+
+	<insert id="createPersonalInout" parameterType="kr.co.kmac.pms.schedule.domain.PersonInout">
+		INSERT INTO Schedule_Time(
+			ssn, 
+			[year], [month], [day], 
+			seq, 
+			startHour, startMin, endHour, endMin,
+			createDate,
+			approvalSsn, approvalDate, approvalYN
+		)
+		VALUES(
+			#{ssn}, 
+			#{year}, FORMAT(#{month}, '00'), FORMAT(#{day}, '00'),
+			dbo.getScheduleSeq(#{ssn}, #{year}, #{month}, #{day}),
+			#{startHour}, #{startMin}, #{endHour}, #{endMin},
+			GETDATE(),
+			#{approvalSsn}, #{approvalDate}, #{approvalYN}
+		) 	
+	</insert>
+	
+	<select id="getPersonalInoutByMonth" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.PersonInout">
+		SELECT *
+		FROM  Schedule_Time
+		where ssn = #{ssn}
+		AND (year = ${year})        
+		AND (month = ${month})     	    
+		order by  year, month, day
+	</select>
+	
+	<select id="getPersonalInout" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.PersonInout">
+		select * from Schedule_Time
+		 where idx		=	#{idx}
+	</select>
+	
+	<update id="updatePersonalInout" parameterType="kr.co.kmac.pms.schedule.domain.PersonInout">
+		update	Schedule_Time 
+		   set	startHour		= #{startHour}, 
+				startMin		= #{startMin}, 
+				endHour			= #{endHour}, 
+				endMin			= #{endMin},
+				approvalSsn		= #{approvalSsn}, 
+				approvalDate	= #{approvalDate}, 
+				approvalYN		= #{approvalYN}
+		 where	idx	=	#{idx}
+	</update>
+	
+	<delete id="removePersonalInout" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam">
+		delete from Schedule_Time 
+		 where	idx	=	#{idx}
+	</delete>
+	
+</mapper>

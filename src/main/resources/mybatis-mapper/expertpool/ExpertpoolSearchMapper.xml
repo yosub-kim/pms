@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.expertpool.mapper.ExpertpoolSearchMapper">
+
+	<select id="getTotalNumberOfEntries" resultType="java.lang.Integer" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		select count(*) cnt 
+		from (
+			select  jobClass,  jobClassName, company
+			, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+			
+			, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, e.absence,
+					s.consultingMajor,
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					<if test="jobClass !=null and jobClass.length !=0">
+						and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="dept !=null and dept.length !=0">
+						and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="restrictUser !=null and restrictUser !=0">
+						and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>	
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	 upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>
+			<if test="consultantChk != null ">
+				and jobClass in ('A','B','J','N')
+			</if>
+		) res2
+	</select>
+		
+	<select id="getExpertpoolSearchMainList" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		select * 
+		from (
+			select ROW_NUMBER() over(order by jobClass, dept, companyPosition, name ) as rowNum, res2.* 
+			from (
+				select  
+					jobClass,  jobClassName, company
+					, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+					, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence, companyTelNo, restrictContents, uid
+				from (
+					select
+						jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+						s.consultingMajor, companyTelNo, e.restrictContents,
+						h.exeprtHashTag, left(SecureDB.DBSEC.DECRYPT_AES(uid), 6) as uid
+					from (
+						SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+						, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+						, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company, companyTelNo, restrictContents, uid
+						 From expertPool
+						) AAA
+						where 1=1
+						and dept != '2000'
+						<if test="jobClass !=null and jobClass.length !=0">
+							and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>
+						<if test="dept !=null and dept.length !=0">
+							and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>
+						<if test="restrictUser !=null and restrictUser !=0">
+							and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>	
+					)e 
+					left outer join (
+						select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+						from ExpertPoolSpecialField e 
+						group by ssn 
+					) s
+					on e.ssn = s.ssn
+					left outer join (
+						select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+						from ExpertHashtag h 
+						group by expertSsn 
+					) h
+					on e.ssn = h.ssn
+				) res
+				where 1=1
+				<if test="keyword != null and keyword != ''">
+				and (	upper(consultingMajor) like upper('%'+#{keyword} + '%')
+						or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+						or upper(name) like upper('%'+#{keyword} + '%')
+						or upper(company) like upper('%'+#{keyword} + '%')
+				)
+				</if>
+				<if test="consultantChk != null ">
+				and jobClass in ('A','B','J','N')
+				</if>
+			) res2
+		) res3	
+		where res3.rowNum between ((${pagingPage}-1)*${pagingNumberPer}+1) and ((${pagingPage}-1)*${pagingNumberPer}+${pagingNumberPer}) 
+		order by jobClass, dept, companyPosition, name
+	</select>
+	
+	<select id="getExpertpoolSearchJobClassAgg" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		SELECT	KEY_1 jobClass, DATA_1 jobClassName, count(res.ssn) cnt 
+		from (
+			select TABLE_NAME, KEY_1, DATA_1 from cmTableData where table_Name = 'EMP_WORKING_TYPE'
+		) a left outer join (
+	
+			select  
+				jobClass,  jobClassName, company
+				, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+				
+				, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+					s.consultingMajor, 
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					<if test="jobClass !=null and jobClass.length !=0">
+						and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="dept !=null and dept.length !=0">
+						and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="restrictUser !=null and restrictUser !=0">
+						and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>	
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	 upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>
+			<if test="consultantChk != null ">
+				and jobClass in ('A','B','J','N')
+			</if>
+		)res
+		on a.KEY_1 =res.jobClass
+		where jobclass not in ('F','K','L','M')
+		group by KEY_1, DATA_1
+		order by (case when KEY_1='A' then '1' when KEY_1='B' then '2' when KEY_1='J' then '3' when KEY_1='N' then '4' when KEY_1='C' then '5' when KEY_1='R' then '6' else KEY_1 end) 
+	</select>	
+
+	<select id="getExpertpoolSearchDeptAgg" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		SELECT	id dept, description deptName, count(res.ssn) cnt 
+		from (
+			select id, description from smGroup where enabled = 1 and memberRule = 'A'
+		) a left outer join (
+			select  
+				jobClass,  jobClassName, company
+				
+				, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+					s.consultingMajor, 
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					
+							<if test="jobClass !=null and jobClass.length !=0">
+								and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+							</if>
+							<if test="dept !=null and dept.length !=0">
+								and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+							</if>
+							<if test="restrictUser !=null and restrictUser !=0">
+								and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+							</if>	
+						
+				
+					
+					
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>	
+		)res
+		on a.id =res.dept
+		where dept not in ('6200','921A','923A','924A','9250','9260')
+		group by id, description
+		order by case id when '6201' then '9219' 
+						 WHEN '9401' then '9351'
+						else id end 
+	</select>	
+
+	<select id="getExpertpoolSearchRestrictAgg" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		SELECT	a.absence restrictUser , a.absence, count(res.ssn) cnt 
+		from ( select 'Y' as absence union all select 'N' as absence
+		) a left outer join (
+			select  
+				jobClass,  jobClassName, company
+				, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+				
+				, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+					s.consultingMajor, 
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					<if test="jobClass !=null and jobClass.length !=0">
+						and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="dept !=null and dept.length !=0">
+						and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="restrictUser !=null and restrictUser !=0">
+						and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>	
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	 upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>		
+		) res
+		on a.absence = res.absence
+		where a.absence = 'Y' 
+		group by a.absence
+		order by 1 desc
+	</select>	
+	
+	<select id="getHRExpertpoolSearchMainList" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		select * 
+		from (
+			select ROW_NUMBER() over(order by jobClass, dept, companyPosition, name ) as rowNum, res2.* 
+			from (
+				select  
+					jobClass,  jobClassName, company
+					, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+					
+					, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence, companyTelNo, restrictContents, emplNo, gender, uid, hobong
+				from (
+					select
+						jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+						s.consultingMajor, companyTelNo, e.restrictContents,
+						h.exeprtHashTag, emplNo, (case gender when '1' then '남' else '여' end) as gender, dbo.[UF_getAge](SecureDB.DBSEC.DECRYPT_AES(uid)) as uid,
+						case when left(hobong, 1) = '0' then (substring(hobong, 2, 1) + '.' + right(hobong, 1)) else '-' end as hobong
+					from (
+						SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+						, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+						, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company, companyTelNo, restrictContents, uid, emplNo, gender
+						 From expertPool
+						) AAA
+						where 1=1
+						and dept != '2000'
+						and ssn != 'G000942'
+						<if test="jobClass !=null and jobClass.length !=0">
+							and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>
+						<if test="dept !=null and dept.length !=0">
+							and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>
+						<if test="restrictUser !=null and restrictUser !=0">
+							and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+						</if>	
+					)e 
+					left outer join (
+						select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+						from ExpertPoolSpecialField e 
+						group by ssn 
+					) s
+					on e.ssn = s.ssn
+					left outer join (
+						select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+						from ExpertHashtag h 
+						group by expertSsn 
+					) h
+					on e.ssn = h.ssn
+					left outer join (
+						select * From openquery
+						(u7, 'Select  Kname , A.sno , A.ju_no , dept_code , case sno when ''20070159'' then ''CSO'' ELSE dept_name END dept_name , duty_rank ,DNAME , hobong 
+							  from perinfo A , datachkd B
+							  where a.duty_rank = b.dcode and hcode=''HB02'' AND comp_code IN (''C'',''M'',''D'',''G'') and tenure_yn != ''N'' 
+						  	  and hobong != ''S25'' and sno != ''19970402''  and substr(sno,1,1) != ''K''
+							  and tenure_kind=1 and dept_code!=''2100''  
+							  and (substr(dept_code,1,2) = ''93''  or substr(dept_code,1,2) = ''41'' or substr(dept_code,1,2) = ''70'' or substr(dept_code,1,2) = ''90''  )
+							  and hobong != ''999''
+							  order by dept_code, duty_type, duty_level, duty_rank'
+						)q
+					)u
+					on e.emplNo = u.sno
+				) res
+				where 1=1
+				<if test="keyword != null and keyword != ''">
+				and (	upper(consultingMajor) like upper('%'+#{keyword} + '%')
+						or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+						or upper(name) like upper('%'+#{keyword} + '%')
+						or upper(company) like upper('%'+#{keyword} + '%')
+				)
+				</if>
+				and jobClass in ('A','B','J','N')
+			) res2
+		) res3	
+		where res3.rowNum between ((${pagingPage}-1)*${pagingNumberPer}+1) and ((${pagingPage}-1)*${pagingNumberPer}+${pagingNumberPer}) 
+		order by jobClass, dept, companyPosition, name
+	</select>
+	
+	<select id="getHRExpertpoolSearchJobClassAgg" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		SELECT	KEY_1 jobClass, DATA_1 jobClassName, count(res.ssn) cnt 
+		from (
+			select TABLE_NAME, KEY_1, DATA_1 from cmTableData where table_Name = 'EMP_WORKING_TYPE'
+		) a left outer join (
+	
+			select  
+				jobClass,  jobClassName, company
+				, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+				
+				, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+					s.consultingMajor, 
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					<if test="jobClass !=null and jobClass.length !=0">
+						and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="dept !=null and dept.length !=0">
+						and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="restrictUser !=null and restrictUser !=0">
+						and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>	
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	 upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>
+			and jobClass in ('A','B','J','N')
+		)res
+		on a.KEY_1 =res.jobClass
+		where jobclass not in ('F','K','L','M')
+		group by KEY_1, DATA_1
+		order by (case when KEY_1='A' then '1' when KEY_1='B' then '2' when KEY_1='J' then '3' when KEY_1='N' then '4' when KEY_1='C' then '5' when KEY_1='R' then '6' else KEY_1 end) 
+	</select>	
+
+	<select id="getHRExpertpoolSearchDeptAgg" resultType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchEntity" parameterType="kr.co.kmac.pms.expertpool.domain.ExpertpoolSearchParam" >
+		SELECT	id dept, memberRule, case when memberRule='J' then description + ' 상임' else description end as deptName, count(res.ssn) cnt 
+		from (
+			select id, description, memberRule from smGroup where enabled = 1 and memberRule in ('A','B','J','N')
+		) a left outer join (
+			select  
+				jobClass,  jobClassName, company
+				, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName
+				
+				
+				, companyPosition, companyPositionName, ssn, name, email, restrictUser, absence
+			from (
+				select
+					jobClass,  dbo.getCommonCodeToData('EMP_WORKING_TYPE', jobClass) jobClassName, company, dept, deptName, companyPosition, companyPositionName, e.ssn, e.name, email, e.restrictUser, isnull(e.absence, 'N') absence,
+					s.consultingMajor, 
+					h.exeprtHashTag
+				from (
+					SELECT * FROM (
+						select SSN, CASE WHEN SSN IN ('A000064','G003735') THEN  '9401' ELSE dept END AS dept 
+					, CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' ELSE deptName END AS deptName 
+					, companyPosition, companyPositionName, name, email, restrictUser, absence, jobClass, company
+					 From expertPool
+					) AAA
+					where 1=1
+					and dept != '2000'
+					<if test="jobClass !=null and jobClass.length !=0">
+						and jobClass in <foreach collection="jobClass" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="dept !=null and dept.length !=0">
+						and dept in <foreach collection="dept" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>
+					<if test="restrictUser !=null and restrictUser !=0">
+						and isnull(absence, 'N') in <foreach collection="restrictUser" item="code" open="(" separator="," close=")">#{code}</foreach>
+					</if>	
+				)e 
+				left outer join (
+					select ssn, REPLACE(RTRIM((SELECT CAST(specialName AS VARCHAR(MAX)) + ';' FROM ExpertPoolSpecialField WHERE (ssn = e.ssn) FOR XML PATH (''))),'','') AS consultingMajor
+					from ExpertPoolSpecialField e 
+					group by ssn 
+				) s
+				on e.ssn = s.ssn
+				left outer join (
+					select expertSsn ssn, REPLACE(RTRIM((SELECT CAST(hashTag AS VARCHAR(MAX)) + ';' FROM ExpertHashtag WHERE (expertSsn = h.expertSsn) FOR XML PATH (''))),'','') AS exeprtHashTag
+					from ExpertHashtag h 
+					group by expertSsn 
+				) h
+				on e.ssn = h.ssn
+			) res
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+			and (	upper(consultingMajor) like upper('%'+#{keyword} + '%')
+					or upper(exeprtHashTag) like upper('%'+#{keyword} + '%')
+					or upper(name) like upper('%'+#{keyword} + '%')
+					or upper(company) like upper('%'+#{keyword} + '%')
+			)
+			</if>	
+		)res
+		on a.id =res.dept
+		where dept not in ('6200','921A','923A','924A','9250','9260')
+		group by id, description, memberRule
+		order by memberRule, case id when '6201' then '9219' else id end 
+	</select>	
+	
+	<select id="getExpertPoolSimpleInfo" resultType="java.util.HashMap" parameterType="java.lang.String" >
+		SELECT  userId
+			, ssn
+			, isNull(groupName,'기타') groupName
+			, groupParentId
+			, (case groupId when '9280' then '9281' when '922A' then '92101' WHEN '921A' THEN '92001' WHEN '923A' THEN '92301' WHEN '924A' THEN '92401' else groupId end) as groupId
+			, userName
+			, isNull(posName,'기타') AS posName
+			, CASE left(posName,3)                 						
+				WHEN 'CEO'		THEN 'CEO'			
+				WHEN 'CBO'		THEN 'CBO'			
+				WHEN 'CSO'		THEN 'CSO'			
+				WHEN 'CCO'		THEN 'CCO'			 	
+				WHEN '자문위'		THEN 'Advisor'		
+				WHEN '엑스퍼'		THEN '엑스퍼트'		
+				WHEN '비서'		THEN '비서실'
+				WHEN '고문컨'		THEN 'Advisor'			
+				ELSE                             	
+					CASE IsNull(groupParentId,'')	
+						WHEN '2000' THEN '부문장'  	
+						ELSE replace(replace(replace(replace(replace(replace(LTrim(groupName),'센터',''),'본부',''),' 상임',''),'상임',''),'기획실','기획'),'부문','')     	
+					END                          	
+				END  AS labelName                  	
+			, CASE IsNull((case when posName = 'CSO' then '7080' else groupParentId end),'')      	
+				WHEN '' THEN 0                   	
+				WHEN '2030' THEN 1               	 
+				WHEN '2000' THEN 2               	
+				WHEN '7080' THEN 2               	
+				WHEN '2720' THEN 3               	
+				ELSE                             	
+					CASE posName 
+						WHEN 'IM' THEN 4			
+						ELSE 5	 
+					END                            	
+				END  AS OrdSeq
+			,groupSeq	   	
+			, posCode
+		FROM    vUserInfo                                          	
+		WHERE (enabled = '1') AND userId IS NOT NULL
+		and ssn = #{ssn}		
+	</select>
+	
+	<select id="searchExpertPool" resultType="map" parameterType="HashMap" >
+		SELECT	
+			SSN AS id
+			,SSN 
+			,NAME
+			,DEPTNAME
+			,EMAIL
+ 		FROM EXPERTPOOL 
+ 		WHERE RESTRICTUSER != 'Y'  
+ 		AND ENABLE = '1'
+ 		<if test="searchText != null and searchText != ''">
+ 		AND (NAME LIKE '%'+#{searchText}+'%') OR (DEPTNAME LIKE '%'+#{searchText}+'%')
+ 		</if>
+ 		<if test="searchText == null or searchText == ''">
+ 		AND DEPTNAME = (SELECT TOP 1 DEPTNAME FROM EXPERTPOOL WHERE USERID = #{pms_User_Id})
+ 		</if>
+ 		AND JOBCLASS IN ('A','B','N','J','C')
+	</select>	
+	
+	
+</mapper>

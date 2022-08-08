@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.approval.mapper.ApprovalSearchMapper">
+
+	<!-- 
+	<select id="getApprovalSearchAuthority" resultType="java.lang.String" parameterType="java.lang.String" >
+		select *  from (
+				select '0' auth, #{userSsn} as key_1
+			union all
+				select '1' auth,  key_1 from cmTableData with(nolock) 
+				where (table_name = 'GENERAL_SUPPORT_MEMBER' or table_name = 'BOARD_MEMBER'  or table_name = 'SYSTEM_ADMIN' )
+				and key_1 = #{userSsn}
+			union all
+				select '2' auth, key_1 from cmTableData with(nolock) 
+				where (table_name = 'GENERAL_SUPPORT_MEMBER' or table_name = 'SYSTEM_ADMIN' )
+				and key_1 = #{userSsn}
+			union all
+				select '3' auth, key_1 from cmTableData with(nolock) 
+				where (table_name = 'SALARY_MANAGE_MEMBER' )
+				and key_1 = #{userSsn}
+		) r
+	</select>
+	 -->
+	
+	<select id="getSearchRule_GSM_BM_SA" resultType="java.lang.String" parameterType="java.lang.String" >
+				select key_1 userAuthority1 from cmTableData with(nolock) 
+				where (table_name = 'GENERAL_SUPPORT_MEMBER' or table_name = 'BOARD_MEMBER'  or table_name = 'SYSTEM_ADMIN' )
+				and key_1 = #{userSsn}
+	</select>
+	<select id="getSearchRule_GSM_SA" resultType="java.lang.String" parameterType="java.lang.String" >
+				select key_1 userAuthority2 from cmTableData with(nolock) 
+				where (table_name = 'GENERAL_SUPPORT_MEMBER' or table_name = 'SYSTEM_ADMIN' )
+				and key_1 = #{userSsn}
+	</select>
+	<select id="getSearchRule_GSM_SALARY_SA" resultType="java.lang.String" parameterType="java.lang.String" >
+				select key_1 userAuthority3 from cmTableData with(nolock) 
+				where (table_name = 'SALARY_MANAGE_MEMBER' )
+				and key_1 = #{userSsn}
+	</select>
+	
+	<select id="getTotalNumberOfEntries" resultType="java.lang.Integer" parameterType="kr.co.kmac.pms.approval.domain.ApprovalSearchParam" >
+		select count(*) cnt from (
+			select * from ApprovalSearchNewList
+			where	approvalType not in ('draft21', 'draft22', 'draft3', 'draft5', 'draft15', 'salary')
+			<if test="userAuthority1 == null or userAuthority1 == '' ">
+				and	(registerSsn		= #{userSsn}
+					or teammanagerSsn	= #{userSsn}
+					or cfoSsn			= #{userSsn}
+					or cioSsn			= #{userSsn}
+					or assistant1Ssn	= #{userSsn}
+					or assistant2Ssn	= #{userSsn}
+					or assistant3Ssn	= #{userSsn}
+					or assistant4Ssn	= #{userSsn}
+					or ceoSsn			= #{userSsn}
+					or (select left(dept,3) from expertpool where ssn = #{userSsn} and companyposition='06CB') = left(registerDept,3) 
+					or (select dept from expertpool where ssn = #{userSsn} and companyposition in ('08CF','09CJ')) = registerDept  	
+					)	
+			</if>
+			union 
+			select * from ApprovalSearchNewList
+			where approvalType in ('draft21', 'draft22')
+			<if test="userAuthority2 == null or userAuthority2 == '' ">
+				and	(registerSsn		= #{userSsn}
+					or teammanagerSsn	= #{userSsn}
+					or cfoSsn			= #{userSsn}
+					or cioSsn			= #{userSsn}
+					or assistant1Ssn	= #{userSsn}
+					or assistant2Ssn	= #{userSsn}
+					or assistant3Ssn	= #{userSsn}
+					or assistant4Ssn	= #{userSsn}
+					or ceoSsn			= #{userSsn}
+					)	
+			</if>
+			union 
+			select * from ApprovalSearchNewList
+			where approvalType in ('draft3', 'draft5', 'draft15', 'salary')
+			<if test="userAuthority3 == null or userAuthority3 == '' ">
+				and (registerSsn		= #{userSsn}
+					or teammanagerSsn	= #{userSsn}
+					or cfoSsn			= #{userSsn}
+					or cioSsn			= #{userSsn}
+					or assistant1Ssn	= #{userSsn}
+					or assistant2Ssn	= #{userSsn}
+					or assistant3Ssn	= #{userSsn}
+					or assistant4Ssn	= #{userSsn}
+					or ceoSsn			= #{userSsn}
+					)	
+			</if>
+		) res
+		where 1=1
+		<if test="approvalType !=null and approvalType.length !=0">
+			and approvalType in <foreach collection="approvalType" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="registerDept !=null and registerDept.length !=0">
+			and registerDept in <foreach collection="registerDept" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="state !=null and state.length !=0">
+			and state in <foreach collection="state" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="registerStartDate !=null and registerStartDate != ''"><![CDATA[
+			and registerDate >= #{registerStartDate}
+		]]></if>
+		<if test="registerEndDate !=null and registerEndDate != ''"><![CDATA[
+			and registerDate <= #{registerEndDate}
+		]]></if>				
+		<if test="keyword != null and keyword != '' ">
+			and (  upper(subject) like upper('%'+#{keyword} + '%')
+				or upper(registerName) like upper('%'+#{keyword} + '%')
+				or upper(content) like  upper('%'+#{keyword} + '%') )
+		</if>
+	</select>
+	
+	<select id="getApprovalSearchMainList" resultType="kr.co.kmac.pms.approval.domain.ApprovalSearchEntity" parameterType="kr.co.kmac.pms.approval.domain.ApprovalSearchParam" >
+		select *  
+		from (
+			select ROW_NUMBER() over(order by (case state	when '반려' then '1'
+															when '진행'	then '2'
+															when '종료'	then '3' end) asc, 
+												registerDate desc) as rowNum, * 
+			from (
+				select * from ApprovalSearchNewList
+				where	approvalType not in ('draft21', 'draft22', 'draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority1 == null or userAuthority1 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						or (select left(dept,3) from expertpool where ssn = #{userSsn} and companyposition='06CB') = left(registerDept,3) 
+						or (select dept from expertpool where ssn = #{userSsn} and companyposition in ('08CF','09CJ')) = registerDept  	
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft21', 'draft22')
+				<if test="userAuthority2 == null or userAuthority2 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority3 == null or userAuthority3 == '' ">
+					and (registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+			) res
+			where 1=1
+			<if test="approvalType !=null and approvalType.length !=0">
+				and approvalType in <foreach collection="approvalType" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerDept !=null and registerDept.length !=0">
+				and registerDept in <foreach collection="registerDept" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="state !=null and state.length !=0">
+				and state in <foreach collection="state" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerStartDate !=null and registerStartDate != ''"><![CDATA[
+				and registerDate >= #{registerStartDate}
+			]]></if>
+			<if test="registerEndDate !=null and registerEndDate != ''"><![CDATA[
+				and registerDate <= #{registerEndDate}
+			]]></if>				
+			<if test="keyword != null and keyword != '' ">
+				and (  upper(subject) like upper('%'+#{keyword} + '%')
+					or upper(registerName) like upper('%'+#{keyword} + '%')
+					or upper(content) like  upper('%'+#{keyword} + '%') )
+			</if>
+		) res
+		where res.rowNum between ((${pagingPage}-1)*${pagingNumberPer}+1) and ((${pagingPage}-1)*${pagingNumberPer}+${pagingNumberPer}) 
+		order by 1 asc
+	</select>
+		
+	
+	<select id="getApprovalSearchApprovalTypeAgg" resultType="kr.co.kmac.pms.approval.domain.ApprovalSearchEntity" parameterType="kr.co.kmac.pms.approval.domain.ApprovalSearchParam" >
+		select approvalType, approvalName, count(*) cnt  
+		from (
+			select * from (
+				select * from ApprovalSearchNewList
+				where	approvalType not in ('draft21', 'draft22', 'draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority1 == null or userAuthority1 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						or (select left(dept,3) from expertpool where ssn = #{userSsn} and companyposition='06CB') = left(registerDept,3) 
+						or (select dept from expertpool where ssn = #{userSsn} and companyposition in ('08CF','09CJ')) = registerDept  	
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft21', 'draft22')
+				<if test="userAuthority2 == null or userAuthority2 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority3 == null or userAuthority3 == '' ">
+					and (registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+			) res
+			where 1=1
+			<if test="approvalType !=null and approvalType.length !=0">
+				and approvalType in <foreach collection="approvalType" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerDept !=null and registerDept.length !=0">
+				and registerDept in <foreach collection="registerDept" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="state !=null and state.length !=0">
+				and state in <foreach collection="state" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerStartDate !=null and registerStartDate != ''"><![CDATA[
+				and registerDate >= #{registerStartDate}
+			]]></if>
+			<if test="registerEndDate !=null and registerEndDate != ''"><![CDATA[
+				and registerDate <= #{registerEndDate}
+			]]></if>				
+			<if test="keyword != null and keyword != '' ">
+				and (  upper(subject) like upper('%'+#{keyword} + '%')
+					or upper(registerName) like upper('%'+#{keyword} + '%')
+					or upper(content) like  upper('%'+#{keyword} + '%') )
+			</if>		
+		) res
+		group by approvalType, approvalName
+	</select>	
+
+	<select id="getApprovalSearchStateAgg" resultType="kr.co.kmac.pms.approval.domain.ApprovalSearchEntity" parameterType="kr.co.kmac.pms.approval.domain.ApprovalSearchParam" >
+		select state, count(*) cnt  
+		from (
+			select * from (
+				select * from ApprovalSearchNewList
+				where	approvalType not in ('draft21', 'draft22', 'draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority1 == null or userAuthority1 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						or (select left(dept,3) from expertpool where ssn = #{userSsn} and companyposition='06CB') = left(registerDept,3) 
+						or (select dept from expertpool where ssn = #{userSsn} and companyposition in ('08CF','09CJ')) = registerDept  	
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft21', 'draft22')
+				<if test="userAuthority2 == null or userAuthority2 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority3 == null or userAuthority3 == '' ">
+					and (registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+			) res
+			where 1=1
+			<if test="approvalType !=null and approvalType.length !=0">
+				and approvalType in <foreach collection="approvalType" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerDept !=null and registerDept.length !=0">
+				and registerDept in <foreach collection="registerDept" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="state !=null and state.length !=0">
+				and state in <foreach collection="state" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerStartDate !=null and registerStartDate != ''"><![CDATA[
+				and registerDate >= #{registerStartDate}
+			]]></if>
+			<if test="registerEndDate !=null and registerEndDate != ''"><![CDATA[
+				and registerDate <= #{registerEndDate}
+			]]></if>				
+			<if test="keyword != null and keyword != '' ">
+				and (  upper(subject) like upper('%'+#{keyword} + '%')
+					or upper(registerName) like upper('%'+#{keyword} + '%')
+					or upper(content) like  upper('%'+#{keyword} + '%') )
+			</if>		
+		) res
+		group by state		
+		order by 1
+	</select>	
+
+	<select id="getApprovalSearchRegisterDeptAgg" resultType="kr.co.kmac.pms.approval.domain.ApprovalSearchEntity" parameterType="kr.co.kmac.pms.approval.domain.ApprovalSearchParam" >
+		select registerDept, registerDeptName, count(*) cnt  
+		from (
+			select * from (
+				select * from ApprovalSearchNewList
+				where	approvalType not in ('draft21', 'draft22', 'draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority1 == null or userAuthority1 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						or (select left(dept,3) from expertpool where ssn = #{userSsn} and companyposition='06CB') = left(registerDept,3) 
+						or (select dept from expertpool where ssn = #{userSsn} and companyposition in ('08CF','09CJ')) = registerDept  	
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft21', 'draft22')
+				<if test="userAuthority2 == null or userAuthority2 == '' ">
+					and	(registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+				union 
+				select * from ApprovalSearchNewList
+				where approvalType in ('draft3', 'draft5', 'draft15', 'salary')
+				<if test="userAuthority3 == null or userAuthority3 == '' ">
+					and (registerSsn		= #{userSsn}
+						or teammanagerSsn	= #{userSsn}
+						or cfoSsn			= #{userSsn}
+						or cioSsn			= #{userSsn}
+						or assistant1Ssn	= #{userSsn}
+						or assistant2Ssn	= #{userSsn}
+						or assistant3Ssn	= #{userSsn}
+						or assistant4Ssn	= #{userSsn}
+						or ceoSsn			= #{userSsn}
+						)	
+				</if>
+			) res
+			where 1=1
+			<if test="approvalType !=null and approvalType.length !=0">
+				and approvalType in <foreach collection="approvalType" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerDept !=null and registerDept.length !=0">
+				and registerDept in <foreach collection="registerDept" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="state !=null and state.length !=0">
+				and state in <foreach collection="state" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="registerStartDate !=null and registerStartDate != ''"><![CDATA[
+				and registerDate >= #{registerStartDate}
+			]]></if>
+			<if test="registerEndDate !=null and registerEndDate != ''"><![CDATA[
+				and registerDate <= #{registerEndDate}
+			]]></if>				
+			<if test="keyword != null and keyword != '' ">
+				and (  upper(subject) like upper('%'+#{keyword} + '%')
+					or upper(registerName) like upper('%'+#{keyword} + '%')
+					or upper(content) like  upper('%'+#{keyword} + '%') )
+			</if>
+		)res
+		group by registerDept, registerDeptName	
+	</select>	
+
+
+</mapper>

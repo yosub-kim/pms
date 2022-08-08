@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.project.mapper.ProjectSearchMapper">
+
+	<select id="getTotalNumberOfEntries" resultType="java.lang.Integer" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		SELECT	count(*) cnt from ProjectSearchNewList
+		where 1=1
+		<if test="keyword != null and keyword != '' ">
+			and (	upper(projectName) like upper('%'+#{keyword} + '%')
+				or upper(projectCode) like upper('%'+#{keyword} + '%')
+				or upper(customerName) like upper('%'+#{keyword} + '%')
+				or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+		</if>
+		<if test="projectState !=null and projectState.length !=0">
+			and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+			and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDivCode !=null and runningDivCode.length !=0">
+			and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+			and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="customerCode !=null and customerCode.length !=0">
+			and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+			and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+			and realStartDate >= replace(#{realStartDate}, '-', '')
+		]]></if>
+		<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+			and realStartDate <= replace(#{realEndDate}, '-', '')
+		]]></if>		
+	</select>
+		
+	<select id="getProjectSearchMainList" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		select * from (
+			SELECT ROW_NUMBER() over(order by projectcode  desc) as rowNum, * 
+			from ProjectSearchNewList
+			where 1=1 
+			and projectState not in ('1','2')
+			<if test="keyword != null and keyword != ''">
+				and (	upper(projectName) like upper('%'+#{keyword} + '%')
+					or upper(projectCode) like upper('%'+#{keyword} + '%')
+					or upper(customerName) like upper('%'+#{keyword} + '%')
+					or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+			</if>
+			<if test="projectState !=null and projectState.length !=0">
+				and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+				and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDivCode !=null and runningDivCode.length !=0">
+				and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+				and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="customerCode !=null and customerCode.length !=0">
+				and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+				and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+				and realStartDate >= replace(#{realStartDate}, '-', '')
+			]]></if>
+			<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+				and realStartDate <= replace(#{realEndDate}, '-', '')
+			]]></if>		
+		) res3
+		where res3.rowNum between ((${pagingPage}-1)*${pagingNumberPer}+1) and ((${pagingPage}-1)*${pagingNumberPer}+${pagingNumberPer}) 
+		order by projectcode  desc
+	</select>
+	
+	<select id="getProjectSearchBizTypeAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		select a.KEY_1 as businessTypeCode, a.DATA_1 as businessTypeCodeName, isnull(cnt, 0) cnt 
+		from (select TABLE_NAME, KEY_1, DATA_1 from cmTableData where table_Name = 'BUSINESS_TYPE_CODE') a 
+		left outer join (
+			SELECT businessTypeCode, dbo.getCommonCodeToData('BUSINESS_TYPE_CODE', businessTypeCode) businessTypeCodeName, count(*) cnt 
+			from ProjectSearchNewList
+			where 1=1 
+			<if test="keyword != null and keyword != ''">
+				and (	upper(projectName) like upper('%'+#{keyword} + '%')
+					or upper(projectCode) like upper('%'+#{keyword} + '%')
+					or upper(customerName) like upper('%'+#{keyword} + '%')
+					or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+			</if>
+			<if test="projectState !=null and projectState.length !=0">
+				and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+				and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDivCode !=null and runningDivCode.length !=0">
+				and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+				and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="customerCode !=null and customerCode.length !=0">
+				and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+				and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+				and realStartDate >= replace(#{realStartDate}, '-', '')
+			]]></if>
+			<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+				and realStartDate <= replace(#{realEndDate}, '-', '')
+			]]></if>		
+			group by businessTypeCode
+		) b
+		on a.KEY_1 =b.businessTypeCode
+		where cnt != 0
+		order by 3 desc
+	</select>	
+
+	<select id="getProjectSearchStateAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		select a.KEY_1 as projectState, a.DATA_1 as projectStateName, isnull(cnt, 0) cnt 
+		from (select TABLE_NAME, KEY_1, DATA_1 from cmTableData where table_Name = 'PROJECT_STATE') a 
+		left outer join (
+			SELECT projectState, dbo.getCommonCodeToData('PROJECT_STATE', projectState) projectStateName, count(*) cnt 
+			from ProjectSearchNewList
+			where 1=1 
+			<if test="keyword != null and keyword != ''">
+				and (	upper(projectName) like upper('%'+#{keyword} + '%')
+					or upper(projectCode) like upper('%'+#{keyword} + '%')
+					or upper(customerName) like upper('%'+#{keyword} + '%')
+					or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+			</if>
+			<if test="projectState !=null and projectState.length !=0">
+				and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+				and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDivCode !=null and runningDivCode.length !=0">
+				and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+				and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="customerCode !=null and customerCode.length !=0">
+				and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+				and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+				and realStartDate >= replace(#{realStartDate}, '-', '')
+			]]></if>
+			<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+				and realStartDate <= replace(#{realEndDate}, '-', '')
+			]]></if>		
+			group by projectState
+		) b
+		on a.KEY_1 =b.projectState
+		where a.KEY_1  in ('3','4','5','6')
+		order by 3 desc
+	</select>	
+
+	<select id="getProjectSearchDivAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		SELECT runningDivCode,runningDivCodeName, count(*) cnt 
+		from ProjectSearchNewList
+		where 1=1 
+		<if test="keyword != null and keyword != ''">
+			and (	upper(projectName) like upper('%'+#{keyword} + '%')
+				or upper(projectCode) like upper('%'+#{keyword} + '%')
+				or upper(customerName) like upper('%'+#{keyword} + '%')
+				or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+		</if>
+		<if test="projectState !=null and projectState.length !=0">
+			and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+			and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDivCode !=null and runningDivCode.length !=0">
+			and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+			and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="customerCode !=null and customerCode.length !=0">
+			and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+			and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+			and realStartDate >= replace(#{realStartDate}, '-', '')
+		]]></if>
+		<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+			and realStartDate <= replace(#{realEndDate}, '-', '')
+		]]></if>		
+		group by runningDivCode, runningDivCodeName
+		order by 3 desc
+	</select>	
+
+	<select id="getProjectSearchDeptAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		select id runningDeptCode, replace(description, 'CPO그룹', 'CPO') runningDeptCodeName, isnull(cnt, 0) cnt  
+		from (
+			select id, description from smGroup where enabled = 1 and id <![CDATA[<>]]> '2000' and memberRule = 'A'
+		) a left outer join (
+			SELECT runningDeptCode, runningDeptCodeName, count(*) cnt 
+			from ProjectSearchNewList
+			where 1=1 
+			<if test="keyword != null and keyword != ''">
+				and (	upper(projectName) like upper('%'+#{keyword} + '%')
+					or upper(projectCode) like upper('%'+#{keyword} + '%')
+					or upper(customerName) like upper('%'+#{keyword} + '%')
+					or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+			</if>
+			<if test="projectState !=null and projectState.length !=0">
+				and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+				and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDivCode !=null and runningDivCode.length !=0">
+				and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDeptCode !=null and runningDeptCode.length !=0">
+				and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="customerCode !=null and customerCode.length !=0">
+				and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="projectTypeCode !=null and projectTypeCode.length !=0">
+				and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+				and realStartDate >= replace(#{realStartDate}, '-', '')
+			]]></if>
+			<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+				and realStartDate <= replace(#{realEndDate}, '-', '')
+			]]></if>		
+			group by runningDeptCode,runningDeptCodeName
+		) b
+		on a.id =b.runningDeptCode
+		where right(id, 1) != '0' and cnt != 0 order by  case id when '6201' then '9219' else id end  
+	</select>	
+
+	<select id="getProjectSearchCustomerAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		SELECT customerCode, customerName, count(*) cnt 
+		from ProjectSearchNewList
+		where 1=1 
+		<if test="keyword != null and keyword != ''">
+			and (	upper(projectName) like upper('%'+#{keyword} + '%')
+				or upper(projectCode) like upper('%'+#{keyword} + '%')
+				or upper(customerName) like upper('%'+#{keyword} + '%')
+				or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+		</if>
+		<if test="projectState !=null and projectState.length !=0">
+			and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+			and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDivCode !=null and runningDivCode.length !=0">
+			and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="runningDeptCode !=null and runningDeptCode.length  !=0">
+			and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="customerCode !=null and customerCode.length  !=0">
+			and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="projectTypeCode !=null and projectTypeCode.length  !=0">
+			and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+		</if>
+		<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+			and realStartDate >= replace(#{realStartDate}, '-', '')
+		]]></if>
+		<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+			and realStartDate <= replace(#{realEndDate}, '-', '')
+		]]></if>			
+		group by customerCode, customerName
+		order by 3 desc
+	</select>	
+
+	<select id="getProjectSearchProjectTypeAgg" resultType="kr.co.kmac.pms.project.domain.ProjectSearchEntity" parameterType="kr.co.kmac.pms.project.domain.ProjectSearchParam" >
+		select a.KEY_1 as projectTypeCode, a.DATA_1 as projectTypeCodeName, isnull(cnt, 0) cnt 
+		from (select TABLE_NAME, KEY_1, DATA_1 from cmTableData where table_Name = 'PROJECT_TYPE_CODE') a 
+		left outer join (
+			SELECT projectTypeCode, dbo.getCommonCodeToData('PROJECT_TYPE_CODE', projectTypeCode) projectTypeCodeName, count(*) cnt 
+			from ProjectSearchNewList
+			where 1=1
+			<if test="keyword != null and keyword != ''">
+				and (	upper(projectName) like upper('%'+#{keyword} + '%')
+					or upper(projectCode) like upper('%'+#{keyword} + '%')
+					or upper(customerName) like upper('%'+#{keyword} + '%')
+					or upper(hashTags) like  upper('%'+#{keyword} + '%') )
+			</if>
+			<if test="projectState !=null and projectState.length !=0">
+				and projectState in <foreach collection="projectState" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="businessTypeCode !=null and businessTypeCode.length !=0">
+				and businessTypeCode in <foreach collection="businessTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDivCode !=null and runningDivCode.length  !=0">
+				and runningDivCode in <foreach collection="runningDivCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="runningDeptCode !=null and runningDeptCode.length  !=0">
+				and runningDeptCode in <foreach collection="runningDeptCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="customerCode !=null and customerCode.length  !=0">
+				and customerCode in <foreach collection="customerCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="projectTypeCode !=null and projectTypeCode.length  !=0">
+				and projectTypeCode in <foreach collection="projectTypeCode" item="code" open="(" separator="," close=")">#{code}</foreach>
+			</if>
+			<if test="realStartDate !=null and realStartDate != ''"><![CDATA[
+				and realStartDate >= replace(#{realStartDate}, '-', '')
+			]]></if>
+			<if test="realEndDate !=null and realEndDate != ''"><![CDATA[
+				and realStartDate <= replace(#{realEndDate}, '-', '')
+			]]></if>			
+			group by projectTypeCode
+		) b
+		on a.KEY_1 =b.projectTypeCode
+		where a.KEY_1 not in ('PMD','PMM','PMX','AA')
+		order by 3 desc
+	</select>	
+
+
+</mapper>

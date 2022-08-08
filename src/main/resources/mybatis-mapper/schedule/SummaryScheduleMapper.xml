@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.schedule.mapper.SummaryScheduleMapper">
+
+	<select id="getHolidayByMonth" resultType="kr.co.kmac.pms.schedule.domain.Holiday" 
+		parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" >
+		SELECT hyear, hmonth, hday, hName 
+		FROM holliday
+		where 1=1
+		and hyear = #{year} and hmonth = #{month}
+		ORDER BY hday
+	</select>
+	
+	<select id="getScheduleWeeklySummary" resultType="kr.co.kmac.pms.schedule.domain.summary.ScheduleSummary" 
+		parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" fetchSize="5000">
+		select 
+			userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode, year, month, day, 
+			[내부일정] as t1, [외부일정] as t2, [고객정보] as t3, [프로젝트] as t4, [교육참석] as t5, [휴가] as t6, [Up-day] as t7, [개인휴무] as t8,
+			(convert(int, isnull([내부일정], 0))
+			+convert(int, isnull([외부일정], 0))
+			+convert(int, isnull([고객정보], 0))
+			+convert(int, isnull([프로젝트], 0))
+			+convert(int, isnull([교육참석], 0))
+			+convert(int, isnull([휴가], 0))
+			+convert(int, isnull([Up-day], 0))
+			+convert(int, isnull([개인휴무], 0))) totalCount, hday as holiday
+		from (
+			select a.userId, a.ssn, a.groupName, a.groupParentId, a.groupId, a.userName, a.posName, a.labelName, a.OrdSeq, a.groupSeq, a.posCode, a.year, a.month, a.day, b.type, b.cnt, hday
+			from (
+		 		select userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode, bc.year, bc.month, bc.day, bcc.hday
+		 		from (    
+		 			select userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode          
+		 			from (  
+						SELECT  userId
+							, ssn
+							, isNull(groupName,'기타') groupName
+							, groupParentId
+							, (case groupId when '9280' then '9281' when '922A' then '92101' WHEN '921A' THEN '92001' WHEN '923A' THEN '92301' WHEN '924A' THEN '92401' else CASE WHEN SSN IN ('A000064','G003735') THEN '9401' ELSE groupId end end) as groupId
+							, userName
+							, isNull(posName,'기타') AS posName
+							, CASE left(posName,3)                 						
+								WHEN 'CEO'		THEN 'CEO'			
+								WHEN 'CBO'		THEN 'CBO'			
+								WHEN 'CSO'		THEN 'CSO'			
+								WHEN 'CCO'		THEN 'CCO'			 	
+								WHEN '자문위'		THEN 'Advisor'		
+								WHEN '엑스퍼'		THEN '엑스퍼트'		
+								WHEN '비서'		THEN '비서실'
+								WHEN '고문컨'		THEN 'Advisor'			
+			  					ELSE                             	
+									CASE IsNull(groupParentId,'')	
+										WHEN '2000' THEN '부문장'  	
+										ELSE 
+											CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' 
+										ELSE replace(replace(replace(replace(replace(replace(LTrim(groupName),'센터',''),'본부',''),' 상임',''),'상임',''),'기획실','기획'),'부문','')     	
+									END                          	
+						 		END  END AS labelName                  	
+							, CASE IsNull((case when posName = 'CSO' then '7080' else groupParentId end),'')      	
+								WHEN '' THEN 0                   	
+								WHEN '2030' THEN 1               	 
+								WHEN '2000' THEN 2               	
+								WHEN '7080' THEN 2               	
+								WHEN '2720' THEN 3               	
+								ELSE                             	
+									CASE posName 
+										WHEN 'IM' THEN 4			
+										ELSE 5	 
+									END                            	
+						 		END  AS OrdSeq
+							,groupSeq	   	
+							, posCode
+						FROM    vUserInfo                                          	
+						WHERE (enabled = '1') AND userId IS NOT NULL
+						<choose>
+							<when test="jobClass == 'A'.toString() or jobClass == 'J'.toString()">
+							<![CDATA[
+								AND (jobclass in ('${jobClass}', 'B', 'H'))      	
+								AND jobclass <> (case '${jobClass}' when 'J' then 'H' else '' end) 
+								AND jobclass <> (case '${jobClass}' when 'J' then 'B' else '' end) 
+								AND poscode <> '64GT'	 
+							]]>
+							</when>
+							<otherwise>
+								AND jobclass = 'N'
+								AND posCode = '64GT'
+							</otherwise>
+						</choose>
+						AND ssn NOT IN ('E000817', 'A001559', 'G003279')
+						AND groupId not in ('9264','9265')		 				
+		 			) a     
+		 		) a cross join (
+		 			select [year], [month], [day] From Calendar
+					where [date] between dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}')) 
+									and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}')) 
+		 		) bc
+		 		left join (
+					select [hyear], [hmonth], [hday]
+					from holliday
+				)bcc
+				on year = hyear and month = hmonth and day = hday     
+			) a left outer join (       
+		 		select    
+		 			YEAR, MONTH, Day,  ssn, type, cnt
+		 		from (
+					/**------------------------------------------------------------------------------------------**/
+		 			SELECT year, month, day, ssn, '고객정보' as type, count(*) cnt
+		 			from (
+		 				SELECT	DATENAME(YEAR, c.info_date) as [year],        
+		 						DATENAME(MONTH, c.info_date) as [month],          
+		 						RIGHT(CONVERT(varchar,c.info_date,112),2) as [day],               
+		 						picker_ssn as ssn,   
+		 						CONVERT(date, c.info_date) as infoDate             
+		 				FROM  Customer c, customer_pickers p   
+		 				WHERE 1=1			 		 				
+						AND	c.idx = p.customer_idx	  
+						AND c.info_date  between dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+											and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}')) 
+						AND	c.embbsMethod = '1'     
+						<if test="keyword != null and keyword != '' ">
+							AND upper(subject) like upper('%${keyword}%')
+						</if>
+		 			) a   
+		 			group by year, month, day, ssn
+					
+					UNION ALL
+					SELECT year, month, day, SSN, type, count(*) cnt
+					FROM (
+					SELECT  year, month, day, CASE WHEN SSL.SSN IS NULL THEN SD.SSN  ELSE SSL.SSN END AS SSN,
+						(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+							(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+						end) type , SSL.IDX
+					FROM  Schedule SD
+					LEFT JOIN (SELECT SSN,IDX,OWNERSSN FROM ScheduleShareList) SSL
+					ON SD.IDX = SSL.IDX
+					WHERE 1=1
+					<if test="keyword != null and keyword != '' ">			
+						AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%{keyword}%') )
+					</if>
+					<if test="secretYN != null and secretYN != '' ">	
+					</if>
+					AND (SSL.SSN != SSL.OWNERSSN OR SSL.IDX IS NULL) 
+					AND (secretYN = 'N')
+					AND convert(date, year+'-'+month+'-'+day)  between dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+																	and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}'))   
+																	
+					UNION ALL 
+					
+					SELECT DISTINCT year, month, day, SD.SSN AS SSN,
+						(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+							(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+						end) type , SSL.IDX
+					FROM  Schedule SD
+					INNER JOIN (SELECT SSN,IDX,OWNERSSN FROM ScheduleShareList) SSL
+					ON SD.IDX = SSL.IDX
+					AND SD.SSN = SSL.OWNERSSN
+
+					WHERE 1=1
+					<if test="keyword != null and keyword != '' ">			
+						AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%{keyword}%') )
+					</if>
+					<if test="secretYN != null and secretYN != '' ">	
+					</if>
+					AND (secretYN = 'N')
+					AND convert(date, year+'-'+month+'-'+day)  between dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+																	and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}'))   
+																	
+					
+					
+					) A
+					group by year, month, day, ssn, type
+		
+					UNION ALL
+		
+					SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, count(*) cnt
+					from (
+						SELECT  PRD.projectCode, PRD.year, PRD.month, PRD.day, PRD.chargeSsn          
+						FROM    ProjectReportDetail AS PRD 	              
+						INNER JOIN Project AS P
+						ON PRD.projectCode = P.projectCode	
+						WHERE   year> 2020
+						<if test="keyword != null and keyword != '' ">
+							and upper(p.customerName) like upper('%${keyword}%')
+						</if>
+						and convert(date, year+month+day)  between dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+																and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}'))	  
+						UNION ALL
+						SELECT  PRD.projectCode, PRD.year, PRD.month, PRD.day, PRD.chargeSsn	              
+						FROM    ProjectManpowerDetail AS PRD
+						INNER JOIN Project AS P
+						ON PRD.projectCode = P.projectCode	
+						WHERE   year> 2020
+						<if test="keyword != null and keyword != '' ">
+							and upper(p.customerName) like upper('%${keyword}%')
+						</if>
+						and convert(date, year+month+day)  between  dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+																and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}')) 
+						UNION ALL
+						SELECT	BBSID as projectCode, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+						FROM standardbbs
+						WHERE refSchedule = 'Y' and  len(workDate) > 0
+						<if test="keyword != null and keyword != '' ">
+							and upper(subject) like upper('%${keyword}%')
+						</if>
+						and convert(date, workDate)  between  dateadd(day, 1-datepart(dw, '${date}'), CONVERT(date, '${date}'))  
+														and dateadd(day, 7-datepart(dw, '${date}'), CONVERT(date, '${date}')) 
+		 			) a
+					group by year, month, day, chargeSsn	 
+					/**------------------------------------------------------------------------------------------**/
+		 		) res     
+			) b         
+			on a.ssn = b.ssn
+			and a.year = b.year
+			and a.month = convert(int, b.month) 
+			and a.day = convert(int, b.day) 
+			
+		) as r  PIVOT ( 
+		    SUM(cnt) FOR [type] IN ([내부일정],[외부일정],[고객정보],[프로젝트],[교육참석],[휴가],[Up-day],[개인휴무]) 
+		) AS pivot_result
+		order by  OrdSeq,groupSeq,CASE WHEN groupId ='9401' THEN '9355' ELSE groupId END,CASE WHEN groupId ='9401' AND posCode = '10TM' THEN '0'  WHEN groupId ='9401' AND posCode = '23NRB' THEN '00' ELSE posCode END,posName,SSN		
+	</select>
+	
+	<select id="getScheduleMonthlySummary" resultType="kr.co.kmac.pms.schedule.domain.summary.ScheduleSummary" 
+		parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" fetchSize="5000">
+		select 
+			userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode, year, month, day, 
+			[내부일정] as t1, [외부일정] as t2, [고객정보] as t3, [프로젝트] as t4, [교육참석] as t5, [휴가] as t6, [Up-day] as t7, [개인휴무] as t8,
+			(convert(int, isnull([내부일정], 0))
+			+convert(int, isnull([외부일정], 0))
+			+convert(int, isnull([고객정보], 0))
+			+convert(int, isnull([프로젝트], 0))
+			+convert(int, isnull([교육참석], 0))
+			+convert(int, isnull([휴가], 0))
+			+convert(int, isnull([Up-day], 0))
+			+convert(int, isnull([개인휴무], 0))) totalCount, hday as holiday
+		from (
+			select a.userId, a.ssn, a.groupName, a.groupParentId, a.groupId, a.userName, a.posName, a.labelName, a.OrdSeq, a.groupSeq, a.posCode, a.year, a.month, a.day, b.type, b.cnt, hday
+			from (
+		 		select userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode, bc.year, bc.month, bc.day, bcc.hday
+		 		from (    
+		 			select userId, ssn, groupName, groupParentId, groupId, userName, posName, labelName, OrdSeq, groupSeq, posCode          
+		 			from (  
+						SELECT  userId
+							, ssn
+							, isNull(groupName,'기타') groupName
+							, groupParentId
+							, (case groupId when '9280' then '9281' when '922A' then '92101' WHEN '921A' THEN '92001' WHEN '923A' THEN '92301' WHEN '924A' THEN '92401' else CASE WHEN SSN IN ('A000064','G003735') THEN '9401' ELSE  groupId end end) as groupId
+							, userName
+							, isNull(posName,'기타') AS posName
+							<choose>
+							<when test="jobClass == 'P'.toString()">
+							<![CDATA[
+							, isNull(groupName,'기타') AS labelName
+							]]>
+							</when>
+							<otherwise>
+							, CASE left(posName,3)                 						
+								WHEN 'CEO'		THEN 'CEO'			
+								WHEN 'CBO'		THEN 'CBO'			
+								WHEN 'CSO'		THEN 'CSO'			
+								WHEN 'CCO'		THEN 'CCO'			 	
+								WHEN '자문위'		THEN 'Advisor'		
+								WHEN '엑스퍼'		THEN '엑스퍼트'		
+								WHEN '비서'		THEN '비서실'
+								WHEN '고문컨'		THEN 'Advisor'			
+			  					ELSE                             	
+									CASE IsNull(groupParentId,'')	
+										WHEN '2000' THEN '부문장'  
+										ELSE 
+										CASE WHEN SSN IN ('A000064','G003735') THEN '글로벌교육팀' 
+												
+										ELSE replace(replace(replace(replace(replace(replace(LTrim(groupName),'센터',''),'본부',''),' 상임',''),'상임',''),'기획실','기획'),'부문','')     	
+									END
+						 		END  END AS labelName
+							</otherwise>
+						</choose>
+							, CASE IsNull((case when posName = 'CSO' then '7080' else groupParentId end),'')      	
+								WHEN '' THEN 0
+								WHEN '2030' THEN 1
+								WHEN '2000' THEN 2
+								WHEN '7080' THEN 2
+								WHEN '2720' THEN 3
+								ELSE
+									CASE posName 
+										WHEN 'IM' THEN 4
+										ELSE 5	 
+									END
+						 		END  AS OrdSeq
+							,groupSeq
+							, posCode
+						FROM    vUserInfo
+						WHERE (enabled = '1') AND userId IS NOT NULL
+						<choose>
+							<when test="jobClass == 'A'.toString() or jobClass == 'J'.toString()">
+							<![CDATA[
+								AND (jobclass in ('${jobClass}', 'B', 'H'))
+								AND jobclass <> (case '${jobClass}' when 'J' then 'H' else '' end) 
+								AND jobclass <> (case '${jobClass}' when 'J' then 'B' else '' end) 
+								AND poscode <> '64GT'	 
+							]]>
+							</when>
+							<when test="jobClass == 'P'.toString()">
+							<![CDATA[
+								AND (jobclass in ('${jobClass}'))      	
+								AND poscode <> '64GT'	 
+							]]>
+							</when>
+							<otherwise>
+								AND (jobclass in ('${jobClass}', 'B', 'H'))
+								AND posCode = '64GT'
+							</otherwise>
+						</choose>
+						AND ssn NOT IN ('E000817', 'A001559', 'G003279')
+						AND groupId not in ('9264','9265')		 				
+		 			) a     
+		 		) a cross join (
+		 			select [year], [month], [day] From Calendar
+					where year = ${year} and month = ${month}
+		 		) bc
+		 		left join (
+					select [hyear], [hmonth], [hday]
+					from holliday
+				)bcc
+				on year = hyear and month = hmonth and day = hday     
+			) a left outer join (       
+		 		select    
+		 			YEAR, MONTH, Day,  ssn, type, cnt
+		 		from (
+					/**------------------------------------------------------------------------------------------**/
+		 			SELECT year, month, day, ssn, '고객정보' as type, count(*) cnt
+		 			from (
+		 				SELECT	DATENAME(YEAR, c.info_date) as [year],        
+		 						DATENAME(MONTH, c.info_date) as [month],          
+		 						RIGHT(CONVERT(varchar,c.info_date,112),2) as [day],               
+		 						picker_ssn as ssn,   
+		 						CONVERT(date, c.info_date) as infoDate             
+		 				FROM  Customer c, customer_pickers p   
+		 				WHERE 1=1			 		 				
+						AND	c.idx = p.customer_idx	  
+						AND DATENAME(YEAR, c.info_date) = ${year}				
+						AND DATENAME(month, c.info_date) = ${month}
+						AND	c.embbsMethod = '1'     
+						<if test="keyword != null and keyword != '' ">
+							AND upper(subject) like upper('%${keyword}%')
+						</if>
+		 			) a   
+		 			group by year, month, day, ssn
+					
+					UNION ALL
+					SELECT 
+						year, month, day, SSN, type, count(*) cnt
+					FROM (
+					SELECT  year, month, day, CASE WHEN SSL.SSN IS NULL THEN SD.SSN  ELSE SSL.SSN END AS SSN,
+						(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+							(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+						end) type , SSL.IDX
+					FROM  Schedule SD
+					LEFT JOIN (SELECT SSN,IDX,OWNERSSN FROM ScheduleShareList) SSL
+					ON SD.IDX = SSL.IDX
+					WHERE 1=1
+					<if test="keyword != null and keyword != '' ">			
+						AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%{keyword}%') )
+					</if>
+					<if test="secretYN != null and secretYN != '' ">	
+					</if>
+					AND (SSL.SSN != SSL.OWNERSSN OR SSL.IDX IS NULL) 
+					AND (secretYN = 'N')
+					AND (year = ${year})        
+					AND (month = ${month}) 
+					
+					UNION ALL 
+					
+					SELECT DISTINCT year, month, day, SD.SSN AS SSN,
+						(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+							(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+						end) type , SSL.IDX
+					FROM  Schedule SD
+					INNER JOIN (SELECT SSN,IDX,OWNERSSN FROM ScheduleShareList) SSL
+					ON SD.IDX = SSL.IDX
+					AND SD.SSN = SSL.OWNERSSN
+
+					WHERE 1=1
+					<if test="keyword != null and keyword != '' ">			
+						AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%{keyword}%') )
+					</if>
+					<if test="secretYN != null and secretYN != '' ">	
+					</if>
+					AND (secretYN = 'N')
+					AND (year = ${year})        
+					AND (month = ${month}) 
+					
+					) A
+					group by year, month, day, ssn, type
+		
+					UNION ALL
+		
+					SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, count(*) cnt
+					from (
+						SELECT  PRD.projectCode, PRD.year, PRD.month, PRD.day, PRD.chargeSsn          
+						FROM    ProjectReportDetail AS PRD 	              
+						INNER JOIN Project AS P
+						ON PRD.projectCode = P.projectCode	
+						WHERE  1=1
+						<if test="keyword != null and keyword != '' ">
+							and upper(p.customerName) like upper('%${keyword}%')
+						</if>
+						AND (PRD.year = ${year})
+						AND (PRD.month = ${month})	  
+						UNION ALL
+						SELECT  PRD.projectCode, PRD.year, PRD.month, PRD.day, PRD.chargeSsn	              
+						FROM    ProjectManpowerDetail AS PRD
+						INNER JOIN Project AS P
+						ON PRD.projectCode = P.projectCode	
+						WHERE  1=1
+						<if test="keyword != null and keyword != '' ">
+							and upper(p.customerName) like upper('%${keyword}%')
+						</if>
+						AND (PRD.year = ${year})
+						AND (PRD.month = ${month}) 
+						UNION ALL
+						SELECT	BBSID as projectCode, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+						FROM standardbbs
+						WHERE refSchedule = 'Y'
+						<if test="keyword != null and keyword != '' ">
+							and upper(subject) like upper('%${keyword}%')
+						</if>
+						AND datename(YEAR, workDate) = ${year}
+						AND datename(MONTH, workDate) =  ${month}
+		 			) a
+					group by year, month, day, chargeSsn	 
+					/**------------------------------------------------------------------------------------------**/
+		 		) res     
+			) b         
+			on a.ssn = b.ssn
+			and a.year = b.year
+			and a.month = convert(int, b.month) 
+			and a.day = convert(int, b.day) 
+			
+		) as r  PIVOT ( 
+		    SUM(cnt) FOR [type] IN ([내부일정],[외부일정],[고객정보],[프로젝트],[교육참석],[휴가],[Up-day],[개인휴무]) 
+		) AS pivot_result
+		order by  OrdSeq,groupSeq,CASE WHEN groupId ='9401' THEN '9355' ELSE groupId END,CASE WHEN groupId ='9401' AND posCode = '10TM' THEN '0'  WHEN groupId ='9401' AND posCode = '23NRB' THEN '00' ELSE posCode END,posName,SSN
+	</select>	
+
+</mapper>

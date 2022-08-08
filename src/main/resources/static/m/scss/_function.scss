@@ -1,0 +1,174 @@
+@charset 'utf-8';
+
+// 변수
+$c-main: #006fc1;
+$c-sub: #469ada;
+
+$c-bg: #f0f6ff;
+$c-red: #da4646;
+
+$c-line: #dae1ea;
+$c-title: #414b69;
+
+$c-bk: #222222;
+$c-bk-light: #666666;
+$c-bk-dark: #424242;
+$c-wt: #ffffff;
+$c-gry: #dddddd;
+$c-gry-dark: #aaaaaa;
+$c-nav: #888888;
+
+$url: "../images/";
+$url_common: "../images/common/";
+$url_main: "../images/main/";
+$url_sub: "../images/sub/";
+
+$header-size: 60px;
+$footer-size: 30px;
+
+
+// Mixin
+@mixin fontset($ff: 'NotoKrR', $fs: 16px, $lh: 1, $fc: $c-bk, $a: false, $hover: null) {
+    font-family: $ff;
+    font-size: $fs;
+    line-height: $lh;
+    color: $fc;
+    @if $a {
+        text-decoration: none;
+        &:hover {
+            color: $hover;
+        }
+    }
+}
+
+@mixin absolute($t: null, $l: null, $b: null, $r: null) {
+    position: absolute;
+    top: $t;
+    left: $l;
+    bottom: $b;
+    right: $r;
+}
+
+@mixin fixed($t: null, $l: null, $b: null, $r: null) {
+    position: fixed;
+    top: $t;
+    left: $l;
+    bottom: $b;
+    right: $r;
+}
+
+@mixin border($bp: null, $bw: 1px, $bt: solid, $bc: $c-line) {
+    @if $bp == all {
+        border: $bw $bt $bc;
+    }
+    @else {
+        border-#{$bp}: $bw $bt $bc;
+    }
+}
+
+@mixin radius($r: 5px) {
+    border-radius: $r;
+}
+
+@mixin flex($ai: center, $jc: center, $fw: nowrap, $fd: row){
+    display: flex;
+    align-items: $ai;
+    justify-content: $jc;
+    flex-wrap: $fw;
+    flex-direction: $fd;
+}
+
+@mixin transform($transforms...) {
+    transform: $transforms;
+}
+
+@mixin rotate($deg) {
+    @include transform(rotate(#{$deg}deg));
+}
+
+@mixin scale($x: 1, $y: 1) {
+@include transform(scale($x, $y));
+} 
+
+@mixin translate($x, $y) {
+    @include transform(translate($x, $y));
+}
+
+@mixin skew($x) {
+    @include transform(skew(#{$x}deg));
+} 
+
+@mixin transform-origin($origin) {
+    transform-origin: $origin;
+}
+
+@mixin transition($p: all, $t: 0.3s, $f: ease, $d: 0s){
+    transition: $p $t $f $d;
+}
+
+@mixin shadow($args...) {    
+    box-shadow: $args;
+}
+
+@mixin w-c {
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+// animate
+@mixin keyframes($name) {
+    @keyframes #{$name} {
+    @content;
+    }
+}
+
+@keyframes bgScale {
+    0% {@include transform(scale(1.4) rotate(0.01deg));}
+    100% {@include transform(scale(1) rotate(0.01deg));}
+}
+
+@keyframes widthScale {
+    0% {width: 0;}
+    100% {width: 800px;}
+}
+
+@keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+}
+
+@mixin inner {
+    padding: 0 20px;
+}
+
+@mixin ellipsis{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+%inner {
+    @include inner;
+}
+
+@mixin be_af {
+    content: ''; 
+    display: block;
+}
+
+%be_af {
+    @include be_af;
+}
+
+@for $i from 1 through 10 {
+	$base: 10;
+	$width: $base * $i;
+}

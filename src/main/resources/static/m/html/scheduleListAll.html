@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>
+            <div class="logo"></div>        
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>스케줄관리</p>
+                </div>
+                <ul>
+                    <li><button type="button" class="btn c-sub" title="검색 창 열기" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-magnify"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="게시글 작성"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                </ul>
+                <!-- 검색 창 팝업 -->
+                <div id="pop_search" class="popup_layer pop_search">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="pop_close">
+                            <input type="text" placeholder="검색어(제목/내용/작성자) 입력" />						
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_search');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>								
+                        <div class="write_group">
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                        </div>
+                        <select name="" id="">
+                            <option value="정보유형 선택">정보유형 선택</option>
+                            <option value="정보유형 선택">정보유형 선택</option>
+                        </select>                        
+                        <button type="button" class="btn c-wt" title="검색">검색</button>
+                    </div>
+                </div>
+                <!-- // 검색 창 팝업 -->
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="search_area">
+                    <div class="calendar">
+                        <button type="button" class="btn-close" title="닫기"><i class="mdi mdi-chevron-left"></i></button>
+                        <ul>
+                            <li>
+                                <select name="" id="">
+                                    <option value="2022년">2022년</option>
+                                    <option value="2021년">2021년</option>
+                                </select>
+                            </li>
+                            <li>
+                                <select name="" id="">
+                                    <option value="1월">1월</option>
+                                    <option value="2월">2월</option>
+                                </select>
+                            </li>
+                            <li>
+                                <select name="" id="">
+                                    <option value="1주차">1주차</option>
+                                    <option value="2주차">2주차</option>
+                                </select>
+                            </li>
+                            <li>
+                                <select name="" id="">
+                                    <option value="상근">상근</option>
+                                </select>
+                            </li>
+                        </ul>
+                        <button type="button" class="btn-close" title="닫기"><i class="mdi mdi-chevron-right"></i></button>
+                    </div>
+                </div>
+                <!-- // search_area -->
+
+                <!-- 전사 스케줄 관리 -->
+                <div class="gantt_box">
+                    <div class="list">
+
+                        <div class="gantt_title">
+                            <p>소속부서<br />└ 성명</p>
+                        </div>
+
+                        <div class="dropdown_list_wrap">
+                            <ul class="dropdown_list">
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor AdvisorAdvisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>CEO</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">CEO</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p>Advisor</p></a></div>
+                                    <div class="drop_data_list sc">
+                                        <ul>
+                                            <li><a href="javascript:;">고두균</a></li>
+                                            <li><a href="javascript:;">김희철</a></li>
+                                            <li><a href="javascript:;">오진영</a></li>
+                                            <li><a href="javascript:;">이형근</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="view">	
+                        
+                        <div class="week">
+                            <div class="sun">일</div>
+                            <div class="mon holiday">월</div><!-- 공휴일 .holiday (22.03.12) -->
+                            <div class="tue today">화</div><!-- 오늘 일자 .today (22.03.12) -->
+                            <div class="wed">수</div>
+                            <div class="thu">목</div>
+                            <div class="fri">금</div>
+                            <div class="sat">토</div>
+                        </div>
+                        <!-- <div class="week">
+                            <div class="sun">1</div>
+                            <div class="mon">2</div>
+                            <div class="tue">3</div>
+                            <div class="wed">4</div>
+                            <div class="thu">5</div>
+                            <div class="fri">6</div>
+                            <div class="sat">7</div>
+                        </div> -->
+
+                        <div class="dropdown_list_wrap">
+                            <ul class="dropdown_list">
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task bg"><!-- 백그라운드 지정 시 .bg (22.03.12)-->
+                                            <div></div>
+                                            <div class="holiday"></div><!-- 공휴일 .holiday (22.03.12) -->
+                                            <div class="today"></div><!-- 오늘 일자 .today (22.03.12) -->
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select holiday"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div><!-- 공휴일 .holiday (22.03.12) -->
+                                            <div class="ico-2 select today"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div><!-- 오늘 일자 .today (22.03.12) -->
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task bg"><!-- 백그라운드 지정 시 .bg (22.03.12)-->
+                                            <div></div>
+                                            <div class="holiday"></div><!-- 공휴일 .holiday (22.03.12) -->
+                                            <div class="today"></div><!-- 오늘 일자 .today (22.03.12) -->
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="holiday"><a class="circle yellow_b pink_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div><!-- 공휴일 .holiday (22.03.12) -->
+                                            <div class="today"><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+2</span></a></div><!-- 카테고리가 여러개 일 경우 <span>+ </span> --><!-- 오늘 일자 .today (22.03.12) -->
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 <span>+ </span> -->
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="holiday"><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div><!-- 공휴일 .holiday (22.03.12) -->
+                                            <div class="today"><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div><!-- 오늘 일자 .today (22.03.12) -->
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-2 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-3 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-4 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="circle yellow_b pink_a"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-2 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-3 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-4 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="circle yellow_b pink_a"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task bg"><!-- 백그라운드 지정 시 .bg (22.03.12)-->
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-2 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-3 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-4 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="circle yellow_b pink_a"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-2 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-3 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-4 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="circle yellow_b pink_a"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>	
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div class="ico-2 select group"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"><span>+5</span></a></div><!-- 카테고리가 여러개 일 경우 .group -->
+                                            <div class="ico-1 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-2 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-3 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-4 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-5 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div class="ico-6 select"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="on">
+                                    <div class="drop_title_list">
+                                        <div class="task">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                    <div class="drop_data_list sc">
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div class="circle yellow_b pink_a"><a href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle yellow_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b green_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div><a class="circle pink_b blue_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b purple_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="task task_sub">
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                            <div><a class="circle pink_b orange_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                            <div><a class="circle pink_b gray_a" href="javascript:;" onclick="javascript:layer_open(this,'pop_schedule');"></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>													
+                <!-- // gantt_box -->
+                <!-- // 전사 스케줄 관리 -->
+                
+                <!-- 스케줄 상세, 수정 팝업 -->
+                <div id="pop_schedule" class="popup_layer pop_schedule">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="head">
+                            <div>
+                                <p>[Advisior] 고두균</p>
+                                <p>2022-01-02(월)</p>
+                            </div>					
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_schedule');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>
+                        <div class="view">
+                            <ul>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-1">외부일정</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-2">내부일정</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-3">교육참석</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-4">재택근무</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-5">프로젝트 투입</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-6">휴가</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="title">
+                                        <p class="ico ico-7">기타</p>
+                                        <ul class="btn_edit">
+                                            <li><button type="button" class="btn line c-red" title="삭제" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                            <li><button type="button" class="btn line c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail">
+                                        <p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록 N)</p>
+                                        <p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+                                        <p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+                                        <p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- // 스케줄 상세, 수정 팝업 -->
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>회의실예약</p>
+                </div>
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="inner">
+                    <div class="write">
+                        <select name="" id="">
+                            <option value="회의실 선택">회의실 선택</option>
+                        </select>                        
+                        <ul class="accordions">
+                            <li>
+                                <input type="checkbox" id="chck1">
+                                <label class="accordion-label" for="chck1">1월 5일(수)</label>
+                                <div class="accordion-content">
+                                    <!-- 일자 선택 -->
+                                    <div class="month_box">
+
+                                        <div class="week">
+                                            <p class="sun">일요일</p>
+                                            <p class="mon">월요일</p>
+                                            <p class="tue">화요일</p>
+                                            <p class="wed">수요일</p>
+                                            <p class="thu">목요일</p>
+                                            <p class="fri">금요일</p>
+                                            <p class="sat">토요일</p>
+                                        </div>
+                                        
+                                        <div class="month">    
+                                            <div class="sun none"><!-- 미 선택 .none -->              														
+                                                <p>26</p>
+                                            </div>
+                                            <div class="none"><!-- 미 선택 .none -->              														
+                                                <p>27</p>
+                                            </div>
+                                            <div class="none"><!-- 미 선택 .none -->              														
+                                                <p>28</p>
+                                            </div>
+                                            <div class="none"><!-- 미 선택 .none -->              														
+                                                <p>29</p>
+                                            </div> 
+                                            <div class="none"><!-- 미 선택 .none -->              														
+                                                <p>30</p>
+                                            </div>
+                                            <div class="none"><!-- 미 선택 .none -->              														
+                                                <p>31</p>
+                                            </div>
+                                            <div class="sat none">                 														
+                                                <p>1</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="month">
+                                            <div class="sun">
+                                                <p><a href="javascript:;">2</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">3</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">4</a></p>
+                                            </div>                       
+                                            <div class="today"><!-- 오늘 날자 .today -->
+                                                <p><a href="javascript:;" onclick="javascript:layer_open(this,'pop_support_all');">5</a></p>
+                                                <span>오늘</span>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;" onclick="javascript:layer_open(this,'pop_support_all');">6</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;" onclick="javascript:layer_open(this,'pop_support_all');">7</a></p>
+                                            </div>
+                                            <div class="sat">
+                                                <p><a href="javascript:;">8</a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="month">
+                                            <div class="sun">
+                                                <p><a href="javascript:;">9</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">10</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">11</a></p>
+                                            </div>                      
+                                            <div>
+                                                <p><a href="javascript:;">12</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">13</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">14</a></p>
+                                            </div>
+                                            <div class="sat">
+                                                <p><a href="javascript:;">15</a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="month">
+                                            <div class="sun">
+                                                <p><a href="javascript:;">16</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">17</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">18</a></p>
+                                            </div>                      
+                                            <div>
+                                                <p><a href="javascript:;">19</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">20</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">21</a></p>
+                                            </div>
+                                            <div class="sat">
+                                                <p><a href="javascript:;">22</a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="month">
+                                            <div class="sun">
+                                                <p><a href="javascript:;">23</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">24</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">25</a></p>
+                                            </div>                      
+                                            <div>
+                                                <p><a href="javascript:;">26</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">27</a></p>
+                                            </div>
+                                            <div>
+                                                <p><a href="javascript:;">28</a></p>
+                                            </div>
+                                            <div class="sat">
+                                                <p><a href="javascript:;">29</a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="month">
+                                            <div class="sun">
+                                                <p><a href="javascript:;">30</a></p>
+                                            </div>
+                                            <div class="none">
+                                                <p>1</p>
+                                            </div>
+                                            <div class="none">
+                                                <p>2</p>
+                                            </div>                      
+                                            <div class="none">
+                                                <p>3</p>
+                                            </div>
+                                            <div class="none">
+                                                <p>4</p>
+                                            </div>
+                                            <div class="none">
+                                                <p>5</p>
+                                            </div>
+                                            <div class="sat none">
+                                                <p>6</p>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <!-- // 일자 선택 -->
+                                </div>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="chck2">
+                                <label class="accordion-label" for="chck2">시간 선택</label>
+                                <div class="accordion-content">
+                                    <!-- 시간 선택 -->
+                                    <div class="time_select">
+                                        <ul class="chek_text">
+                                            <li><p>선택</p></li>
+                                            <li><p class="disable">불가</p></li>
+                                        </ul>
+                                        <div class="list">
+                                            <p>오전</p>
+                                            <ul>
+                                                <li class="on"><a href="javascript:;">9:00</a></li><!-- 선택 시 .on-->
+                                                <li><a href="javascript:;">9:30</a></li>
+                                                <li><a href="javascript:;">10:00</a></li>
+                                                <li class="on"><a href="javascript:;">10:30</a></li><!-- 선택 시 .on-->
+                                            </ul>
+                                            <ul>                                            
+                                                <li><a href="javascript:;">11:00</a></li>
+                                                <li class="disable">11:30</a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="list">
+                                            <p>오후</p>
+                                            <ul>
+                                                <li><a href="javascript:;">1:00</a></li>
+                                                <li><a href="javascript:;">1:30</a></li>
+                                                <li><a href="javascript:;">2:00</a></li>
+                                                <li><a href="javascript:;">2:30</a></li>
+                                            </ul>
+                                            <ul>
+                                                <li><a href="javascript:;">3:00</a></li>
+                                                <li class="disable">3:30</a></li>
+                                                <li class="disable">4:00</a></li>
+                                                <li><a href="javascript:;">4:30</a></li>
+                                            </ul>
+                                            <ul>                                            
+                                                <li><a href="javascript:;">5:00</a></li>
+                                                <li class="disable">5:30</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- // 시간 선택 -->
+                                </div>
+                            </li>
+                        </ul>
+                        <input type="text" placeholder="회의주제 입력" />
+                        <textarea name="" id="" cols="30" rows="10" placeholder="비고 또는 메모" class="textarea"></textarea> 
+                        
+                        <div class="textarea_box"><!-- 영역 가운데 정렬, 텍스트는 왼쪽 정렬 -->
+                            <textarea name="" id=""  cols="30" rows="10" placeholder="" class="textarea">
+비고 또는 메모
+비고 또는 메모
+비고 또는 메모 비고 또
+비고 비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고비고
+                            </textarea>
+                        </div>
+                        
+                    </div>                    
+                </div>              
+
+                <div class="fixed_footer">
+                    <div class="date">
+                        <p>2022-01-31(금)</p>
+                    </div>
+                    <div class="btn_area">
+                        <button type="button" class="btn disable">예약하기</button><!-- 예약불가 .disable -->
+                        <button type="button" class="btn" onclick="location.href='javascript:;'">예약하기</button><!-- 예약가능 -->
+                    </div>
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+    </div>
+   
+</body>
+</html>

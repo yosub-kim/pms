@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>공지사항</p>
+                </div>                
+                <ul>
+                    <li>
+                        <ul class="chek_ui">
+                            <li>
+                                <input type="checkbox" id="allView" name="allView" class="btn_check" />
+                                <label for="allView"><p>전체보기</p></label>       
+                            </li>
+                        </ul>
+                    </li>
+                    <li><button type="button" class="btn c-sub" title="검색 창 열기" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-magnify"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="게시글 작성" onclick="location.href='boardWrite.html'"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                </ul>
+                <!-- 검색 창 팝업 -->
+                <div id="pop_search" class="popup_layer pop_search">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="pop_close">
+                            <input type="text" placeholder="검색어(제목/내용/작성자) 입력" />						
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_search');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>								
+                        <div class="write_group">
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                        </div>
+                        <select name="" id="">
+                            <option value="정보유형 선택">정보유형 선택</option>
+                            <option value="정보유형 선택">정보유형 선택</option>
+                        </select>                        
+                        <button type="button" class="btn c-wt" title="검색">검색</button>
+                    </div>
+                </div>
+                <!-- // 검색 창 팝업 -->
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="tbl-wrap">
+                    <table class="tbl list">							
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject new"><p><strong>[휴가원]</strong> 연차휴가 사용의 건 연차휴가 사용의 건연차휴가 사용의 건연차휴가 사용의 건</p></div><!-- 새글 .new -->
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                    <li><i class="mdi mdi-check-circle-outline"></i><p>품의가능</p></li><!-- 품의가능 -->
+                                                </ul>
+                                            </div>
+                                            <p class="count c-main">승인</p><!-- 승인 .c-main -->
+                                        </div>
+                                        <div class="comment_box">
+                                            <div class="comment">                                            
+                                                <div class="subject"><p><i class="mdi mdi-subdirectory-arrow-right"></i><strong>[휴가원]</strong> 연차휴가 사용의 건에 대한 답변입니다.</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                            </div>
+                                            <div class="comment">                                            
+                                                <div class="subject"><p><i class="mdi mdi-subdirectory-arrow-right"></i><strong>[휴가원]</strong> 연차휴가 사용의 건에 대한 답변입니다.</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                            </div>
+                                            <div class="comment">                                            
+                                                <div class="subject"><p><i class="mdi mdi-subdirectory-arrow-right"></i><strong>[휴가원]</strong> 연차휴가 사용의 건에 대한 답변입니다.</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><i class="mdi mdi-check-circle-outline"></i><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                    <li><i class="mdi mdi-close-circle-outline"></i><p>품의불가능</p></li><!-- 품의불가능 -->
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-red">반려</p><!-- 반려 .c-red -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><i class="mdi mdi-close-circle-outline"></i><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-sub">검토</p><!-- 검토 .c-sub -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><i class="mdi mdi-cellphone c-aqua"></i><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div><!-- 아이콘을 aqua색으로 할 경우 .c-aqua -->
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><i class="mdi mdi-monitor c-red"></i><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div><!-- 아이콘을 빨간색으로 할 경우 .c-red -->
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-red">반려</p><!-- 반려 .c-red -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-sub">검토</p><!-- 검토 .c-sub -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="approvalView.html">
+                                        <div>
+                                            <div>
+                                                <div class="subject"><p><strong>[휴가원]</strong> 연차휴가 사용의 건</p></div>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                    <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                </ul>
+                                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                    <li><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></li>
+                                                </ul>
+                                            </div>
+                                            <p class="count c-bk">종료</p><!-- 종료 .c-bk -->
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>                                                                    	
+                        </tbody>
+                    </table>
+                    <div class="btn_more"><a href="javascript;">더 보기 + <span>(10/4491)</span></a></div>
+
+                    <!-- paging -->
+                    <div class="paging">
+                        <ul>
+                            <li><a href="javascript:;" class="icon"><i class="mdi mdi-page-first"></i>처음</a></li>
+                            <li><a href="javascript:;" class="icon"><i class="mdi mdi-chevron-left"></i>이전</a></li>
+                            <li><a href="javascript:;" class="current" title="현재 페이지">1</a></li>
+                            <li><a href="javascript:;">2</a></li>
+                            <li><a href="javascript:;">3</a></li>
+                            <li><a href="javascript:;">4</a></li>
+                            <li><a href="javascript:;">5</a></li>
+                            <li><a href="javascript:;" class="icon"><i class="mdi mdi-chevron-right"></i>다음</a></li>
+                            <li><a href="javascript:;" class="icon"><i class="mdi mdi-page-last"></i>마지막</a></li>
+                        </ul>
+                    </div>
+                    <!-- // paging -->	
+
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

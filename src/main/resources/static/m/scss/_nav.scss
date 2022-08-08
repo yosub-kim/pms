@@ -1,0 +1,416 @@
+@charset 'utf-8';
+
+.navbar {    
+    @include transition($t: 0.4s, $f: cubic-bezier(.46,.87,.18,1.01));
+    width: 300px;
+    height: 100%;
+    position: fixed;
+    left: -300px;
+    top: 0px;
+    z-index: 1000;
+    background-color: $c-wt; 
+    .overlay {
+        width: 0;
+        opacity: 0;
+        transition: opacity 1s;
+    }     
+    &.open {    
+        @include transition($t: 0.7s, $f: cubic-bezier(.46,.87,.18,1.01));
+        left: 0;
+        .overlay {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            z-index: 3;
+            top: 0;
+            left: 0;
+            background-color: rgba(0,0,0, 0.5);
+            overflow: hidden;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 1s;
+        }
+        .btn_close {
+            top: 20px;
+            width: 24px;
+            height: 20px;
+            &:before {
+                @include rotate(45);
+                top: 10px;
+            }
+            &:after {
+                @include rotate(-45);
+                top: 10px;
+            }
+            span {
+                display: none;
+            }
+        }
+
+    }
+    .btn_close {
+        position: fixed; 
+        left: 20px;
+        top: 20px; 
+        z-index: 1000;
+        width: 24px;
+        height: 20px;
+        display: inline-block;
+        &:before {    
+            @include be_af ();
+            @include absolute();
+            @include transition($t: 0.7s, $f: cubic-bezier(.46,.87,.18,1.01));
+            width: 24px;
+            height: 2px;
+            background-color: $c-bk;
+        }
+        &:after {
+            @include absolute($t: 18px, $l: 0);
+            @include transition($t: 0.7s, $f: cubic-bezier(.46,.87,.18,1.01));
+            content: '';
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: $c-bk;   
+        }
+        span {
+            @include absolute($t: 9px, $l: 0);
+            display: block;
+            background-color: $c-bk;
+            width: 24px;
+            height: 2px;   
+        }
+    }  
+    
+    .conts_box {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        z-index: 999;
+        .in_box {
+            @include transition($t: 0.7s, $f: cubic-bezier(.46,.87,.18,1.01));
+            width: 200%;
+            height: 100%;
+            display: inline-block;
+            vertical-align: top;
+            position: relative;  
+            > section {
+                width: 50%;
+                height: 100%;
+                padding-top: 60px;
+                box-sizing: border-box;
+                position: relative;
+                background-color: $c-wt;
+            } 
+            .scroll_box {
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                overflow-y: auto;
+            }  
+        }
+    }
+}
+.navbar_menu {
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #eee;
+    i {
+        margin-right: 10px;
+        font-size: 18px;
+        color: $c-nav;
+    }
+    .home {        
+        a {
+            display: inline-block;
+            color: $c-nav;
+            font-size: 15px;
+            padding: 10px 0 0 25px;
+            height: 60px;
+            line-height: 60px;
+            &:hover {
+                color: $c-main;
+            }
+        }
+    }
+    ul {
+        li {
+            a {
+                display: block;
+                position: relative;
+                @include fontset ($ff: 'NotoKrR', $fs: 17px, $lh: 40px, $fc: $c-nav); 
+                height: 40px;
+                text-align: left;
+                padding-left: 25px;
+                &:after {   
+                    @include absolute($t: 10px, $r: 20px);
+                    @include fontset ($ff: 'Material Design Icons', $fs: 20px, $fc: $c-nav);   
+                    @include transition();
+                    @include rotate(0);
+                    content: "\F0143";
+                    text-align: center;
+                }
+                &:hover {
+                    color: $c-main;
+                    &:after {   
+                        color: $c-main;
+                    }
+                    i {
+                        color: $c-main;
+                    }
+                }
+            }
+            &.on {
+                a {
+                    color: $c-main;
+                    &:after {
+                        @include rotate(-180);
+                        color: $c-main;          
+                    }
+                    &:hover:after {
+                        color: $c-main;
+                    }
+                    i {
+                        color: $c-main;
+                    }
+                }
+                ul {
+                    li {
+                        a {                            
+                            color: $c-nav;
+                            &:focus, 
+                            &:hover {
+                                color: $c-bk;
+                            }
+                            &:hover:after {
+                                color: $c-bk;
+                            }
+                            &:after {
+                                color: $c-bk;
+                            }
+                            i {
+                                color: $c-bk;
+                            }
+                        }
+                    }
+                }
+            }
+            ul {
+                display: none;
+                background-color: #fcfcfc;
+                border-top: 1px solid #eee; 
+                li {
+                    background-color: #fcfcfc;
+                    border-bottom: 1px solid #eee; 
+                    p {
+                        @include flex($jc: flex-start);
+                        padding-left: 30px;  
+                        a {
+                            @include fontset ($ff: 'NotoKrM', $fs: 14px, $lh: 45px, $fc: $c-nav);                
+                            height: 45px;
+                            padding-left: 20px;
+                            width: 100%;
+                        }
+                    }
+                    &.on {
+                        p {
+                            a {
+                                &:after {
+                                    @include rotate(0);
+                                    color: $c-bk;
+                                }
+                            }
+                        }
+                        ul {
+                            li {
+                                a {
+                                    &:hover {
+                                        color: $c-bk;
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }                    
+                    ul {
+                        display: none;
+                        background-color: #fcfcfc;
+                        border-top: 1px solid #eee;
+                        padding: 10px 0 5px 15px;
+                        li {
+                            background-color: #fcfcfc;
+                            border-bottom: 0; 
+                            position: relative;
+                            &:not(:last-child) {
+                                margin-bottom: 10px; 
+                            }                                               
+                            &:before {
+                               content: "";
+                               width: 2px;
+                               height: 2px;
+                               background-color: #555;
+                               position: absolute;
+                               top: 13px;
+                               left: 35px;
+                            }
+                            a {
+                                display: inline-block;
+                                @include fontset ($ff: 'NotoKrR', $fs: 14px, $lh: 25px);
+                                height: 25px;
+                                position: relative;
+                                width: inherit;
+                                padding-left: 15px;             
+                                &:after {
+                                    display: none;
+                                }
+                                &:before {
+                                    @include be_af ();
+                                    @include transition();
+                                    position: absolute;
+                                    bottom: 0px;
+                                    left: 15px;
+                                    width: 0;
+                                    height: 1px;
+                                    background: $c-bk;    
+                                }
+                                &:hover:before {
+                                    width: 100%;
+                                    left: 5px;
+                                    text-align: left;
+                                }
+                            }
+                        }
+                    }
+                }                
+            }            
+            &.noDepth {
+                a {
+                    color: $c-nav;
+                    &:after {
+                        content: "";
+                        display: none;
+                    }
+                    &:hover {
+                        color: $c-main;
+                    }
+                }
+            }            
+        }
+    }
+    ul.noDepth {
+        li {
+            &.noDepth {
+                a {
+                    color: $c-nav;
+                    &:after {
+                        content: "";
+                        display: none;
+                    }
+                    &:hover {
+                        color: $c-bk;
+                    }
+                }
+            }
+        }
+    }
+}
+
+input[type="checkbox"].bookmark  {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+    + label {
+        position: relative;
+        display: inline-block;
+        padding-left: 0;
+        cursor: pointer;
+        &:before {    
+            @include fontset ($ff: 'Material Design Icons', $fs: 18px, $lh: 45px, $fc: #888888);
+            @include transition();
+            content: "\F04CE";
+            display: inline-block;
+        }
+    }
+    &:checked + label:before {
+        color: #ffcc00;
+    }
+}
+
+.empty_star {
+    position: relative;
+    i {
+        position: relative;
+        top: -2px;
+        font-size: 18px;
+        color: #888888;
+        margin-right: 0;
+    }
+}
+
+input[type="checkbox"].like  {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+    + label {
+        position: relative;
+        display: inline-block;
+        padding-left: 0;
+        cursor: pointer;
+        &:before {    
+            @include fontset ($ff: 'Material Design Icons', $fs: 18px, $lh: 45px, $fc: #888888);
+            @include transition();
+            content: "\F04CE";
+            display: inline-block;
+        }
+    }
+    &:checked + label:before {
+        color: #ffcc00;
+    }
+}
+
+.btn_like {
+    @include flex($jc: flex-start);  
+    .like {
+        @include transition();
+        @include radius();
+        width: 70px;
+        height: 30px;
+        line-height: 27px;
+        border: 1px solid #c971d6;
+        background-color: $c-wt;    
+        font-size: 13px;
+        color: #c971d6;
+        margin-left: 10px;
+        &:focus,
+        &:hover {
+            @include transition();
+            border: 1px solid #c971d6;
+            background-color: #c971d6;
+            color: $c-wt; 
+        }  
+        i {
+            color: #c971d6;
+            font-size: 16px;
+            margin-right: 2px;
+        }
+        &:focus, 
+        &:hover {
+            i {
+                color: $c-wt;
+            }
+        }
+    }
+} 

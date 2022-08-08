@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.work.mapper.WorkMapper">
+
+	<select id="myWorkList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  		SELECT	work.id
+														,work.title
+														,work.assigneeId, work.assignerId
+														,work.state, work.type, work.level
+														,work.refWorkId1 ,CASE WHEN work.refWorkId2 IS NULL THEN '' ELSE work.refWorkId2 END AS refWorkId2 ,work.refWorkId3
+														,(select projectName from project where projectCode = work.refWorkId1) as projectName
+														,(case when refWorkId2 is null  
+																then (select name from worktype where worktype.id = work.type) 
+																else  (select approvalName from sanctionTemplate where approvalType = work.refWorkId2)  end) approvalName
+														,document
+														,work.draftUserId, Expertpool.name as draftUserName
+														,work.draftUserDept, smGroup.Name as draftUserDeptName
+														,work.draftDate, work.createDate, work.openDate, work.executeDate
+											FROM Work work  WITH(NOLOCK)
+											left outer join Expertpool
+												on work.draftUserId = Expertpool.ssn
+											left outer join smGroup 
+												on work.draftUserDept = smGroup.id
+											WHERE	1=1
+											and state = 'WORK_STATE_READY'
+											/* and type not in ('4028809e0a20e689010a2b4be76c0046','4028809e0a20e689010a2b4be76c0049','4028809e0a20e689010a2b4be76c0047','4028809e0a20e689010a2b4be76c0048') */
+											and type not in (select id from WorkType where name like '지도 일지%')
+											and type not in (select id from WorkType where name like '프로젝트리포트%')
+											and type not in (select id from WorkType where name like '주간%')
+											and type not like 'ref_%'
+											and assigneeId = #{SSN}
+											order by createDate desc
+	</select>
+	
+	
+	<select id="getSanctiontPresentList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	DECLARE @PAGE_NO INT = #{pagingPage} -- 페이지 번호
+	DECLARE @PAGE_SIZE INT = 10 -- 한 페이지에 보여줄 row 수
+	
+	SELECT * FROM (	
+		select ROW_NUMBER() OVER(ORDER BY SEQ DESC) AS ROWNUM,* from(								
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate,
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile 
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType != 'draft21' and sd.approvalType != 'draft22'
+										and sd.approvalType != 'draft3'	and sd.approvalType != 'draft5'	and sd.approvalType != 'draft15' and sd.approvalType != 'salary'	
+										and sd.state != 'SANCTION_STATE_DRAFT'
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+								<if test="userId != null and userId != ''">
+								 where (sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId}
+										or (select left(dept,3) from expertpool where ssn = #{userId} and companyposition='06CB') = left(sd.registerDept,3) 
+										or (select dept from expertpool where ssn = #{userId} and companyposition in ('08CF','09CJ')) = sd.registerDept  
+										)
+								</if>
+								) res
+								where 1=1
+			<if test="approvalType != null and approvalType != ''">
+				and res.approvalType like '%'+{approvalType}+'%' 
+			</if>
+			<if test="isWholeApproval != null and isWholeApproval != ''">
+				and res.isWholeApproval != {isWholeApproval}
+			</if>
+			 <if test="name != null and name != ''">
+						and res.registerName like '%' +#{name} + '%' 
+			 </if>
+			 <if test="projectName != null and projectName != ''">
+						and res.projectName like '%' +#{projectName} + '%' 
+			 </if>
+			 <if test="ing != null and ing != ''">
+						and res.state = #{ing}
+			 </if>
+			 <if test="divCode != null and divCode != ''">
+						and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+			 </if>	
+			 <if test="prevDivCode != null and prevDivCode != ''">
+					 and res.registerDept = #{prevDivCode}
+			 </if>
+			 <if test="startDate != null and startDate != ''">
+					and (res.registerDate >= #{startDate} or res.registerDate is null )
+			 </if>
+			 <if test="endDate != null and endDate != ''">
+					and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )
+			 </if>
+		union 
+
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate, 
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType in ('draft21', 'draft22')
+										and sd.state != 'SANCTION_STATE_DRAFT'
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+									 <if test="userId != null and userId != ''">	
+								where (	sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId})
+										</if>
+								) res
+								where 1=1
+								<if test="approvalType != null and approvalType != ''">
+									and res.approvalType like '%'+{approvalType}+'%' 
+								</if>
+								<if test="isWholeApproval != null and isWholeApproval != ''">
+									and res.isWholeApproval != #{isWholeApproval}
+								</if>
+								<if test="name != null and name != ''">
+									and res.registerName like '%' +#{name} + '%' 
+								</if>
+								<if test="projectName != null and projectName != ''">
+										and res.projectName like '%' +#{projectName} + '%' 
+							 	</if>		
+								<if test="ing != null and ing != ''">
+										and res.state = #{ing}
+								</if>
+								<if test="divCode != null and divCode != ''">
+										and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+								</if>
+								<if test="prevDivCode != null and prevDivCode != ''">
+										and res.registerDept = #{prevDivCode}
+								</if>	 
+								and (res.registerDate >= #{startDate} or res.registerDate is null )
+						 		and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )
+
+						union 
+
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate, 
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile 
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType in ( 'salary', 'draft3', 'draft5', 'draft15' )		
+										and sd.state != 'SANCTION_STATE_DRAFT'							
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+										<if test="userId != null and userId != ''">	
+								where (	sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId})
+										</if>
+							
+								) res
+								where 1=1
+								<if test="approvalType != null and approvalType != ''">
+									and res.approvalType like '%'+{approvalType}+'%' 
+								</if>
+								<if test="isWholeApproval != null and isWholeApproval != ''">
+									and res.isWholeApproval != #{isWholeApproval}
+								</if>
+								<if test="name != null and name != ''">
+									and res.registerName like '%' +#{name} + '%' 
+								</if>
+								<if test="projectName != null and projectName != ''">
+										and res.projectName like '%' +#{projectName} + '%' 
+							 	</if>		
+								<if test="ing != null and ing != ''">
+										and res.state = #{ing}
+								</if>
+								<if test="divCode != null and divCode != ''">
+										and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+								</if>
+								<if test="prevDivCode != null and prevDivCode != ''">
+										and res.registerDept = #{prevDivCode}
+								</if>	 
+								and (res.registerDate >= #{startDate} or res.registerDate is null )
+						 		and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )	  			 
+						) result			
+						where ((state = '반려' and approvalType in ('A','PA','draft14','draft17','M','ME','MF','MG','MI') and registerDate is null) or registerDate is not null)				 
+					) AA	
+					WHERE rownum  BETWEEN ((@PAGE_NO-1)*@PAGE_SIZE)+1 AND (@PAGE_NO*@PAGE_SIZE)
+					order by (case state	when '반려' 	then '1'
+												when '진행'	then '2'
+												when '종료'	then '3' end) asc, 
+									registerDate desc 
+	</select>
+
+
+<select id="getSanctiontPresentCount" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	
+	SELECT count(*) AS CNT FROM (	
+		select ROW_NUMBER() OVER(ORDER BY SEQ DESC) AS ROWNUM,* from(								
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate,
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile 
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType != 'draft21' and sd.approvalType != 'draft22'
+										and sd.approvalType != 'draft3'	and sd.approvalType != 'draft5'	and sd.approvalType != 'draft15' and sd.approvalType != 'salary'	
+										and sd.state != 'SANCTION_STATE_DRAFT'
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+								<if test="userId != null and userId != ''">
+								 where (sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId}
+										or (select left(dept,3) from expertpool where ssn = #{userId} and companyposition='06CB') = left(sd.registerDept,3) 
+										or (select dept from expertpool where ssn = #{userId} and companyposition in ('08CF','09CJ')) = sd.registerDept  
+										)
+								</if>
+								) res
+								where 1=1
+			<if test="approvalType != null and approvalType != ''">
+				and res.approvalType like '%'+{approvalType}+'%' 
+			</if>
+			<if test="isWholeApproval != null and isWholeApproval != ''">
+				and res.isWholeApproval != {isWholeApproval}
+			</if>
+			 <if test="name != null and name != ''">
+						and res.registerName like '%' +#{name} + '%' 
+			 </if>
+			 <if test="projectName != null and projectName != ''">
+						and res.projectName like '%' +#{projectName} + '%' 
+			 </if>
+			 <if test="ing != null and ing != ''">
+						and res.state = #{ing}
+			 </if>
+			 <if test="divCode != null and divCode != ''">
+						and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+			 </if>	
+			 <if test="prevDivCode != null and prevDivCode != ''">
+					 and res.registerDept = #{prevDivCode}
+			 </if>
+			 <if test="startDate != null and startDate != ''">
+					and (res.registerDate >= #{startDate} or res.registerDate is null )
+			 </if>
+			 <if test="endDate != null and endDate != ''">
+					and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )
+			 </if>
+		union 
+
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate, 
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType in ('draft21', 'draft22')
+										and sd.state != 'SANCTION_STATE_DRAFT'
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+									 <if test="userId != null and userId != ''">	
+								where (	sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId})
+										</if>
+								) res
+								where 1=1
+								<if test="approvalType != null and approvalType != ''">
+									and res.approvalType like '%'+{approvalType}+'%' 
+								</if>
+								<if test="isWholeApproval != null and isWholeApproval != ''">
+									and res.isWholeApproval != #{isWholeApproval}
+								</if>
+								<if test="name != null and name != ''">
+									and res.registerName like '%' +#{name} + '%' 
+								</if>
+								<if test="projectName != null and projectName != ''">
+										and res.projectName like '%' +#{projectName} + '%' 
+							 	</if>		
+								<if test="ing != null and ing != ''">
+										and res.state = #{ing}
+								</if>
+								<if test="divCode != null and divCode != ''">
+										and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+								</if>
+								<if test="prevDivCode != null and prevDivCode != ''">
+										and res.registerDept = #{prevDivCode}
+								</if>	 
+								and (res.registerDate >= #{startDate} or res.registerDate is null )
+						 		and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )
+
+						union 
+
+								select * 
+								from (	
+									select 	sd.seq,  sd.approvalType, st.approvalName, sd.createrDate, 
+											sd.projectCode,
+											(case  sd.projectCode when '8888888' then sd.subject else sd.subject end) projectName,
+											sd.registerDept, sm.description as registerDeptName, substring(sd.registerDept, 1, 3) + '0' divCode,
+											sd.registerSsn, sd.registerName, sd.registerDate,
+											(case  sd.state	when 'SANCTION_STATE_DRAFT'				then '작성'		when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_REVIEW'			then '검토'		when 'SANCTION_STATE_CHECK'				then '확인'		when 'SANCTION_STATE_APPROVE' then '승인'		
+															when 'SANCTION_STATE_ASSIST1'			then '협의'		when 'SANCTION_STATE_ASSIST2'			then '협의'		
+															when 'SANCTION_STATE_ASSIST3'			then '협의'		when 'SANCTION_STATE_ASSIST4'			then '협의'		
+															when 'SANCTION_STATE_SUPPORT_DRAFT'		then '기획실'	when 'SANCTION_STATE_SUPPORT_REVIEW'	then '기획실'		
+															when 'SANCTION_STATE_LAST'				then '최종승인'
+															when 'SANCTION_STATE_SUPPORT_APPROVE'	then '기획실'	when 'SANCTION_STATE_CEO'				then 'CEO'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as present,
+											(case  sd.state	when 'SANCTION_STATE_COMPLETE'			then '종료'
+															when  'SANCTION_STATE_DRAFT' 			then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REJECT_DRAFT'		then dbo.getExpertPoolName(sd.registerSsn)
+															when  'SANCTION_STATE_REVIEW' 			then dbo.getExpertPoolName(sd.teammanagerSsn)
+															when  'SANCTION_STATE_CHECK' 			then dbo.getExpertPoolName(sd.cfoSsn)
+															when  'SANCTION_STATE_APPROVE' 			then dbo.getExpertPoolName(sd.cioSsn)
+															when  'SANCTION_STATE_ASSIST1' 			then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_ASSIST2' 			then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_ASSIST3' 			then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_ASSIST4'			then dbo.getExpertPoolName(sd.assistant4Ssn)
+															when  'SANCTION_STATE_SUPPORT_DRAFT'	then dbo.getExpertPoolName(sd.assistant1Ssn)
+															when  'SANCTION_STATE_SUPPORT_REVIEW'	then dbo.getExpertPoolName(sd.assistant2Ssn)
+															when  'SANCTION_STATE_SUPPORT_APPROVE'	then dbo.getExpertPoolName(sd.assistant3Ssn)
+															when  'SANCTION_STATE_LAST'				then dbo.getExpertPoolName(sd.lastSsn)
+															when  'SANCTION_STATE_CEO'				then dbo.getExpertPoolName(sd.ceoSsn)
+											else '~' end) as presentName,												
+											(case  sd.state	when 'SANCTION_STATE_REJECT_DRAFT'		then '반려'		
+															when 'SANCTION_STATE_COMPLETE'			then '종료'		
+											else '진행' 	end) as state, worktype, wt.formUrl workTypeUrl, isWholeApproval, wt.useMobile 
+									from		sanctionDoc sd with(nolock)
+										inner join sanctionTemplate st with(nolock)
+										on sd.approvalType = st.approvalType
+										and sd.approvalType in ( 'salary', 'draft3', 'draft5', 'draft15' )		
+										and sd.state != 'SANCTION_STATE_DRAFT'							
+										inner join worktype wt with(nolock)
+										on wt.id = sd.workType
+										left outer join smGroup sm
+										on sd.registerDept = sm.id
+										left outer join project pr
+										on sd.projectCode = pr.projectCode
+										<if test="userId != null and userId != ''">	
+								where (	sd.registerSsn	= #{userId}
+										or sd.teammanagerSsn	= #{userId}
+										or sd.cfoSsn			= #{userId}
+										or sd.cioSsn			= #{userId}
+										or sd.assistant1Ssn		= #{userId}
+										or sd.assistant2Ssn		= #{userId}
+										or sd.assistant3Ssn		= #{userId}
+										or sd.assistant4Ssn		= #{userId}
+										or sd.ceoSsn			= #{userId})
+										</if>
+							
+								) res
+								where 1=1
+								<if test="approvalType != null and approvalType != ''">
+									and res.approvalType like '%'+{approvalType}+'%' 
+								</if>
+								<if test="isWholeApproval != null and isWholeApproval != ''">
+									and res.isWholeApproval != #{isWholeApproval}
+								</if>
+								<if test="name != null and name != ''">
+									and res.registerName like '%' +#{name} + '%' 
+								</if>
+								<if test="projectName != null and projectName != ''">
+										and res.projectName like '%' +#{projectName} + '%' 
+							 	</if>		
+								<if test="ing != null and ing != ''">
+										and res.state = #{ing}
+								</if>
+								<if test="divCode != null and divCode != ''">
+										and res.registerDept in (select key_1 from cmtabledata where table_name='DEPT_SUBSTRUCTURE' and data_1 = #{divCode})
+								</if>
+								<if test="prevDivCode != null and prevDivCode != ''">
+										and res.registerDept = #{prevDivCode}
+								</if>	 
+								and (res.registerDate >= #{startDate} or res.registerDate is null )
+						 		and (res.registerDate <![CDATA[ <= ]]> #{endDate} or res.registerDate is null )	  			 
+						) result			
+						where ((state = '반려' and approvalType in ('A','PA','draft14','draft17','M','ME','MF','MG','MI') and registerDate is null) or registerDate is not null)				 
+					) AA	
+					
+	</select>
+
+</mapper>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->		
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" /><!-- 셀렉트 박스 UI -->
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />
+
+<!--/* ====================== Renewal jQuery include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery.selectric.min.js"></script><!-- 셀렉트 박스 UI-->
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+
+
+
+
+<script type="text/javascript">
+	function doInit() {
+		document.location.href = "/_new/approval/searchList";
+	}
+	function doSearch() {
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/approval/searchList?" + query;
+	}
+	function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/approval/searchList?" + query;
+	}
+	function goApprovalDetail() {
+		document.location.href = "/action/ApprovalSearchAction.do"
+			+"?mode=getApprovalInfoTab&viewMode=approvalSearch&approvalCode="+approvalCode;
+	}
+
+</script> 	
+</head>
+
+<body class="load"> 
+<form name="approvalSearchListForm" method="post">
+	<div style='display: none;'>
+		<input type="hidden" name="pagingPage" id="pagingPage" th:value="${searchParam.pagingPage}"/>
+	</div>
+	<div class="sub_location">
+		<div class="location">
+			<p class="menu_title">프로젝트 전체현황</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>PMS</li>
+				<li>프로젝트현황</li>
+				<li>프로젝트 전체현황</li>
+			</ul>
+		</div>	
+	</div>
+	
+	<div class="contents sub"><!-- 서브 페이지 .sub -->
+		<div class="box">
+			<div class="search_box"><!-- 셀렉트 박스 없을 경우 .select_none -->
+				<div class="select_group">
+					<div class="search_input_box">
+						<div class="search_input">
+							<label for="search"></label>
+							<input type="text" name="keyword" th:value="${searchParam.keyword}" id="search" placeholder="검색어를 입력하세요. (제목, 내용, 기안자)" />
+						</div>
+					</div>
+				</div>
+				<div>
+					<button type="button" class="btn btn_blue" onclick="javascript:doSearch();">검색</button>	
+				</div>
+			</div>
+		</div>
+		<!-- // 검색 창 -->	
+		<div class="board_List_wrap">
+			<!-- 검색 조건 -->								
+			<div class="box search_detail">
+				<div class="title_area">
+					<p>검색조건</p>
+					<button type="button" class="btn btn_d_grey" onclick="javascript:doInit();">초기화</button>		
+				</div>
+
+				<div class="tbl-wrap sc">
+					<div class="search_list">
+						<p class="h1">기간선택</p>
+						<div class="month_check">
+							<div class="input_date">
+								<input type="text" title="조회 기간 선택" id="registerStartDate" name="registerStartDate" th:value="${searchParam.registerStartDate}"/>
+								<script>
+								jQuery(function(){jQuery( "#registerStartDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>								
+							</div>
+							<span>~</span>
+							<div class="input_date">
+								<input type="text" title="조회 기간 선택" id="registerEndDate" name="registerEndDate" th:value="${searchParam.registerEndDate}"/>
+								<script>
+								jQuery(function(){jQuery( "#registerEndDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>
+							</div>
+						</div>
+						<ul class="dropdown">
+							<li>
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">비즈니스 타입</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="agg, index : ${approvalTypeAgg}">
+											<div><input type="checkbox" name="approvalType" th:id="'biz_'+${index.index}" class="btn_check" th:value="${agg.approvalType}" onclick="javascript:doSearch()"/>
+                							<label th:for="'biz_'+${index.index}"><p th:text=${agg.approvalName}></p></label></div><p th:text=${agg.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>								
+							<li>
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">상태</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="agg, index : ${stateAgg}"><div><input type="checkbox" name="state" th:id="'agg_'+${index.index}" class="btn_check" th:value="${agg.state}" onclick="javascript:doSearch()" />
+                							<label th:for="'agg_'+${index.index}"><p th:text=${agg.state}></p></label></div><p th:text=${agg.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">Div</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="agg, index : ${registerDeptAgg}"><div><input type="checkbox" name="registerDept" th:id="'agg_'+${index.index}" class="btn_check" th:value="${agg.registerDept}" onclick="javascript:doSearch()" />
+                							<label th:for="'agg_'+${index.index}"><p th:text=${agg.registerDeptName}></p></label></div><p th:text=${agg.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+
+				</div>
+				<!-- // tbl-wrap -->
+			</div>							
+			<!-- // 검색 조건 -->		
+			
+			<!-- 테이블 리스트 -->					
+			<div class="box board_detail">
+				<div class="a-both total">
+					<p>총<span th:text="${searchParam.totalNumberOfEntries}" th:remove="tag"></span>건</p>
+					<div class="select_ui">
+						<select class="tric_01" name="pagingNumberPer" onchange="javascript:doSearch()">
+							<option value="10" th:selected="${searchParam.pagingNumberPer}=='10'">10개 보기</option>
+							<option value="30" th:selected="${searchParam.pagingNumberPer}=='30'">30개 보기</option>
+							<option value="50" th:selected="${searchParam.pagingNumberPer}=='50'">50개 보기</option>
+						</select>
+					</div>
+				</div>
+					
+				<div class="tbl-wrap sc">
+					<table class="tbl-list all"><!-- 전체현황 테이블 .all -->
+						<thead>
+							<tr>
+								<th>결재유형</th>
+								<th>제목</th>
+								<th>조직단위</th>								
+								<th>기안자</th>
+								<th>기안일</th>
+								<th>진행상태</th>
+							</tr>
+						</thead>
+												
+						<tbody>
+							<tr th:each="rs, iterState : ${mainList}">
+								<td th:text="${rs.approvalName}"></td>
+								<td><a th:text="${rs.subject}" ></a></td>
+								<td th:text="${rs.registerDeptName}"></td>
+								<td th:text="${rs.registerName}"></td>
+								<td th:text="${#dates.format(rs.registerDate, 'yyyy.MM.dd')}"><span th:text="${rs.registerDate}"></span></td>
+								<td th:text="${rs.state}"></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(mainList)}">
+								<td colspan="6">검색된 데이터가 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="paging_area">
+					<SCRIPT LANGUAGE="JavaScript" th:inline="javascript">
+					/*<![CDATA[*/ 
+						var pagingPage = /*[[ ${searchParam.pagingPage} ]]*/; 
+						var totalNumberOfEntries = /*[[ ${searchParam.totalNumberOfEntries} ]]*/; 
+						var pagingNumberPer = /*[[ ${searchParam.pagingNumberPer} ]]*/; 
+					/*]]*/
+						document.write(makePageHtml2(pagingPage, 10, totalNumberOfEntries, pagingNumberPer)) ;
+					</SCRIPT>				
+				</div>
+			</div>			
+		</div>
+
+	</div>
+	
+	<div class="footer">
+		<p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+	</div>
+	<!-- // footer -->		
+	
+</form>
+</body>
+</html>

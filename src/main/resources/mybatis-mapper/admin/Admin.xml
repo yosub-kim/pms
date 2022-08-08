@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.admin.mapper.AdminMapper">
+<select id="searchAllMenu" resultType="map" parameterType="HashMap" >
+		SELECT PARENTMENU AS parent , MENUTYPE AS indent, MENUNUM AS id,MENUNUM,MENUNAME, MENUPATH, MENUTYPE, MENUUSEINFO, MENUSORT,PARENTMENU
+		, CASE WHEN MENUTYPE = 1 OR MENUTYPE = 2 THEN 'true' END AS _collapsed
+		FROM MENU 
+		WHERE 1=1
+		<if test="MENUNUM != null and MENUNUM != ''">
+		AND MENUNUM LIKE CONCAT(‘%’, #{MENUNUM}, ‘%’)
+		</if>
+		<if test="MENUNAME != null and MENUNAME != ''">
+		AND MENUNAME LIKE CONCAT(‘%’, #{MENUNAME}, ‘%’)
+		</if>
+		<if test="MENUPATH != null and MENUPATH != ''">
+		AND MENUPATH LIKE CONCAT(‘%’, #{MENUPATH}, ‘%’)
+		</if>
+		<if test="MENUTYPE != null and MENUTYPE != ''">
+		AND MENUTYPE LIKE CONCAT(‘%’, #{MENUTYPE}, ‘%’)
+		</if>
+		
+		<if test="MENUSORT != null and MENUSORT != ''">
+		AND MENUSORT LIKE CONCAT(‘%’, #{MENUSORT}, ‘%’)
+		</if>
+		<if test="MENUUSEINFO != null and MENUUSEINFO != ''">
+		AND MENUUSEINFO = #{MENUUSEINFO}
+		</if>
+		ORDER BY MENUSORT ASC
+	</select>	
+	<insert id="insertMenuList"  parameterType="HashMap" >
+		INSERT INTO MENU (MENUNUM,MENUNAME,MENUPATH,MENUTYPE,MENUUSEINFO,MENUSORT)
+		VALUES(
+		#{MENUNUM},#{MENUNAME},#{MENUPATH},#{MENUTYPE},#{MENUUSEINFO},#{MENUSORT}
+		);
+		 
+	</insert>
+	<update id="updateMenuList"  parameterType="HashMap" >
+		UPDATE MENU 
+		SET MENUNAME = #{MENUNAME}
+			,MENUPATH = #{MENUPATH}
+			,MENUTYPE = #{MENUTYPE}
+			,MENUUSEINFO = #{MENUUSEINFO}
+			,MENUSORT = #{MENUSORT}
+			,PARENTMENU = #{PARENTMENU}
+		WHERE MENUNUM = #{MENUNUM}
+	</update>
+	<delete id="deleteMenuList" parameterType="HashMap" >
+		DELETE MENU WHERE MENUNUM = #{MENUNUM}
+	</delete>
+	<delete id="deleteMenuRole" parameterType="HashMap" >
+		DELETE RoleDetail WHERE MENUNUM = #{MENUNUM}
+	</delete>
+	<select id="searchRoleList" resultType="map" parameterType="HashMap" >
+		SELECT 
+			ROLENUM AS id,ROLENUM,ROLENAME,ROLEUSEINFO,ROLESEQ
+			FROM ROLE
+		ORDER BY ROLESEQ ASC
+	</select>
+	<select id="searchRoleMenuList" resultType="map" parameterType="HashMap" >
+		SELECT 
+			PARENTMENU AS parent ,ROLENUM + RD.MENUNUM AS id, MENUNAME, MENUTYPE AS indent, MENUSORT, CASE WHEN MENUTYPE = 1 OR MENUTYPE = 2 THEN 'true' END AS _collapsed, useYN
+			FROM ROLEDETAIL RD
+			INNER JOIN MENU MN
+			ON RD.MENUNUM = MN.MENUNUM
+			WHERE ROLENUM = #{ROLENUM}
+		ORDER BY MENUSORT ASC
+	</select>
+	<select id="managementDoubleSaleList" resultType="map" parameterType="HashMap" >
+		SELECT 
+		PJ.recordType
+		, CASE WHEN PJ.recordType = 'double' THEN '이중매출' 
+				WHEN PJ.recordType = 'cprtn' THEN '협업사업' 
+				END AS recordTypeNAME
+		,CASE WHEN PJ.ACCOUNTCONFIRMYN IS NULL THEN 'N' ELSE PJ.ACCOUNTCONFIRMYN END AS ACCOUNTCONFIRMYN
+		,PR.PJCode
+		,PR.GUBUN
+		,PR.DEPT
+		,SG.DESCRIPTION
+		,PR.PER
+		,CASE WHEN DPJ.SALESAMT IS NULL THEN '0' ELSE DPJ.SALESAMT END AS SALESAMT
+		,CASE WHEN deptCost IS NOT NULL THEN deptCost ELSE 
+			CASE WHEN DPJ.SALESAMT IS NULL THEN '0' ELSE (DPJ.SALESAMT*(PR.PER/convert(float,100))) 
+			END 
+		 END AS DEPTAMT
+		,SD.SUBJECT
+		,SD.REGISTERDATE
+		,(SELECT COUNT(*) FROM project_ratio WHERE PJCODE = PR.PJCODE) AS ROWSPAN
+			FROM project_ratio PR
+			INNER JOIN PROJECT PJ
+			ON PR.PJCODE = PJ.projectCode
+			INNER JOIN (SELECT * FROM DWPM.DBO.DW_PROJECTMST WHERE PRE_ENTNO IS NULL) DPJ
+			ON PR.PJCODE = DPJ.PROJID
+			INNER JOIN (SELECT DISTINCT SUBJECT,projectCode,CASE WHEN REGISTERDATE IS NULL THEN '-' ELSE LEFT(CONVERT(CHAR(10), REGISTERDATE , 23),7) END AS REGISTERDATE,REGISTERDEPT FROM sanctionDoc WHERE APPROVALTYPE IN ('A','PA') ) SD
+			ON PR.PJCODE = SD.projectCode
+			LEFT JOIN SMGROUP SG
+			ON PR.DEPT = SG.ID
+		WHERE 1=1
+		<if test="RECORDTYPE != null and RECORDTYPE != ''">
+		AND PJ.RECORDTYPE = #{RECORDTYPE}
+		</if>
+		<if test="RECORDTYPE == null or RECORDTYPE == ''">
+		AND PJ.RECORDTYPE IN ('double','cprtn') 
+		</if>
+		<if test="deptcode != null and deptcode != ''">
+		AND SD.REGISTERDEPT = #{deptcode}
+		</if>
+		<if test="ACCOUNTCONFIRMYN != null and ACCOUNTCONFIRMYN != ''">
+		AND CASE WHEN PJ.ACCOUNTCONFIRMYN IS NULL THEN 'N' ELSE PJ.ACCOUNTCONFIRMYN END = #{ACCOUNTCONFIRMYN}
+		</if>
+		<if test="realEndDate != null and realEndDate != ''">
+		AND #{realEndDate} >= SD.REGISTERDATE
+		</if>
+		<if test="realStartDate != null and realStartDate != ''">
+		AND SD.REGISTERDATE >= #{realStartDate}
+		</if>
+		ORDER BY recordType DESC, PJCODE, GUBUN
+		
+	</select>
+	<select id="getAdminUserList" resultType="map" parameterType="HashMap" >
+		SELECT SSN FROM ExpertPool WITH(NOLOCK) WHERE ROLE = 'ROLE2006050120451853989'
+	</select>
+	<update id="saveAccountConfirmYN"  parameterType="HashMap" >
+		UPDATE PROJECT 
+		SET ACCOUNTCONFIRMYN = #{ACCOUNTCONFIRMYN}
+		WHERE PROJECTCODE = #{PJCode}
+	</update>
+</mapper>

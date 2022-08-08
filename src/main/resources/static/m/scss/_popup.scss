@@ -1,0 +1,445 @@
+@charset 'utf-8';
+
+/* popup */
+.popup_layer {
+    @include fixed($t: 0, $l: 0);  
+    @include flex($fd: column);
+    visibility: hidden;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9998;
+    outline: 0;  
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        animation: fadeIn 0.2s forwards;
+    }  
+    .popup_bg {
+        @include fixed($t: 0, $l: 0); 
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.2);
+    }  
+    .popup_inner {
+        position: relative;
+        width: calc(100% - 40px);
+        background: #fff;
+        @include radius();
+        @include border($bp: all, $bc: $c-line);
+        padding: 15px 15px 0 15px;
+        box-shadow: 6px 6px 6px -6px  rgba(0, 0, 0, 0.1);
+        .btn-close {
+            @include flex($jc: flex-end);
+            width: 100%;
+            position: relative;
+            i {
+                font-size: 34px;
+                color: #222222;
+                position: relative;
+                top: -2px
+            }
+        }
+    }
+    &.pop_search {
+        top: 105px;
+        height: 100%;
+        width: 100%;
+        .popup_bg {
+            background: rgba(255, 255, 255, 0.5);
+            margin-top: 60px;            
+        }
+        .popup_inner {
+            @include radius(0);
+            @include absolute($t: 0);
+            width: inherit;
+            width: 100%;
+            border: 0;
+            padding: 0 20px 20px 20px;
+            background-color: $c-main;
+            .btn-close {
+                width: inherit;
+                width: 50px;
+            }
+        }
+        .pop_close {
+            @include flex($jc: space-between);
+            height: 38px;
+            position: relative;
+            margin: 10px 0 20px 0;
+            width: 100%;
+            i {              
+                color: $c-wt;
+                top: 0px;
+                right: 2px;
+                font-size: 25px;
+            }
+            input[type="text"] {
+                border-radius: inherit;
+                background-color: inherit;
+                border: inherit;
+                padding-left: 0;
+                @include fontset($fs: 15px, $fc: $c-wt);
+                @include border($bp: bottom, $bc: $c-wt);
+                &::placeholder {
+                    @include fontset($fs: 15px, $fc: $c-wt);
+                    opacity: 1;
+                }
+            }
+            
+        }        
+        select {
+            @include fontset($fs: 15px, $fc: $c-wt);
+            background-color: $c-main;
+            margin-bottom: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='14.06px' height='8.415px' viewBox='0 0 14.06 8.415' enable-background='new 0 0 14.06 8.415' xml:space='preserve'%3E%3Cg%3E%3Cg%3E%3Cpolygon fill-rule='evenodd' clip-rule='evenodd' fill='%23ffffff' points='14.06,1.415 12.646,0 7.03,5.616 1.414,0 0,1.415 7,8.415 7.03,8.385 7.06,8.415 '/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            &:focus {
+                @include border($bp: all, $bc: $c-wt);
+            }            
+        }
+        .btn {
+            width: inherit;
+            width: 100%;
+            height: 40px;
+            background-color: $c-wt;
+            @include fontset($fs: 15px, $fc: $c-sub);
+        }       
+    }
+    &.pop_schedule {
+        bottom: 0;
+        height: 100%;
+        width: 100%;
+        .popup_bg {
+            background: rgba(255, 255, 255, 0.5);
+            margin-top: 60px;
+            top: inherit;
+            bottom: 0;
+        }
+        .popup_inner {
+            @include absolute($b: 0);
+            padding: 0;
+            border-radius: 0;
+            width: inherit;
+            width: 100%;
+            border: 0;
+            height: 40%;
+            background-color: $c-wt;
+            .head {
+                @include flex($jc: space-between);                
+                @include inner();
+                width: 100%;
+                height: 46px;
+                background-color: $c-main;
+                div {
+                    @include flex($jc: space-between);
+                    width: 100%;
+                    p {
+                        @include fontset($fs: 15px, $fc: $c-wt);
+                    }
+                }
+                .btn-close {
+                    width: 15px;
+                    margin-left: 15px;
+                    position: relative;
+                    i {
+                        position: relative;
+                        right: -5px;
+                        font-size: 22px;
+                        color: $c-wt;
+                    }
+
+                }
+            }
+            .view {
+                overflow-x: auto;
+                height: 100%;
+                padding-bottom: 46px;
+                > ul {
+                    width: 100%;
+                    > li {
+                        padding: 10px 20px 5px;
+                        @include border($bp: bottom);
+
+                        // &:nth-child(5n+1) .title p:before {
+                        //     background-color: rgba(137,207,240,0.7);
+                        // }
+                        // &:nth-child(5n+2) .title p:before {
+                        //     background-color: rgba(138,134,214,0.7);
+                        // }
+                        // &:nth-child(5n+3) .title p:before {
+                        //     background-color: rgba(41,204,211,0.7);
+                        // }
+                        // &:nth-child(5n+4) .title p:before {
+                        //     background-color: rgba(249,201,60,0.7);
+                        // }
+                        // &:nth-child(5n) .title p:before {
+                        //     background-color: rgba(249,153,60,0.7);
+                        // }
+                    }
+                }                
+                .title {
+                    @include flex($jc: space-between);
+                    margin-bottom: 10px;
+                    p {
+                        width: 100%;
+                        position: relative;
+                        padding-left: 15px;                        
+                        @include fontset($fs: 14px);
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        &:before {
+                            content: '';
+                            @include absolute($t: 3px, $l: 0px);
+                            border-radius: 100%;
+                            width: 10px;
+                            height: 10px;
+                        }
+                        span.c-main {
+                            margin-left: 3px;
+                            color: $c-main;
+                            span {
+                                color: $c-main;
+                            }
+                        }
+                    }
+                    ul {
+                        width: 30%;
+                        @include flex($jc: flex-end);
+                    }
+                    .chek_ui {
+                        width: 30px;
+                        height: 30px;
+                        padding: 0;
+                        margin-left: 5px;
+                        margin-bottom: 0;
+                    }
+
+                }
+                .detail {
+                    margin-left: 15px;
+                    p {
+                        position: relative;
+                        @include fontset($fs: 13px);
+                        margin-bottom: 5px;
+                        i {
+                            position: relative; 
+                            top: 1px;
+                            font-size: 20px;
+                            min-width: 22px;
+                            text-align: center;
+                            margin-right: 10px;
+                        }
+                    }                    
+                    div {                            
+                        @include flex($jc: flex-start);
+                        margin-bottom: 5px;
+                        i {
+                            position: relative; 
+                            top: 1px;
+                            font-size: 20px;
+                            min-width: 20px;
+                            text-align: center;
+                            margin-right: 10px;
+                        }
+                        ul {
+                            @include flex($jc: flex-start);
+                            li {
+                                position: relative;
+                                padding-right: 5px;
+                                margin-right: 5px;
+                                &:not(:last-child):after {
+                                    content: '';
+                                    @include absolute($t: 3px, $r: 0);
+                                    width: 1px;
+                                    height: 10px;
+                                    background-color: $c-bk-light;
+                                }
+                                p {
+                                    margin-bottom: 0;
+                                    span {
+                                        @include fontset($fs: 13px, $fc: $c-sub);
+                                    }
+                                }
+                            }
+                        }                       
+                        
+                    }
+                }
+                .memo {
+                    background-color: #f1f2f3;
+                    padding: 10px;
+                    margin: 10px 15px;
+                    * {
+                        @include fontset($fs: 13px, $lh: 1.2);
+                    }
+                }
+                .btn_area {
+                    margin: 20px;
+                }
+                .write_group_box {
+                    padding: 20px;
+                    @include border($bp: bottom, $bc: $c-line);
+                    .write_group {
+                        &:not(:last-child) {
+                            margin-bottom: 15px;
+                        }
+                        .datepicker {
+                            min-width: inherit;
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+            &.my {
+                .head {
+                    background-color: $c-sub;
+                }
+            }
+        }
+        &.notice {
+            .popup_bg {
+                background: rgba(255, 255, 255, 0.5);
+                margin-top: 60px;
+                top: 0;
+                bottom: inherit;
+            }
+            .popup_inner {
+                bottom: inherit;
+                top: 110px;
+                height: inherit;
+                height: auto;
+                .head {
+                    background-color: $c-sub;
+                    p {
+                        @include fontset($ff: 'NotoKrM', $fs: 15px, $fc: $c-wt);
+                    }
+                }
+                .view {
+                    background-color: $c-sub;
+                    height: inherit;
+                    height: auto;
+                    padding: 0 20px 20px 20px;
+                    p {
+                        @include fontset($ff: 'NotoKrR', $fs: 13px, $fc: $c-wt, $lh: 1.4);
+                    }
+                }
+                ul {
+                    margin-bottom: 20px;
+                    li {
+                        padding: 0;
+                        border: 0;
+                        margin-bottom: 5px;   
+                        p {
+                            position: relative;
+                            padding-left: 10px;
+                            &:before {
+                                content: '';
+                                @include absolute($t: 8px, $l: 0);
+                                width: 2px;
+                                height: 2px;
+                                background-color: #fff;
+                            }
+                        }                     
+                    }
+                }
+                .a-r {
+                    @include fontset($ff: 'NotoKrM', $fs: 15px, $fc: $c-wt);
+                }
+            }
+        }
+    }
+    .popup_contents {
+        text-align: center;
+        margin: 0 auto;
+        height: inherit;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-arrow-color: #ddd;
+        scrollbar-base-color: #fff;
+        scrollbar-Face-Color: #ddd;
+        scrollbar-Track-Color: #fff;
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #ddd;
+            @include radius($r: 10px);
+            background-clip: padding-box;
+        }
+        &::-webkit-scrollbar-track {
+            background-color: #fff;
+            @include radius($r: 10px);
+        }
+        .h1 {
+            @include fontset($ff: 'NotoKrB', $fs: 24px, $lh: 1, $fc: $c-title);
+            margin: 30px 0;
+        }
+        .h2 {
+            @include fontset($fs: 18px);
+            margin-bottom: 15px;
+        }
+        .h2 span {
+            @include fontset($ff: 'NotoKrB', $fs: 18px);
+            display: inline-block;
+            margin-right: 3px;
+        }
+        .info_text {
+            @include fontset($fs: 14px, $fc: #555555);
+            line-height: 20px;
+            margin-bottom: 40px;
+            padding-left: 60px;
+            text-align: left;
+        }  
+        .popup_text {
+            @include fontset($fs: 18px, $fc: $c-bk-dark, $lh: 160%);
+            margin-bottom: 30px;
+        }
+        .popup_text span {
+            @include fontset($fs: 18px, $fc: $c-main);
+        }
+        .text1 {
+            @include fontset($fs: 16px, $fc: $c-bk-dark, $lh: 160%);
+            margin-bottom: 5px;
+            span {
+                @include fontset($ff: 'NotoKrB', $fc: $c-bk);
+            }
+        }
+        .text2 {
+            @include fontset($fs: 13px, $fc: $c-bk-light, $lh: 140%);
+            position: relative;
+            + .text2 {
+                margin-bottom: 30px;
+            }
+        }
+        .phone_box {
+            @include flex($jc: space-between);
+            span {
+                display: inline-block;
+                margin: 0 10px;
+            }
+        }
+        .btn_area {
+            @include flex($fw: nowrap, $jc: space-between);
+            width: calc(100% - 0px);
+            margin: 30px 0 40px;
+            button {
+                flex: 1 1 auto;
+                width: auto;
+                &:not(:first-child) {
+                margin-left: 8px;
+                }
+            }
+        }
+        .t-line {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+        input[type="password"] {
+            + input[type="password"] {
+                margin-top: 20px;
+            }
+        }
+
+    }
+}

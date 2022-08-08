@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+function dateChange(){
+	var year = $("#year").val();
+	var month = $("#month").val();
+	var jobClass = $("#jobClass").val();
+	var keyword = $("#keyword").val();
+	location.href = "/_new/schedule/summary/list" +"?year=" + parseInt(year) +"&month=" + parseInt(month)+"&jobClass="+jobClass+"&keyword="+keyword;
+}
+
+function moveNext(){
+	var year = $("#year").val();
+	var month = $("#month").val();
+	var jobClass = $("#jobClass").val();
+	var keyword = $("#keyword").val();
+	
+	if (month == "12") {
+		year = parseInt(year) + 1;
+		month = 1;
+	} else {
+		month = parseInt(month) + 1; 
+	}
+	location.href = "/_new/schedule/summary/list" +"?year=" + parseInt(year) +"&month=" + parseInt(month)+"&jobClass="+jobClass+"&keyword="+keyword;
+}
+
+function movePrevious(){
+	var year = $("#year").val();
+	var month = $("#month").val();
+	var jobClass = $("#jobClass").val();
+	var keyword = $("#keyword").val();
+	
+	if (month == "1") {
+		year = parseInt(year) - 1;
+		month = 12;
+	} else {
+		month = parseInt(month) - 1; 
+	}
+	location.href = "/_new/schedule/summary/list" +"?year=" + parseInt(year) +"&month=" + parseInt(month)+"&jobClass="+jobClass+"&keyword="+keyword;
+}
+
+function goDetailCal(ssn){
+	var year = $("#year").val();
+	var month = $("#month").val();
+	var keyword = $("#keyword").val();
+	var LoginSsn = $("#LoginSsn").val();
+	if(LoginSsn == ssn){
+		location.href = "/_new/schedule/personal/list?year="+year+"&month="+month+"&keyword="+keyword+"&ssn="+ssn;
+	}else{
+		location.href = "/_new/schedule/personal/listview?year="+year+"&month="+month+"&keyword="+keyword+"&ssn="+ssn;
+	}
+	
+}
+
+function layer_open_summary(obj, el, ssn, date){
+
+	var current=true;
+    if(el == 'pop_register_edit'){
+		$.ajax({
+			type: "GET",
+			contentType: 'application/json',
+			url : "/_new/schedule/personal/date?ssn="+ssn+"&date="+date+"&keyword="+$("#keyword").val(),
+			dataType: "json",
+	        cache: false,
+	        timeout: 60000
+		})
+		.done(function(data, textStatus, jqXHR ) { 
+			$("#tab_ico-1").children().remove();    $("#ico-1").removeClass("curent");
+			$("#tab_ico-2").children().remove();    $("#ico-2").removeClass("curent");
+			$("#tab_ico-3").children().remove();    $("#ico-3").removeClass("curent");
+			$("#tab_ico-4").children().remove();    $("#ico-4").removeClass("curent");
+			$("#tab_ico-5").children().remove();    $("#ico-5").removeClass("curent");
+			$("#tab_ico-6").children().remove();    $("#ico-6").removeClass("curent");
+			$("#tab_ico-7").children().remove();    $("#ico-7").removeClass("curent");
+			
+			if(data.typeMap.ico1 > 0){$("#ico-1").show();  if(current){current=false; $("#ico-1").addClass("curent"); $("#tab1").show();}else{$("#ico-1").removeClass("curent");} $("#ico-1_cnt").text("외부일정("+data.typeMap.ico1+")");} else {$("#ico-1").hide();}
+			if(data.typeMap.ico2 > 0){$("#ico-2").show();  if(current){current=false; $("#ico-2").addClass("curent"); $("#tab2").show();}else{$("#ico-2").removeClass("curent");} $("#ico-2_cnt").text("내부일정("+data.typeMap.ico2+")");} else {$("#ico-2").hide();}
+			if(data.typeMap.ico3 > 0){$("#ico-3").show();  if(current){current=false; $("#ico-3").addClass("curent"); $("#tab3").show();}else{$("#ico-3").removeClass("curent");} $("#ico-3_cnt").text("교육참석("+data.typeMap.ico3+")");} else {$("#ico-3").hide();}
+			if(data.typeMap.ico4 > 0){$("#ico-4").show();  if(current){current=false; $("#ico-4").addClass("curent"); $("#tab4").show();}else{$("#ico-4").removeClass("curent");} $("#ico-4_cnt").text("재택근무("+data.typeMap.ico4+")");} else {$("#ico-4").hide();}
+			if(data.typeMap.ico5 > 0){$("#ico-5").show();  if(current){current=false; $("#ico-5").addClass("curent"); $("#tab5").show();}else{$("#ico-5").removeClass("curent");} $("#ico-5_cnt").text("프로젝트("+data.typeMap.ico5+")");} else {$("#ico-5").hide();}
+			if(data.typeMap.ico6 > 0){$("#ico-6").show();  if(current){current=false; $("#ico-6").addClass("curent"); $("#tab6").show();}else{$("#ico-6").removeClass("curent");} $("#ico-6_cnt").text("휴가("  +data.typeMap.ico6+")");} else {$("#ico-6").hide();}
+			if(data.typeMap.ico7 > 0){$("#ico-7").show();  if(current){current=false; $("#ico-7").addClass("curent"); $("#tab7").show();}else{$("#ico-7").removeClass("curent");} $("#ico-7_cnt").text("고객정보("+data.typeMap.ico7+")");} else {$("#ico-7").hide();}
+
+			if(data.mainList.length > 0){				
+				$(data.mainList).each (function (index, item) {
+					console.log(item);
+					if(item.iconCodeShort == 'ico-1' || item.iconCodeShort == 'ico-2' || item.iconCodeShort == 'ico-3'){
+						var str = "";
+						str += '<ul class="register_view">';
+						str += '	<li><i class="mdi mdi-card-account-details-outline"></i><p>'
+										+ item.content+' : ' + item.customerName 
+										+ (item.googleSyncId != null ? ' (고객정보 등록여부: '+ item.googleSyncId + ')' : '') + '</p></li>';
+						if(item.place != null && item.place != '')
+							str += '	<li><i class="mdi mdi-map-marker-radius-outline"></i><p>' + item.place + '</p></li>';
+						if(item.relationUser != null && item.relationUser != 0)
+							str += '	<li><i class="mdi mdi-train-car"></i><p>'
+								+ (item.relationUser==3 ? '현장 출근/ 현장 퇴근' 
+									: (item.relationUser==1 ? '현장 출근' 
+										: (item.relationUser==2 ? '현장 퇴근' : ''))) +'</p></li>	';
+						str += '	<li><i class="mdi mdi-alarm-check"></i><p>' + item.dateString +'</p></li>';
+						if(item.myschedule == 'N'){
+							str += '	<li><i class="mdi mdi-share-variant"></i><p>'+item.deptname+'_'+item.name+'</p><li>';
+						}
+						str += '</ul>';
+						$("#tab_"+item.iconCodeShort).removeAttr('style');
+						$("#tab_"+item.iconCodeShort).html($("#tab_"+item.iconCodeShort).html()+str)
+					}
+					if(item.iconCodeShort == 'ico-4' || item.iconCodeShort == 'ico-5' || item.iconCodeShort == 'ico-6'|| item.iconCodeShort == 'ico-7'){
+						var str = "";
+						str += '<ul class="register_view">';
+						str += '	<li><i class="mdi mdi-card-account-details-outline"></i><p>' + item.content+' : ' + item.customerName  + '</p></li>';
+						str += '	<li><i class="mdi mdi-alarm-check"></i><p>' + item.dateString +'</p></li>';
+						if(item.myschedule == 'N'){
+							str += '	<li><i class="mdi mdi-share-variant"></i><p>'+item.deptname+'_'+item.name+'</p><li>';
+						}
+						str += '</ul>';
+						$("#tab_"+item.iconCodeShort).html($("#tab_"+item.iconCodeShort).html()+str)
+					}
+				});
+			}
+			
+			/* 초기화 작업 */
+		    if(data.typeMap.ico1 > 0){$("#ico-1").removeClass("current"); $("#ico-1").eq(0).addClass("current"); $("#tab1").show(); $("#tab2").hide(); $("#tab3").hide(); $("#tab4").hide(); $("#tab5").hide(); $("#tab6").hide(); $("#tab7").hide(); 
+		    $("#ico-2").removeClass("current");$("#ico-3").removeClass("current");$("#ico-4").removeClass("current");$("#ico-5").removeClass("current");$("#ico-6").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico2 > 0){$("#ico-2").removeClass("current"); $("#ico-2").eq(0).addClass("current");  $("#tab2").show(); $("#tab1").hide(); $("#tab3").hide(); $("#tab4").hide(); $("#tab5").hide(); $("#tab6").hide(); $("#tab7").hide(); 
+			$("#ico-1").removeClass("current");$("#ico-3").removeClass("current");$("#ico-4").removeClass("current");$("#ico-5").removeClass("current");$("#ico-6").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico3 > 0){$("#ico-3").removeClass("current"); $("#ico-3").eq(0).addClass("current"); $("#tab3").show(); $("#tab1").hide(); $("#tab2").hide(); $("#tab4").hide(); $("#tab5").hide(); $("#tab6").hide(); $("#tab7").hide();
+			$("#ico-1").removeClass("current");$("#ico-2").removeClass("current");$("#ico-4").removeClass("current");$("#ico-5").removeClass("current");$("#ico-6").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico4 > 0){$("#ico-4").removeClass("current"); $("#ico-4").eq(0).addClass("current"); $("#tab4").show(); $("#tab1").hide(); $("#tab2").hide(); $("#tab3").hide(); $("#tab5").hide(); $("#tab6").hide(); $("#tab7").hide(); 
+			$("#ico-1").removeClass("current");$("#ico-2").removeClass("current");$("#ico-3").removeClass("current");$("#ico-5").removeClass("current");$("#ico-6").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico5 > 0){$("#ico-5").removeClass("current"); $("#ico-5").eq(0).addClass("current"); $("#tab5").show(); $("#tab1").hide(); $("#tab2").hide(); $("#tab3").hide(); $("#tab4").hide(); $("#tab6").hide(); $("#tab7").hide(); 
+			$("#ico-1").removeClass("current");$("#ico-2").removeClass("current");$("#ico-3").removeClass("current");$("#ico-4").removeClass("current");$("#ico-6").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico6 > 0){$("#ico-6").removeClass("current"); $("#ico-6").eq(0).addClass("current"); $("#tab6").show(); $("#tab1").hide(); $("#tab2").hide(); $("#tab3").hide(); $("#tab4").hide(); $("#tab5").hide(); $("#tab7").hide(); 
+			$("#ico-1").removeClass("current");$("#ico-2").removeClass("current");$("#ico-3").removeClass("current");$("#ico-4").removeClass("current");$("#ico-5").removeClass("current");$("#ico-7").removeClass("current");}
+			else if (data.typeMap.ico7 > 0){$("#ico-7").removeClass("current"); $("#ico-7").eq(0).addClass("current"); $("#tab7").show(); $("#tab1").hide(); $("#tab2").hide(); $("#tab3").hide(); $("#tab4").hide(); $("#tab5").hide(); $("#tab6").hide(); 
+			$("#ico-1").removeClass("current");$("#ico-2").removeClass("current");$("#ico-3").removeClass("current");$("#ico-4").removeClass("current");$("#ico-5").removeClass("current");$("#ico-6").removeClass("current");}
+			
+			var temp = jQuery('#' + el);
+			jQuery(obj).addClass('is-focus');
+			temp.addClass('show');
+			temp.attr("tabindex","0").focus();
+			jQuery('.btn_close').on('focus', function(){
+				jQuery(this).keydown(function()  {
+					if(event.which == 9) {
+						temp.attr("tabindex","0").focus();
+					}
+				});
+			});
+    
+			jQuery('.popup_bg').on('scroll touchmove mousewheel', function(event) {
+				event.preventDefault();
+				event.stopPropagation();
+				return false;
+			});
+			 /* layout popup close */
+		    jQuery('.popup_bg').on('click', function(event) {
+        		jQuery(obj).removeClass('is-focus');
+      	 	 	temp.removeClass('show');
+  		  	});	
+		}) 
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+			alert("처리 중 오류가 발생하였습니다.1"+errorThrown+":"+status);
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+		});	
+	}	
+}
+// ra 현황
+function viewRADetail(){
+	var url = "/action/ExpertPoolManagerAction.do?mode=getExpertPoolWorkPeriodList&jobClass=N&companyPosition=64GT";
+	var sFeatures = "top=120,left=120,width=1000,height=640,resizable=no,scrollbars=yes";
+	var detailWin = window.open(url, "viewRADetail", sFeatures);
+	detailWin.focus();
+}
+
+// 엑스퍼트 현황
+function viewExpertDetail(){
+	var url = "/action/ExpertPoolManagerAction.do?mode=getExpertPoolWorkPeriodList_exp2&jobClass=C&companyPosition=!64GT";
+	var sFeatures = "top=120,left=120,width=1130,height=790,resizable=no,scrollbars=yes";
+	var detailWin = window.open(url, "viewExpertDetail", sFeatures);
+	detailWin.focus();
+}
+
+</script> 
+</head>
+
+<body>	
+
+	<div class="location">
+		<p class="menu_title">일정관리</p>
+		<ul>
+			<li class="home">HOME</li>
+			<li>스케줄관리</li>
+			<li>일정관리</li>
+		</ul>
+	</div>
+	<input type="hidden" th:value="${searchParam.Ssn}" id="LoginSsn"/>
+	<div class="contents sub"><!-- 서브 페이지 .sub -->
+
+		<div class="fixed_box">
+			<div class="title">
+				<div class="h1_area">
+					<p class="h1"><i class="mdi mdi-file-document-outline"></i>일정관리</p>
+				</div>	
+			</div>
+			<div class="schedule_status">
+				<ul>
+					<li class="total"	 ><a href="javascript:;" th:text="|전체(${count.totalCount})|"></a></li>
+					<li class="ico ico-1"><a href="javascript:;" th:text="|외부일정(${count.t2})|"></a></li>
+					<li class="ico ico-2"><a href="javascript:;" th:text="|내부일정(${count.t1})|"></a></li>									
+					<li class="ico ico-3" th:if="${jobClass != 'J'}"><a href="javascript:;" th:text="|교육참석(${count.t5})|"></a></li>
+					<li class="ico ico-4" th:if="${jobClass != 'J'}"><a href="javascript:;" th:text="|재택근무(${count.t7})|"></a></li>
+					<li class="ico ico-5"><a href="javascript:;" th:text="|프로젝트(${count.t4})|"></a></li>
+					<li class="ico ico-6">
+						<a th:if="${jobClass != 'J'}" href="javascript:;" th:text="|휴가(${count.t6+count.t8})|"></a>
+						<a th:if="${jobClass == 'J'}" href="javascript:;" th:text="|휴무(${count.t6+count.t8})|"></a>
+					</li>
+					<li class="ico ico-7"><a href="javascript:;" th:text="|고객정보(${count.t3})|"></a></li>									
+				</ul>
+			</div>
+			<div class="fixed_contents schedule_view sc"><!-- 스케줄 관리 컨텐츠 요소 .schedule_view -->
+
+				<!-- 전사 스케줄 관리 -->
+				<div class="board_box schedule">
+					<div class="board_contents">
+						<div class="schedule_head">
+							<div class="month_select">
+								<button type="button" onclick="location.href='javascript:movePrevious();'"><i class="mdi mdi-chevron-left"></i></button>
+								<div class="select_area">
+									<select name="year" id="year" class="select" onchange="location.href='javascript:javascript:dateChange()'">
+										<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow())-9, #dates.year(#dates.createNow()) + 3)}" 
+										th:value="${year}"
+										th:text="${year}" th:selected="${year eq searchParam.year}" ></option>
+									</select>
+									<select name="month" id="month" class="select" onchange="location.href='javascript:javascript:dateChange()'">
+										<option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}" 
+										th:selected="${i eq searchParam.month}" ></option>
+									</select>
+									<select name="jobClass" id="jobClass" class="select"  onchange="location.href='javascript:javascript:dateChange()'">
+										<option value="A" th:selected="${'A' eq searchParam.jobClass}">상근</option>
+										<option value="J" th:selected="${'J' eq searchParam.jobClass}">상임</option>
+										<option value="N" th:selected="${'N' eq searchParam.jobClass}">RA</option>
+										<option value="P" th:selected="${'P' eq searchParam.jobClass}">BA</option>
+									</select>															
+								</div>
+								<button type="button" onclick="location.href='javascript:moveNext();'"><i class="mdi mdi-chevron-right"></i></button>
+							</div>
+							<input type="hidden" style="width: 200px;"  name="keyword" id="keyword" placeholder="검색어를 입력하세요." title="검색어를 입력하세요." th:value="${searchParam.keyword}">
+								<!-- <button type="button" class="btn btn_blue" onclick="location.href='javascript:dateChange();'">검색</button> -->		
+								
+							<div th:if="${searchParam.dept eq '9381' || searchParam.dept eq '9362' || searchParam.dept eq '9360'}" class="search_input">		
+								<button type="button" class="btn btn_d_blue" style="width: 100px;" onclick="viewRADetail()">RA 현황</button>
+								<button type="button" class="btn btn_d_blue" style="width: 100px;" onclick="viewExpertDetail()">엑스퍼트 현황</button>								
+							</div>
+						</div>									
+
+						<div class="gantt_box">
+							<div class="list">
+								<div class="gantt_title">
+									<p>소속부서<br>└ 성명(직위/직책)</p>
+									<!-- 
+										<p class="all-open-text">전체오픈</p>
+										<button type="button" class="btn btn_blue" onclick="location.href='javascript:;'">전체오픈</button>	 -->
+								</div>
+								<div class="dropdown_list_wrap">
+									<ul class="dropdown_list all-open">
+										<li th:each="rs : ${mainList}" class="on">
+											<div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p th:text=${rs.labelName}></p></a></div>
+											<div class="drop_data_list sc">
+												<ul>
+													<li th:each="rs_ : ${rs.userForScheduleSummaries}"
+														th:onclick="javascript:goDetailCal( [[${rs_.ssn}]]);"
+														><span class="profile"><img src="/_new/img/photo_none.png" alt="프로필 이미지"></span
+														><a href="javascript:;" th:text="${rs_.userName}"></a>(<div style="font-size: 12px; cursor: pointer;" th:text="${rs_.posName}"></div>)</li>
+												</ul>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="view">	
+								<div class="week">
+									<div th:each="rs : ${weekDays}" th:text="${rs.dayOfTheWeekKor}"
+										th:class="${rs.dayOfTheWeek}" th:classappend="${rs.today ? 'today' : rs.holiday ? 'holiday' : ''}"></div>
+								</div>
+								
+								<!-- <div class="week">
+									<div th:each="rs: ${weekDays}" th:text="${rs.day}"
+										th:class="${rs.dayOfTheWeek}" th:classappend="${rs.today ? 'today' : ''}" ></div>
+								</div> -->
+								
+								<div class="dropdown_list_wrap">
+									<ul class="dropdown_list">
+										<li th:each="rs : ${mainList}" class="on">
+											<div class="drop_title_list">
+												<div class="week">
+													<div th:each="rs1 : ${weekDays}" th:text="${rs1.day}"
+														th:class="${rs1.dayOfTheWeek}" th:classappend="${rs1.today ? 'today' : rs1.holiday ? 'holiday' : ''}" ></div>
+												</div>
+											</div>
+											<div th:each="rs_ : ${rs.userForScheduleSummaries}" class="drop_data_list sc">
+												<div class="task task_sub">
+													<div th:each="rs__, iterState : ${rs_.scheduleSummaryList}" 
+														th:class="${(iterState.index+1) == searchParam.day ? 'today' : (iterState.index+1) == rs__.holiday ? 'holiday' : ''}" 
+														th:classappend="${rs__.iconCode}"
+														><a th:if="${rs__.totalCount > 0}"  href="javascript:;" th:id="${rs__.idStr}" 
+															th:onclick="javascript:layer_open_summary(this,'pop_register_edit', [[${rs__.ssn}]],[[${rs__.idStr}]] );"
+														><span th:if="${rs__.totalCount > 1}" th:text="|+${rs__.totalCount}|"></span></a></div>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>													
+						<!-- // gantt_box -->
+
+					</div>
+					<!-- // board_contents-->
+				</div>
+				<!-- // 전사 스케줄 관리 -->				
+				
+			</div>	
+			<!-- // fixed_contents -->
+		</div>
+		<!-- // fixed_box -->			
+		
+		
+		<!--  공통 수정 팝업 -->
+		<div id="pop_register_edit" class="popup_layer pop_register common schedule"><!-- 전사관리 팝업 .schedule -->
+			<div class="popup_bg"></div>
+			<div class="popup_inner">
+				<div class="a-both">
+					<p class="h1">일정<span class="lock"><i class="mdi mdi-lock-open-outline"></i></span></p>									
+					<div class="btn_area icon">
+						<!--
+						<button type="button" class="btn-pop edit" onclick="javascript:layer_open(this,'pop_register');"><p>수정</p></button>
+						<button type="button" class="btn-pop del" onclick="location.href='javascript:;'"><p>삭제</p></button>
+						-->
+						<button type="button" class="btn-close" onclick="javascript:layer_close('pop_register_edit');" title="닫기"><i class="mdi mdi-close"></i></button>
+					</div>	
+				</div>
+
+				<div class="schedule_tab_menu">
+					<ul id="tab_menu" class="tab_ui">
+						<li id="ico-1"><a href="javascript:;" class="tab1"><span class="ico ico-1" id="ico-1_cnt">외부일정</span></a></li>
+						<li id="ico-2"><a href="javascript:;" class="tab2"><span class="ico ico-2" id="ico-2_cnt">내부일정</span></a></li>
+						<li id="ico-3"><a href="javascript:;" class="tab3"><span class="ico ico-3" id="ico-3_cnt">교육참석</span></a></li>
+						<li id="ico-4"><a href="javascript:;" class="tab4"><span class="ico ico-4" id="ico-4_cnt">재택근무</span></a></li>
+						<li id="ico-5"><a href="javascript:;" class="tab5"><span class="ico ico-5" id="ico-5_cnt">프로젝트 투입</span></a></li>
+						<li id="ico-6"><a href="javascript:;" class="tab6"><span class="ico ico-6" id="ico-6_cnt">휴가</span></a></li>
+						<li id="ico-7"><a href="javascript:;" class="tab7"><span class="ico ico-7" id="ico-7_cnt">고객정보</span></a></li>
+
+					</ul>
+					<div id="tab_menu_content">
+						<div id="tab1">
+							<ul id="tab_ico-1" class="register_view">
+							</ul>	
+						</div>
+						<div id="tab2">
+							<ul id="tab_ico-2" class="register_view">
+							</ul>	
+						</div>
+						<div id="tab3">
+							<ul id="tab_ico-3" class="register_view">
+							</ul>
+						</div>
+						<div id="tab4">
+							<ul id="tab_ico-4" class="register_view">
+							</ul>
+						</div>
+						<div id="tab5">
+							<ul id="tab_ico-5" class="register_view">
+							</ul>
+						</div>
+						<div id="tab6">
+							<ul id="tab_ico-6" class="register_view">
+							</ul>
+						</div>
+						<div id="tab7">
+							<ul id="tab_ico-7" class="register_view">
+							</ul>	
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!-- // 공통 수정 팝업 -->
+	</div>
+	<!-- // contents -->
+										
+	<div class="footer">
+		<p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+	</div>
+	<!-- // footer -->		
+
+
+</body>
+</html>

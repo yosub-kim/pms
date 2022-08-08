@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>전자결재</p>
+                </div>
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="tbl-wrap">
+                    <table class="tbl-ty1">
+                        <colgroup>
+                            <col width="33%" />
+                            <col width="33%" />
+                            <col width="33%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>단계</th>
+                                <th>이름</th>
+                                <th>일자</th>
+                            </tr>
+                        </thead>					
+                        <tbody>
+                            <tr>
+                                <td>기안</td>
+                                <td>홍길동</td>
+                                <td>2020-12-07</td>
+                            </tr>
+                            <tr>
+                                <td>검토</td>
+                                <td>홍길동</td>
+                                <td>2020-12-07</td>
+                            </tr>
+                            <tr>
+                                <td>확인</td>
+                                <td>홍길동</td>
+                                <td>2020-12-07</td>
+                            </tr>
+                            <tr>
+                                <td>승인</td>
+                                <td>홍길동</td>
+                                <td>2020-12-07</td>
+                            </tr>
+                            <tr>
+                                <td>대표이사</td>
+                                <td>홍길동</td>
+                                <td>2020-12-07</td>
+                            </tr>
+                            <tr>
+                                <td>참조</td>
+                                <td colspan="2">홍길동, 홍길동, 홍길동, 홍길동</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="inner">
+                        <table class="tbl-ty1 line"><!-- 테이블 상단 라인이 필요한 경우 -->
+                            <colgroup>
+                                <col width="33%" />
+                                <col width="33%" />
+                                <col width="33%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>단계</th>
+                                    <th>이름</th>
+                                    <th>일자</th>
+                                </tr>
+                            </thead>					
+                            <tbody>
+                                <tr>
+                                    <th>기안<br />기안<br />기안<br />기안<br />기안<br /></th>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <th>기안</th>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <th>기안</th>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <th>기안</th>
+                                    <td>기안<br />기안<br />기안<br />기안<br />기안<br />기안<br /></td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <th>기안</th>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>참조</td>
+                                    <td colspan="2">홍길동, 홍길동, 홍길동, 홍길동</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="tbl-box"><!-- 테이블 상단 타이틀 요소가 들어갈 경우 .tbl-box-->
+                        <div class="tbl-head">
+                            <p>전자결재</p>
+                            <ul>
+                                <li><button type="button" class="btn c-main" title="작성"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                            </ul>
+                        </div>
+                        <table class="tbl-ty1">
+                            <colgroup>
+                                <col width="33%" />
+                                <col width="33%" />
+                                <col width="33%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>단계</th>
+                                    <th>이름</th>
+                                    <th>일자</th>
+                                </tr>
+                            </thead>					
+                            <tbody>
+                                <tr>
+                                    <td>기안<br />기안<br />기안</td>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>검토</td>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>확인</td>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>승인</td>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>대표이사</td>
+                                    <td>홍길동</td>
+                                    <td>2020-12-07</td>
+                                </tr>
+                                <tr>
+                                    <td>참조</td>
+                                    <td colspan="2">홍길동, 홍길동, 홍길동, 홍길동</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <table class="tbl view">							
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div>
+                                            <div class="subject"><p><strong>[프로젝트 실행품의]</strong> ' 22 대구TP, 종합경영진단' 프로젝트 실행 품의의 건 ' 22 대구TP, 종합경영진단' 프로젝트 실행 품의의 건' 22 대구TP, 종합경영진단' 프로젝트 실행 품의의 건</p></div>
+                                            <ul class="info">
+                                                <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pd-10">
+                                    <ul class="file">
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>(KMAC) Master Plan_22 대구TP_종합경영진단.pptx</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서 2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>                                    
+                                    <div class="text_view">
+                                        아래와 같이 프로젝트 실행에 관한 품의를 올리오니 재가를 요청 드립니다.<br /><br />
+                                        1. 프로젝트 내용: 대구테크노파크의 신임 원장 취임에 따라 2030 중장기 비전 및 전략을 새롭게 수립하고, 체계적인 조직진단을 통해 합리적 조직 설계 및 임금체계 개편을 목적으로 추진함<br /><br />
+                                        2. 수행기간 : 2022년 1월 12일 ~ 2022년 8월 31일<br /><br />
+                                        3. 수행인력 : 심준식 디렉터, 김희수 매니저, 구다은 시니어<br /><br />
+                                        4. 계약금액 : 204,500,000 원(VAT 제외)<br /><br />
+                                        5. 매출이익 : 81,720,800원(40%)
+                                        <div class="write_list mb"><!-- 마진 값이 있을 경유 .mb-->
+                                            <div class="list">
+                                                <div class="writer">
+                                                    <p><i class="mdi mdi-message-reply-text-outline"></i>대표이사 한수희님의 반려사유<span class="date">2020-12-07 09:40:29</span></p>
+                                                </div>
+                                                <p>
+                                                    인건비 근거 명확히 하기 바랍니다. 개인별 업무분장에 의한 상세인건비 제시요망!
+                                                </p>
+                                            </div>
+                                            <div class="list">
+                                                <div class="writer">
+                                                    <p><i class="mdi mdi-message-reply-text-outline"></i>승인자 송영욱님의 확인내용<span class="date">2020-12-07 09:40:29</span></p>
+                                                </div>
+                                            </div>
+                                            <div class="list">
+                                                <div class="writer">
+                                                    <p><i class="mdi mdi-message-reply-text-outline"></i>승인자 송영욱님의 확인내용<span class="date">2020-12-07 09:40:29</span></p>
+                                                </div>
+                                                <p>
+                                                    대구테크노파크 종합 경영진단 건으로, 타 TP로 연계 될 수 있도록 하겠습니다.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>                 
+                        </tbody>
+                    </table>                           
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

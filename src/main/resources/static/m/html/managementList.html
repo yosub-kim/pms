@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>인력관리</p>
+                </div>
+                <ul>
+                    <li><button type="button" class="btn c-sub" title="검색 창 열기" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-magnify"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="게시글 작성" onclick="location.href='InfoWrite.html'"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                </ul>
+                <!-- 검색 창 팝업 -->
+                <div id="pop_search" class="popup_layer pop_search">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="pop_close">
+                            <input type="text" placeholder="검색어(제목/내용/작성자) 입력" />						
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_search');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>								
+                        <div class="write_group">
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                        </div>
+                        <select name="" id="">
+                            <option value="정보유형 선택">정보유형 선택</option>
+                            <option value="정보유형 선택">정보유형 선택</option>
+                        </select>                        
+                        <button type="button" class="btn c-wt" title="검색">검색</button>
+                    </div>
+                </div>
+                <!-- // 검색 창 팝업 -->
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="tbl-wrap">
+                    <table class="tbl list p-10"><!-- 테이블 패딩 값 10px .p-10 -->							
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <a href="managementView.html">
+                                        <div class="a-l">
+                                            <div class="profile">
+                                                <div class="img"><i class="mdi mdi-account"></i></div>
+                                            </div>
+                                            <div class="info_box">
+                                                <p><strong>[KMAC]</strong> 홍길동 </p>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-cellphone"></i><p>010-111-1234</p></li>
+                                                    <li><i class="mdi mdi-at"></i><p>KHS0720@kmac.co.kr</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td>
+                                    <a href="managementView.html">
+                                        <div class="a-l">
+                                            <div class="profile">
+                                                <div class="img"><img src="http://sora222.godohosting.com/kmac_intranet/resources/img/photo_none.png" alt="" /></div>
+                                            </div>
+                                            <div class="info_box">
+                                                <p><strong>[KMAC]</strong> 홍길동</p>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-cellphone"></i><p>010-111-1234</p></li>
+                                                    <li><i class="mdi mdi-at"></i><p>KHS0720@kmac.co.kr</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>  
+                            <tr>
+                                <td>
+                                    <a href="managementView.html">
+                                        <div class="a-l">
+                                            <div class="profile">
+                                                <div class="img"><i class="mdi mdi-account"></i></div>
+                                            </div>
+                                            <div class="info_box">
+                                                <p><strong>[KMAC]</strong> 홍길동</p>
+                                                <ul class="info">
+                                                    <li><i class="mdi mdi-cellphone"></i><p>010-111-1234</p></li>
+                                                    <li><i class="mdi mdi-at"></i><p>KHS0720@kmac.co.kr</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </td>
+                            </tr>         	
+                        </tbody>
+                    </table>
+                    <div class="btn_more"><a href="javascript;">더 보기 + <span>(10/4491)</span></a></div>                    
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

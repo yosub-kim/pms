@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/board/CeoTalk?"+query;
+	}
+
+
+function doSearch(){
+	 var url ="/_new/board/CeoTalk?keyword="+$("#keyword").val()+"&keyfield="+$("#keyfield").val()
+	 location.href = url;
+}
+
+
+</script> 
+</head>
+<body>
+	
+	<div id="sub_location">
+		<div class="location">
+			<p class="menu_title">
+				<td width="100%" align="left"><span class="mainTitle">CEO 두드림</span></td>
+			</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>게시판</li>
+				<li>
+					<td width="100%" align="left"><span class="mainTitle">CEO 두드림</span></td>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- // location -->
+	
+	<form name="frm" method="GET">
+		<!-- 서브 페이지 .sub -->
+		<div class="contents sub" style="max-height: 800px">
+			<div class="box">
+				<div class="info_box">
+					<p class="info_title">&lt;운영방법&gt;</p>
+					<p class="info_text">- 작성자와 CEO만 해당 내용 확인 가능 ※ 경영기획센터를 거치지 않음</p>
+					<p class="info_text">- 고충 접수 시, 100% 답변 진행 (답변기한은 사안의 시급성에 따라 판단)</p>
+					<p class="info_text">- 관련 내용에 대한 조사가 필요시, 철저한 작성자 비밀보호를 원칙으로 답변에 필요한 내용만을 CEO의 지시하에 경영기획센터장 또는 팀장이 조사할 수 있음</p>
+				</div>
+			</div>
+			<!-- 검색 영역 -->
+			<!-- 검색 창 -->
+			<div class="box">
+				<div class="search_box">
+					<div class="select_group">
+					<div class="search_input_box">
+						<select  name="keyfield" id="keyfield" class="select" th:value="${keyfield}">
+							<option value=subject th:selected="${keyfield}=='subject'">제목</option>
+							<option value="content" th:selected="${keyfield}=='content'">내용</option>
+							<option value="writer" th:selected="${keyfield}=='writer'">작성자</option>
+						</select>
+					<div class="search_input">
+						<label for="search"></label> 
+							
+							<input type="hidden" name="mode" value="selectList"> 
+							<input type="hidden" name="bbsId" value="publicNotice">
+							<input type="text" name="keyword" id="keyword" placeholder="검색어를 입력하세요." title="검색어를 입력하세요." value="" th:value="${keyword}"/>
+					</div>
+					</div>
+				</div>
+				<div><button type="button" class="btn btn_blue" id="searchBtn" onclick="location.href='javascript:doSearch();'">검색</button></div>
+				</div>
+				<!-- // search_box -->
+			</div>
+			<!-- // 검색 창 -->
+			<!-- 본문 리스트 시작 -->
+			<div class="box">
+				<div class="a-both total">
+					<p>
+						총<span th:text="${getBoardTotalCNT.TOTALCNT}"></span>건
+					</p>
+					<button type="button" class="btn btn_aqua"onclick="location.href='/_new/board/CeoTalkWrite?saveMode=INSERT'">등록</button>
+				</div>
+
+				<div class="tbl-wrap sc" style="overflow: hidden;">
+					<table class="tbl-list all">
+						<colgroup>
+								<col style="width: 10%;" />
+								<col style="width: 70%;" />
+								<col style="width: 10%;" />
+								
+								<col style="width: 10%;" />
+								
+								
+							</colgroup>
+						<thead>
+							<tr>
+								<th>번호</th>
+								<th class="subject">제목</th>
+								<th>작성자</th>
+								<th>작성일</th>
+								
+							</tr>
+						</thead>
+						<tbody>
+						
+							<tr th:each="rs : ${CeoTalkList}"  onmouseout="row_out(this)"  onmouseover="row_over(this)">
+								<td th:text="${rs.ROWNUM}"></td>
+								<td style="cursor:pointer" class="subject" th:onclick="javascript:location.href='/_new/board/CeoTalkDetail?SEQ=[[${rs.SEQ}]]'">
+									<p th:text="${rs.SUBJECT}"></p><span><span th:if="${rs.COMMENTCNT > 0}" class="reply" th:text="'['+${rs.COMMENTCNT}+']'"></span></span>
+								</td>
+								<td th:text="${rs.WRITER}"></td>
+								<td align="center" th:text="${rs.WTIME}"></td>
+							</tr>
+							
+							
+						</tbody>
+					</table>
+							
+				<div class="paging_area">
+					<SCRIPT LANGUAGE="JavaScript">
+				
+					 /*<![CDATA[*/
+					 	var pagingPage = [[${pagingPage}]];
+					 	var getBoardTotalCNT = [[${getBoardTotalCNT.TOTALCNT}]];
+							document.write( makePageHtml2( 
+									pagingPage, 
+									10, 
+									getBoardTotalCNT, 
+									10)
+							) ;
+					/*]]>*/		
+					</SCRIPT>
+				</div>
+				</div>
+				<!-- // tbl-wrap -->
+				
+				<!-- // paging -->
+				<input type="hidden" name="mode"     	value="selectList">
+				<input type="hidden" name="bbsId"    	value="CEOTALK">
+				<input type="hidden" name="pagingPage" id="pagingPage"	value="">
+				
+			</div>
+			<!-- // box -->
+
+			<!-- // contents_are -->
+		</div>
+	</form>
+</body>
+</html>	
+

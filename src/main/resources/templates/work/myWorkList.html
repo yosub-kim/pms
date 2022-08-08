@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+<link rel="stylesheet" href="/_new/css/jquery-ui.css" type="text/css" />	
+
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+<meta name="viewport" content="width=1600">
+
+<script type="text/javascript">
+
+function selectWork(workId, type) {
+	var ActionURL = "/action/WorkCabinetAction.do?mode=getWorkType";
+	var status = AjaxRequest.post (
+			{	'url':ActionURL,
+				'parameters' : { "workTypeId": type },
+				'onSuccess':function(obj){
+		           	var res = eval('(' + obj.responseText + ')');
+		           	var rsObj = res.workType.formUrl;
+	           		//document.myWorkListForm.action = rsObj+"&workId="+workId;
+					//document.myWorkListForm.target = "";		
+					//document.myWorkListForm.submit();
+					document.location.href = rsObj+"&workId="+workId;
+				},
+				'onLoading':function(obj){},
+				'onError':function(obj){
+					alert("저장할 수 없습니다.");
+				}
+			}
+	); status = null;	
+	/*
+	if(type == "WORKTYPE_GENERAL_SANCTION"){//일반 전자결재
+		document.myWorkListForm.action = "/action/GeneralSanctionAction.do?mode=getGeneralSanctionData&workId="+workId;
+	}else if(type == "WORKTYPE_PROJECT_LUANCH_SANCTION"){ //프로젝트 시작품의
+		document.myWorkListForm.action = "/action/ProjectLaunchSanctionAction.do?mode=getProjectLaunchSanctionData&workId="+workId;
+	}else if(type == "WORKTYPE_PROJECT_OPER_SANCTION"){ //프로젝트 운영품의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}else if(type == "WORKTYPE_PROJECT_BUDJET_SANCTION"){ //프로젝트 예산변경 품의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}else if(type == "WORKTYPE_PROJECT_SCHEDULE_SANCTION"){ //프로젝트 일정변경 품의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}else if(type == "WORKTYPE_PROJECT_MEMBER_SANCTION"){ //프로젝트 인력 변경 품의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}else if(type == "WORKTYPE_PROJECT_SALARY_PU_SANCTION"){ //프로젝트 PU 강사료 픔의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}else if(type == "WORKTYPE_PROJECT_SALARY_BU_SANCTION"){ //프로젝트 BU 강사료 픔의
+		document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	}*/
+}
+function goPage(next_page) {
+	document.myWorkListForm.pageNo.value = next_page ;
+	document.myWorkListForm.target = "";		
+	document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	document.myWorkListForm.submit();
+}
+function doSearch() {
+	document.myWorkListForm.target = "";		
+	document.myWorkListForm.action = "/action/WorkCabinetAction.do?mode=getMyWorkList";
+	document.myWorkListForm.submit();
+}
+
+</script>
+</head>
+
+<body>
+		<form name="myWorkListForm" method="post">
+			<div style='display: none;'>
+				<input type="hidden" name='pageNo'> 
+			</div>
+		
+			<!-- location -->
+		<div class="location">
+			<p class="menu_title">내 결재함</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>내 결재함</li>
+			</ul>
+		</div>
+		<!-- // location -->
+		 
+		<div class="contents sub">
+	
+		<!--search_box -->
+				<div class="box">
+					<div class="search_box">
+						<div class="select_group">
+							<div class="search_input_box">
+								<select  name="keyfield" class="select">
+									<option value=subject>결재명</option>
+								</select>
+								<div class="search_input">
+									<label for="search"></label> 
+									<input type="text" name="keyword" class="textInput_left" value="" >
+								</div>
+							</div>
+						</div>
+						<div><button type="button" class="btn btn_blue" onclick="location.href='javascript:doSearch();'">검색</button></div>
+					</div>
+				</div>
+					<!-- // search_box -->
+			
+			<div class="board_box">
+				<div class="title_both">
+					<div class="h1_area">
+						<p class="h1">내 결재함</p>
+					</div>
+				</div>
+		
+				<div class="board_contents">
+				<table  id="projectProgressTable" class="tbl-edit td-c"><!-- td 영역이 가운데 정렬 일 경우 td-c -->
+							<thead>
+								<colgroup>
+									<col style="width: 15%" />
+									<col style="width: 10%" />
+									<col style="width: *" />
+									<col style="width: 13%" />
+									<col style="width: 13%" />
+									<col style="width: 13%" />
+								</colgroup>
+								<tr>
+									<th>결재 유형</th>
+									<th>결재 상태</th>
+									<th>제목</th>
+									<th>기안 부서</th>
+									<th>기안자</th>
+									<th>기안일</th>		
+								</tr>
+							</thead>
+							<tbody id="ListData">
+							
+									<tr th:if="${list != null}" th:each="rs : ${list}" onmouseover="row_over(this)" onmouseout="row_out(this)" style="cursor: hand;" onclick="selectWork(1, 'a')">
+										<td><span id="approvalName" th:text="${rs.approvalName}"></span></td>
+										<td  th:switch="${rs.level}">
+											<span id="state" th:case="'SANCTION_STATE_DRAFT'" th:text="작성"></span>
+											<span id="state" th:case="'SANCTION_STATE_REJECT_DRAFT'" >
+												<font color="#F290A5" th:text="반려&nbsp"><span class="ico-progress"></span></font><
+											</span>
+											<span id="state" th:case="'SANCTION_STATE_REVIEW'" th:text="검토"></span>
+											<span id="state" th:case="'SANCTION_STATE_APPROVE'" th:text="승인"></span>
+											<span id="state" th:case="'SANCTION_STATE_CHECK'" th:text="확인"></span>
+											<span id="state" th:case="'SANCTION_STATE_ASSIST1'" th:text="협의1"></span>
+											<span id="state" th:case="'SANCTION_STATE_ASSIST2'" th:text="협의2"></span>
+											<span id="state" th:case="'SANCTION_STATE_ASSIST3'" th:text="협의3"></span>
+											<span id="state" th:case="'SANCTION_STATE_SUPPORT_DRAFT'" th:text="지원실 기안"></span>
+											<span id="state" th:case="'SANCTION_STATE_SUPPORT_REVIEW'" th:text="지원실 검토"></span>
+											<span id="state" th:case="'SANCTION_STATE_SUPPORT_APPROVE'" th:text="지원실 승인"></span>
+											<span id="state" th:case="'SANCTION_STATE_CEO'" th:text="대표이사"></span>
+											<span id="state" th:case="'SANCTION_STATE_COMPLETE'" th:text="완료"></span>
+											<span id="state" th:case="'SANCTION_STATE_RATING'" th:text="작성"></span>
+											<span id="state" th:case="'SANCTION_STATE_ENDRIVIEW_DRAFT'" th:text="작성"></span>
+											<span id="state" th:case="'SANCTION_STATE_ENDRIVIEW_RIVIEW'" th:text="검토"></span>
+											<span id="state" th:case="'SANCTION_STATE_ENDRIVIEW_APPROVE'" th:text="승인"></span>
+											<span id="state" th:case="'SANCTION_STATE_ENDRIVIEW_VERIFICATE'" th:text="검증"></span>
+										</td>
+										<td class="subject" style="padding: 0px 0px 0px 15px;" th:switch="${rs.refWorkId2}">
+											<span id="state" th:case="A"  th:text="${rs.projectName}">
+										
+											</span>
+											<span id="state" th:case="B"  th:text="${rs.projectName}">
+										
+											</span>
+											<span id="state" th:case="*"  th:text="${rs.title}">
+										
+											</span>
+									
+										</td>
+									
+										<td><span id="draftUserDept" th:text="${rs.draftUserDeptName}"></span></td>
+										<td><span id="draftUserId" th:text="${rs.draftUserName}"></span></td>
+										<td><span id="draftDate" th:text="${#dates.format(rs.draftDate,'YYYY-MM-dd')}"></span></td>
+									</tr>
+					
+							<c:if th:if="${list == null}">
+								<td colspan="6">검색된 데이터가 없습니다. </td>
+							</c:if>
+						</tbody>
+				</table>
+				<div class="paging_area">
+						<SCRIPT LANGUAGE="JavaScript">
+				document.write(makePageHtml2(1, 5, 5, 5));
+						
+						</SCRIPT>
+				</div>
+				</div>
+				</div>
+				</div>
+		</form>
+</div>	
+</body>
+</html>

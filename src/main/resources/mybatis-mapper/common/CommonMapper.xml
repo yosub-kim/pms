@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.common.mapper.CommonMapper">
+
+	<select id="getUserInfo" resultType="map" parameterType="HashMap" >
+		SELECT * FROM EXPERTPOOL WHERE SSN = #{SSN}
+	</select>
+	<select id="getApprovalType" resultType="map" parameterType="HashMap" >
+		SELECT ApprovalType,ApprovalName FROM SANCTIONTEMPLATE ORDER BY SEQ
+	</select>
+	<select id="getGroupList" resultType="map" parameterType="HashMap" >
+		SELECT * FROM SMGROUP WITH(NOLOCK)
+		WHERE 1=1
+		<if test="groupFlag == '2022'">
+		AND enabled=1 and memberRule like 'A' and depth=2
+		</if>
+		<if test="groupFlag == '2020'">
+		AND enabled=0 and memberRule like 'A' and depth=2 AND HISTORYENABLED = '2' AND MAILENABLED = 1  
+		</if>
+		
+		<if test="groupFlag == '2019'">
+		AND enabled=0 and memberRule like 'A' and depth=1
+		</if>
+		order by seq 
+	</select>
+	<select id="getCodeList" resultType="map" parameterType="HashMap" >
+		SELECT *
+			FROM CMTABLEDATA WITH(NOLOCK) 
+			WHERE TABLE_NAME = #{TABLE_NAME}
+			<if test="KEY_1 != '' and KEY_1 != null">
+			AND KEY_1 = #{KEY_1}
+			</if>
+			<if test="KEY_2 != '' and KEY_2 != null">
+			AND KEY_2 = #{KEY_2}
+			</if>
+			<if test="KEY_3 != '' and KEY_3 != null">
+			AND KEY_3 = #{KEY_3}
+			</if>
+			ORDER BY SEQ
+	</select>
+</mapper>

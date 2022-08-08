@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<!--/* ====================== Renewal jQuery include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery.selectric.min.js"></script><!-- 셀렉트 박스 UI-->
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+
+<script type="text/javascript">
+
+
+</script>
+</head>
+
+<body>
+<p id="infoText">구글 캘린더와 연동중입니다 기다려주세요...</p>
+<input type="hidden" id="access"  th:value="${access_token}"/>
+<input type="hidden" id="state" th:value="${state}"/>
+<input type="hidden" th:value="${code}"/>
+<input type="hidden" id="SSN" th:value="${ssn}"/>
+<script>
+var calendarID = ''
+var year = $("#state").val().split("_")[0];
+var month = $("#state").val().split("_")[1];
+var date = new Date();
+var offset = date.getTimezoneOffset() * 60000; 
+var startDate = new Date(new Date(year, month-1) - offset ).toISOString();
+var endDate = new Date(new Date(year, month, 0) - offset ).toISOString();
+
+var numberCheck = 0;
+
+
+var access = JSON.parse($("#access").val());
+	$(function () {
+	
+		getGoogleScheduleList(access);
+		
+	
+	})
+
+function getGoogleScheduleList(access){
+
+	$.ajax({
+		type: "GET",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/users/me/calendarList?access_token="+access.access_token,
+		data: '',
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+		if(data.items.length > 0){
+
+			calendarID = data.items[data.items.length-1].id;
+			
+			if(access){
+				getEventList();
+				
+				
+			}
+		}
+		console.log("getGoogleScheduleList");
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+	
+}
+
+function getMyScheduleList(){
+
+	$.ajax({
+		type: "POST",
+		contentType: 'application/json',
+		url : "/_new/schedule/personal/searchScheduleList",
+		data: JSON.stringify({"year":year,"month":month,"SSN" : $("#SSN").val()}),
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+	
+		if(calendarID != ''){
+			numberCheck = data.length;
+			if(numberCheck < 1){
+				alert("완료되었습니다.");
+				window.close();
+			}
+			for(var i=0;i<data.length;i++){
+				
+				var event = {
+					'id' : data[i].idx,
+					'summary': data[i].type+"_"+data[i].content,
+					'description': data[i].content,
+					'start': {
+						'dateTime': new Date(new Date(data[i].year, data[i].month-1,data[i].day,data[i].startHour,data[i].startMin) - offset - (1000*60*60*9)).toISOString(),
+						'timeZone': 'Asia/Seoul'
+					},
+					'end': {
+						'dateTime': new Date(new Date(data[i].year, data[i].month-1,data[i].day,data[i].endHour,data[i].endMin) - offset - (1000*60*60*9)).toISOString(),
+						'timeZone': 'Asia/Seoul'
+					},
+					'colorId' : scheduleColor(data[i].type)
+				};
+
+				CRUDCheck(data[i].idx,event);
+				console.log("getMyScheduleList"+i);
+			}
+			console.log("getMyScheduleList");
+		}else{
+			alert("오류가 발생했습니다.");
+			window.close();
+		}
+
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+		$("#infoText").text("오류가 발생했습니다.");
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+	
+}
+
+function CRUDCheck(eventId,event){
+	$.ajax({
+		type: "GET",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/calendars/"+calendarID+"/events/"+eventId+"?access_token="+access.access_token,
+		data: '',
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) {
+		numberCheck = numberCheck - 1; 
+		updateEvent(eventId,event);
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+		if(jqXHR.responseJSON.error.code == '404'){
+			numberCheck = numberCheck - 1;
+			createEvent(eventId,event);
+		}
+		
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+		console.log("CRUDCheck");
+	});
+}
+
+
+function getEventList(){
+	$.ajax({
+		type: "GET",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/calendars/"+calendarID+"/events?access_token="+access.access_token+"&timeMax="+endDate+"&timeMin="+startDate,
+		data: '',
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+
+		for(var i=0;i<data.items.length;i++){
+			if(!isNaN(data.items[i].id)){
+				checkSchedule(data.items[i].id)
+			}
+		}
+		getMyScheduleList();
+		console.log("getEventList");
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+}
+
+
+function checkSchedule(idx){
+	$.ajax({
+		type: "POST",
+		contentType: 'application/json',
+		url : "/_new/schedule/personal/checkSchedule",
+		data: JSON.stringify({"idx":idx}),
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+
+		if(data.CNT==0){
+			deleteEvent(idx);
+		}
+		console.log("checkSchedule");
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+}
+
+
+function deleteEvent(idx){
+
+	$.ajax({
+		type: "DELETE",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/calendars/"+calendarID+"/events/"+idx+"?access_token="+access.access_token,
+		data: '',
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+		console.log("deleteEvent");
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+}
+
+function createEvent(idx,event){
+	$.ajax({
+		type: "POST",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/calendars/"+calendarID+"/events?access_token="+access.access_token,
+		data: JSON.stringify(event),
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+		console.log("createEvent");
+		if(numberCheck < 1){
+			alert("완료되었습니다.");
+			window.close();
+		}
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+}
+
+function updateEvent(idx,event){
+	$.ajax({
+		type: "PUT",
+		contentType: 'application/json',
+		url : "https://www.googleapis.com/calendar/v3/calendars/"+calendarID+"/events/"+idx+"?access_token="+access.access_token,
+		data: JSON.stringify(event),
+		dataType: "json",
+		cache: false,
+		//traditional : true,
+		timeout: 60000
+	})
+	.done(function(data, textStatus, jqXHR ) { 
+		console.log("updateEvent");
+		if(numberCheck < 1){
+			alert("완료되었습니다.");
+			window.close();
+		}
+	}) 
+	.fail(function(jqXHR, textStatus, errorThrown ) {
+
+	}) 
+	.always(function(jqXHR, textStatus, errorThrown ) { 
+	});
+}
+
+function scheduleColor(type) {
+			switch (type) {
+				case "외부일정" :
+					return "1";
+				case "내부일정" :
+					return "9";
+				case "교육참석" :
+					return "2";
+				case "재택근무" :
+					return "5";
+				case "프로젝트" :
+					return "6";
+				case "휴가" :
+					return "4";
+				case "고객정보" :
+					return "8";
+				 default :
+					return "9"; 
+			}
+		}
+</script>
+<!-- 
+ <form id="acform" action="https://oauth2.googleapis.com/token" method="post"
+          enctype="application/x-www-form-urlencoded">
+        <input type="hidden" name="code" th:value="${code}">
+        <input type="hidden" name="client_id" value="318730625859-97r242la98252kk2nomblbfmdqdsfnbv.apps.googleusercontent.com">
+        <input type="hidden" name="client_secret" value="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">
+        <input type="hidden" name="redirect_uri" value="http://localhost:446/_new/schedule/personal/googleAsync">
+        <input type="hidden" name="grant_type" value="authorization_code">
+    </form>
+    <script type="text/javascript">
+        this.document.getElementById("acform").submit();
+    </script>
+ -->
+
+</body>
+</html>

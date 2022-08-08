@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" /><!-- 셀렉트 박스 UI -->
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+  <link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" /><!-- 셀렉트 박스 UI -->
+
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+
+
+$(document).ready(function () {
+	getCodeList('SYSTEM_FAQ_FIELD','','','','field');
+	getCodeList('SYSTEM_FAQ_FIELDDETAIL','intranet','','','fieldDetail');
+})
+
+
+function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/board/CeoTalk?"+query;
+	}
+
+
+function doSearch(){
+	 var url ="/_new/board/CeoTalk?keyword="+$("#keyword").val()+"&keyfield="+$("#keyfield").val()
+	 location.href = url;
+}
+function getCodeList(TABLE_NAME,KEY_1,KEY_2,KEY_3,objectId){
+	jQuery.ajax({
+		type : 'post',
+		url : '/_new/common/getCodeList',
+		data : JSON.stringify({TABLE_NAME:TABLE_NAME,KEY_1:KEY_1,KEY_2:KEY_2,KEY_3:KEY_3}),
+		dataType : 'json',
+		contentType: 'application/json',
+		error: function(xhr, status, error){				
+			alert("저장할 수 없습니다.");
+		},
+		success : function(json){
+			makeOption(json,objectId);
+		}
+	});
+}
+
+function makeOption(json,objectId){
+	var html = "";
+	for(var i = 0; i<json.length;i++){
+		var keyData = json[i].KEY_3;
+		if(keyData == ""){
+			keyData = json[i].KEY_2;
+		}
+		if(keyData == ""){
+			keyData = json[i].KEY_1;
+		}
+		
+		html += `<option value="${keyData}">${json[i].DATA_1}</option>`
+	}
+	
+	$("#"+objectId).html(html);
+}
+</script> 
+
+</head>
+<body>
+	<div class="box">
+				<div class="search_box"> 
+									<div class="select_group">		
+																					
+										<div class="select_box">
+											<div class="label_group" style="display: flex">
+												<div class="label_group" style="margin-left: 0px">
+												<p>분야</p> 														
+													<select class="select" name="field" id="field" onchange="getCodeList('SYSTEM_FAQ_FIELDDETAIL',this.value,'','','fieldDetail')"></select>
+												</div>
+												<div class="label_group">
+												<p>세부분야</p> 														
+													<select class="select" name="fieldDetail" id="fieldDetail" >
+														<option value="">전체</option>
+														<option value="1" >업무개선</option>
+														<option value="2" >IT개선</option>
+														<option value="3" >기타</option>
+													</select>	
+												</div>
+											</div>
+											<div class="label_group">																													
+												<p>채택여부</p> 						
+												<select class="select" name="choice_type" id="choice_type">
+													<option value="">전체</option>
+													<option value="1" >채택</option>
+													<option value="2" >검토(보류)</option>
+													<option value="3" >불채택</option>
+												</select>
+											</div>			
+										</div>
+										
+										<div class="select_box">
+											<div class="label_group">
+												<p>작성자</p>																				
+												<input type="text" class="textInput_left" style="width: 100%;" name="s_writer" id="s_writer" value="" title="검색어를 입력하세요." />				
+											</div>													
+											<div class="label_group">
+												<p>제목</p>
+												<input type="text" class="textInput_left" style="width: 100%;" name="s_subject" id="s_subject" value="" placeholder="검색어를 입력하세요." title="검색어를 입력하세요." />				
+											</div>										
+										</div>
+										
+									</div>
+									<!-- // select Group -->
+									
+									<div><button type="button" class="btn btn_blue" onclick="location.href='javascript:do_search();'">검색<i class="mdi mdi-magnify"></i></button></div>
+	
+				</div>
+				<!-- // search_box -->
+	</div>
+<div class="fixed_contents sc"  style="padding: 0px;overflow: initial">
+			<div class="box scrollhide" style="overflow: auto;max-height: 500px">
+							<div class="a-both total">
+								<p>총<span>244</span>건</p>								
+								<button type="button" class="btn btn_aqua" onclick="goTab('systemSuggestionWrite')">등록</button>
+							</div>  
+							<div class="tbl-wrap sc">
+								<table class="tbl-list">
+									<thead>
+										<tr>
+											<th width="5%">번호</th>
+											<th width="8%">제안유형</th>
+											<th width="47%" class="subject">제목</th>							
+											<th width="5%">첨부</th>						
+											<th width="10%">작성자</th>
+											<th width="10%">작성일</th>
+											<th width="5%">조회</th>
+											<th width="10%">채택여부</th>							
+										</tr>
+									</thead>	
+									
+									<tbody>
+									
+												<tr>
+													<td>244</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26220&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  고객정보 등록 시 업종별 구분 관련 개선 요청</a>
+														
+															<span class="reply">[2]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26220&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">송광호</a></td>
+													<td>2022-05-20</td>
+													<td>111</td>
+													<td>
+														<span style='color: black;'>검토(보류)</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>243</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26219&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  일정관리 구글 연동</a>
+														
+															<span class="reply">[1]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26219&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">김동하</a></td>
+													<td>2022-05-17</td>
+													<td>83</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>242</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26218&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  스케쥴관리, 과년도 일정확인의 건</a>
+														
+															<span class="reply">[3]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26218&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">방지현</a></td>
+													<td>2022-05-04</td>
+													<td>64</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>241</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26217&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  스케줄 등록 시 일정 초대 기능 추가요청</a>
+														
+															<span class="reply">[1]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26217&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">정혜린</a></td>
+													<td>2022-05-03</td>
+													<td>49</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>240</td>											
+													<td>
+														업무개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26216&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  채용(면접) 결과 입력 및 화면 노출 요망</a>
+														
+															<span class="reply">[1]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26216&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">김종운</a></td>
+													<td>2022-03-23</td>
+													<td>95</td>
+													<td>
+														<span style='color: black;'>검토(보류)</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>239</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26215&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  세금계산서 신청 관련</a>
+														
+															<span class="reply">[2]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26215&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">서민원</a></td>
+													<td>2022-02-24</td>
+													<td>83</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>238</td>											
+													<td>
+														업무개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26214&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  계약서 날인용 간인천공기 제안의 건</a>
+														
+															<span class="reply">[1]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26214&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">정수빈</a></td>
+													<td>2022-02-22</td>
+													<td>170</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>237</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26213&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  KMAC 이메일 內 서명 설정 및 배너 광고</a>
+														
+															<span class="reply">[3]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26213&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">정진우</a></td>
+													<td>2022-02-18</td>
+													<td>87</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>236</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26212&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  경영관리/실적현황 항목 수정</a>
+														
+															<span class="reply">[2]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26212&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">김종운</a></td>
+													<td>2022-02-08</td>
+													<td>58</td>
+													<td>
+														<span style='color: black;'>검토(보류)</span>
+													</td>
+												</tr>
+						
+									
+												<tr>
+													<td>235</td>											
+													<td>
+														IT개선
+													</td>
+													<td class="subject">
+																										
+														<a href="board_view.asp?idx=26211&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">
+													  스케줄 등록시 시간 관련 건</a>
+														
+															<span class="reply">[1]</span><!-- 댓글 수 .reply -->
+														
+													</td>
+													<td class='file'>
+														</td>
+													<td><a href="board_view.asp?idx=26211&choice_type=&propose_type=&s_writer=&s_subject=&page=1&listclick=y">오민협</a></td>
+													<td>2022-01-20</td>
+													<td>65</td>
+													<td>
+														<span style='color: blue;'>채택</span>
+													</td>
+												</tr>
+						
+									
+									</tbody>
+
+								</table>
+							</div>
+							<!-- // tbl-wrap -->
+
+							<div class="paging_area">
+
+								<div class="paging">
+
+									<div class='pagination'><a href='#' class='current' title='현재페이지'><b>1</b></a><a href='/kmac/task/propose_board/Board_list.asp?page=2&choice_type=&propose_type=&s_writer=&s_subject='>2</a><a href='/kmac/task/propose_board/Board_list.asp?page=3&choice_type=&propose_type=&s_writer=&s_subject='>3</a><a href='/kmac/task/propose_board/Board_list.asp?page=4&choice_type=&propose_type=&s_writer=&s_subject='>4</a><a href='/kmac/task/propose_board/Board_list.asp?page=5&choice_type=&propose_type=&s_writer=&s_subject='>5</a><a href='/kmac/task/propose_board/Board_list.asp?page=6&choice_type=&propose_type=&s_writer=&s_subject='>6</a><a href='/kmac/task/propose_board/Board_list.asp?page=7&choice_type=&propose_type=&s_writer=&s_subject='>7</a><a href='/kmac/task/propose_board/Board_list.asp?page=8&choice_type=&propose_type=&s_writer=&s_subject='>8</a><a href='/kmac/task/propose_board/Board_list.asp?page=9&choice_type=&propose_type=&s_writer=&s_subject='>9</a><a href='/kmac/task/propose_board/Board_list.asp?page=10&choice_type=&propose_type=&s_writer=&s_subject='>10</a><a class='icon' href='/kmac/task/propose_board/Board_list.asp?page=11&choice_type=&propose_type=&s_writer=&s_subject='><i class='mdi mdi-chevron-right'></i>다음</a></div>		
+									
+								</div>
+								<!-- // paging -->
+
+								<div class="select_ui">
+									<select class="tric_01" name="pageSize" onchange="javascript:document.SearchForm.page.value=1;document.SearchForm.submit();">
+										<option value="10"  selected >10개씩 보기</option>
+										<option value="20" >20개씩 보기</option>
+										<option value="30" >30개씩 보기</option> 
+										<option value="40" >40개씩 보기</option> 
+										<option value="50" >50개씩 보기</option> 
+									</select>
+								</div>
+
+							</div>
+							<!-- // paging_area -->
+
+						</div>
+		</div>
+
+	
+</body>
+</html>	
+

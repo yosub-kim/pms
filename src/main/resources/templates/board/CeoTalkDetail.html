@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+
+
+<script type="text/javascript">
+
+function deleteBoard() {
+	if(confirm("삭제 하시겠습니까?")) {
+		jQuery.ajax({
+			 type : 'post',
+			url : '/_new/board/doDeleteBoard',
+			data : formToJsonString("#frm"),
+			dataType : 'json',
+			contentType: 'application/json',
+			error: function(xhr, status, error){				
+				alert("삭제할 수 없습니다.");
+			},
+			success : function(json){
+				alert("삭제되었습니다.");
+				location.href="/_new/board/CeoTalk"
+				
+			}
+		});
+	}	
+}
+function editBoard() {
+	location.href="/_new/board/CeoTalkWrite?saveMode=UPDATE&SEQ="+$("#boardseq").val();
+}
+function saveBoardComment() {
+
+		jQuery.ajax({
+			 type : 'post',
+			url : '/_new/board/doCeoTalkCommentWrite',
+			data : formToJsonString("#frmCmmt"),
+			dataType : 'json',
+			contentType: 'application/json',
+			error: function(xhr, status, error){				
+				alert("저장할 수 없습니다.");
+			},
+			success : function(json){
+				alert("등록되었습니다.");
+				location.reload();
+				
+			}
+		});
+		
+		
+}
+function deleteCeoTalkComment(seq,commentSeq) {
+	if(confirm("삭제 하시겠습니까?")) {
+		jQuery.ajax({
+			 type : 'post',
+			url : '/_new/board/deleteCeoTalkComment',
+			data : JSON.stringify({SEQ:seq,commentSeq:commentSeq}),
+			dataType : 'json',
+			contentType: 'application/json',
+			error: function(xhr, status, error){				
+				alert("삭제할 수 없습니다.");
+			},
+			success : function(json){
+				alert("삭제되었습니다.");
+				location.reload();
+				
+			}
+		});
+	}	
+}
+</script>
+<script type="text/javascript">
+$(document).ready(function () {
+	
+});
+</script>
+
+<style>
+
+	.button1 { 
+	    height: 30px;
+	    background-color: #ffffff;
+	    font-size: 15px;
+ 		border-radius: 10px 10px 10px 10px;
+ 		border-style: none;
+	}
+</style>
+</head>
+<body>
+	
+	<div class="location">
+		<p class="menu_title">
+			열린세상</p>
+		<ul>
+			<li class="home">HOME</li>
+			<li>게시판</li>
+			<li>
+			
+				
+				
+					<td width="100%" align="left"><span class="mainTitle">열린세상</span></td>
+				
+					
+			</li>
+		</ul>
+	</div>
+	<!-- // location -->
+
+	<div class="contents sub">
+		<!-- 서브 페이지 .sub -->
+
+		<div class="fixed_box">
+			<div class="title">
+				<div class="h1_area">
+					<p class="h1">
+						<i class="mdi mdi-file-document-outline"></i>
+						<span th:utext="${CeoTalkDetail.SUBJECT}"></span>
+					</p>
+					
+				</div>
+				<div class="btn_area">
+					<button type="button" class="btn line btn_blue" th:if="${CeoTalkDetail.MYBoardYN == 'Y'}" onclick="location.href='javascript:editBoard();'">
+						<i class="mdi mdi-square-edit-outline"></i>수정
+					</button>
+					<button type="button" class="btn line btn_pink" th:if="${CeoTalkDetail.MYBoardYN == 'Y'}" onclick="location.href='javascript:deleteBoard();'">
+						<i class="mdi mdi-trash-can-outline"></i>삭제
+					</button>
+					<button type="button" class="btn line btn_grey" onclick="location.href='javascript:history.back();'">
+						<i class="mdi mdi-backburger"></i>목록
+					</button>
+				</div>
+			</div>
+
+			<div class="fixed_contents sc">
+
+				<!-- Table View-->
+				<table class="tbl-view">
+					<thead>
+						<tr>
+							<th>작성자</th>
+							<td th:text="${CeoTalkDetail.NAME}"></th>
+							<th>작성일</th>
+							<td th:text="${CeoTalkDetail.WTIME}"></td>
+						</tr>
+
+					</thead>
+					<tbody>
+						<tr>
+							<td colspan="4" class="text_view_box">
+								<p class="text_view" th:utext="${CeoTalkDetail.CONTENT}"></p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<!-- // Table View-->
+				
+			<form name="frm" id="frm" method="post">
+				<input type="hidden" name="saveMode"	value="UPDATE">
+				<input type="hidden" name="bbsId"		value="CEOTALK">
+				<input type="hidden" name="SEQ"	id="boardseq"		th:value="${CeoTalkDetail.SEQ}">
+				<input type="hidden" name="jobClass"	value="" />
+			</form>
+			
+				<table class="tbl-view-reply">
+				<form name="frmCmmt" id="frmCmmt" method="post" >
+							<input type="hidden" name="bbsId"		value="CEOTALK">
+							<input type="hidden" name="SEQ"			th:value="${CeoTalkDetail.SEQ}">
+							<thead>
+								<tr>
+									<td><i class="mdi mdi-reply"></i>답변 <span th:text="${CeoBoardTotalCommentCNT.TOTALCNT}"></span></td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="reply_write_box">
+										<div class="reply_write">
+											<textarea class="sc" name="commentContents" style="width:100%; height:100%;" maxlength="1000" ></textarea>
+											<button type="button" class="btn btn_blue" onclick="location.href='javascript:saveBoardComment();'">등록</button>
+										</div>
+									</td>
+								</tr>
+								<tr th:each="rs : ${CeoTalkComment}">
+									<td>
+										<div class="reply_view">
+											<div class="a-both">
+												<div class="wirter">
+													<p class="name" th:text="${rs.NAME}"></p>
+													<p class="date" th:text="${rs.WTIME}"></p>
+												</div>
+												<div class="btn_area">
+													<!-- <button type="button" class="btn line btn_blue" onclick="location.href='javascript:;'"><i class="mdi mdi-square-edit-outline"></i>수정</button> -->
+													<button type="button" class="btn line btn_pink" th:onclick="deleteCeoTalkComment('[[${rs.seq}]]','[[${rs.commentSeq}]]');" th:if="${rs.MYCOMMENT == 'Y'}" style="display: block" > 
+														<i class="mdi mdi-trash-can-outline"></i>삭제</button>		
+												</div>
+											</div>
+											
+										<p class="reply_text" th:text="${rs.CONTENT}"></p>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+				</form>
+				</table>
+				<!-- // Table View Reply -->
+			</div>
+			</div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.support.mapper.conferenceMapper">
+	<select id="searchConferenceList" resultType="map" parameterType="HashMap" >
+		SELECT 
+			A.IDX AS id
+			,A.IDX AS CONFER_IDX
+			,CODE
+			,A.NAME
+			,DATE
+			,AREA
+			,SUM(CASE WHEN SECTION='유료' THEN 1 ELSE 0 END) AS CHARGE
+			,SUM(CASE WHEN SECTION='무료' THEN 1 ELSE 0 END) AS FREE
+			,SUM(CASE WHEN SECTION != '' THEN 1 ELSE 0 END) AS CNT
+			,YEAR
+			FROM KMAC.DBO.CONFERENCEINFO A
+			LEFT OUTER JOIN KMAC.DBO.CONFERENCELIST B
+			ON A.IDX=B.CONFER_IDX
+			WHERE 1=1
+			<if test="YEAR != null and YEAR != '' ">
+			AND YEAR = #{YEAR}
+			</if>
+			GROUP BY A.IDX,CODE,A.NAME,DATE,AREA,YEAR
+	</select>
+	<select id="getConferenceYearList" resultType="map" parameterType="HashMap" >
+		SELECT 
+			DISTINCT YEAR AS YEARLIST 
+			FROM KMAC.DBO.CONFERENCEINFO
+			ORDER BY YEAR DESC
+	</select>
+	<select id="searchConferenceDetailList" resultType="map" parameterType="HashMap" >
+		SELECT 
+			IDX
+			,IDX AS id
+			,CONFER_IDX
+			,APPLICATION_YN
+			,COMPANY
+			,DEPT
+			,NAME
+			,TITLE
+			,PHONE
+			,EMAIL
+			,MOBILE
+			,SECTION
+			,SETTLE
+			,COST
+			,MEMO
+			,JOIN_YN
+			,EDITOR
+			,REGDATE
+		FROM KMAC.DBO.conferenceList
+		WHERE CONFER_IDX = #{CONFER_IDX}
+	</select>
+	
+	<insert id="insertConferenceDetailList"  parameterType="HashMap" >
+		INSERT INTO KMAC.DBO.conferenceList (CONFER_IDX,COMPANY,DEPT,NAME,SECTION,COST,MEMO,JOIN_YN,EDITOR,REGDATE,APPLICATION_YN,MOBILE,SETTLE)
+		VALUES(
+		#{CONFER_IDX},#{COMPANY},#{DEPT},#{NAME},#{SECTION},#{COST},#{MEMO},#{JOIN_YN},#{SSN},getDATE(),#{APPLICATION_YN},#{MOBILE},#{SETTLE}
+		);
+		 
+	</insert>
+	<update id="updateConferenceDetailList"  parameterType="HashMap" >
+		UPDATE KMAC.DBO.conferenceList 
+		SET COMPANY = #{COMPANY}
+		,DEPT = #{DEPT}
+		,NAME = #{NAME}
+		,SECTION = #{SECTION}
+		,COST = #{COST}
+		,MEMO = #{MEMO}
+		,JOIN_YN = #{JOIN_YN}
+		,APPLICATION_YN = #{APPLICATION_YN}
+		,MOBILE = #{MOBILE}
+		,SETTLE = #{SETTLE}
+		,UUSER = #{SSN}
+		,UDATE = getDATE()
+		WHERE idx = #{id}
+	</update>
+	<delete id="deleteConferenceDetailList" parameterType="HashMap" >
+		DELETE KMAC.DBO.conferenceList WHERE idx = #{id}
+	</delete>
+	
+	<insert id="insertConferenceList"  parameterType="HashMap" >
+		INSERT INTO KMAC.DBO.CONFERENCEINFO (NAME,AREA,DATE,YEAR)
+		VALUES(
+		#{NAME},#{AREA},#{DATE},#{YEAR}
+		);
+		 
+	</insert>
+	<update id="updateConferenceList"  parameterType="HashMap" >
+		UPDATE KMAC.DBO.CONFERENCEINFO
+		SET NAME = #{NAME}
+		,AREA = #{AREA}
+		,DATE = #{DATE}
+		,YEAR = #{YEAR}
+		
+		WHERE idx = #{id}
+	</update>
+	<delete id="deleteConferenceList" parameterType="HashMap" >
+		DELETE KMAC.DBO.CONFERENCEINFO WHERE idx = #{id}
+	</delete>
+	<select id="conferenctExpect" resultType="map" parameterType="HashMap" >
+	 SELECT 
+	 COUNT(CASE WHEN section = '유료' AND application_yn = '신청' THEN 1 END) AS chargeY
+	, COUNT(CASE WHEN section = '유료' and application_yn = '예정' THEN 1  END) AS chargeN
+	, COUNT(CASE WHEN section = '무료' and application_yn = '신청' THEN 1 END) AS NochargeY
+	, COUNT(CASE WHEN  section = '무료' and application_yn = '예정' THEN 1  END) AS NochargeN
+	, COUNT(CASE WHEN  section = '유료' and join_yn = 'Y'  THEN 1 END) AS chargejoin
+	, COUNT(CASE WHEN section = '무료' and join_yn = 'Y' THEN 1  END) AS Nochargejoin
+	, ISNULL(SUM(CASE WHEN join_yn='Y' and section='유료' THEN isnull(COST,0) END ),0) AS joinCOST
+	, SUM(CASE WHEN  section='유료' THEN isnull(COST,0) END ) AS expectCOST
+	 FROM KMAC.DBO.conferenceList 
+	 WHERE confer_idx = #{id}
+	</select>
+</mapper>

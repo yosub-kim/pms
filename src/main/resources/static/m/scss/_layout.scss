@@ -1,0 +1,951 @@
+@charset 'utf-8';
+
+body {
+    background-color: $c-bg;     
+}
+#wrap {
+    position: relative;   
+}
+
+#header {
+    @include fixed();
+    @include inner();
+    @include flex($jc: space-between);
+    @include border($bp: bottom);
+    z-index: 99;
+    height: 60px;
+    width: 100%;
+    background-color: $c-wt;   
+    .util {       
+        ul {            
+            @include flex($jc: space-between);
+            li {
+                margin-left: 10px;
+                position: relative;
+                i {
+                    font-size: 23px;
+                    &.mdi-home-outline {
+                        font-size: 28px;
+                        position: relative;
+                        top: 2px;
+                    }
+                }
+            }
+        }        
+        button {
+            i {
+                @include transition($t: 0.4s, $f: cubic-bezier(.46,.87,.18,1.01));
+                font-size: 22px;
+                color: $c-bk;
+            }
+            &:hover {
+                i { 
+                    @include transition();
+                    color: #006ec1;
+                }
+            }
+        }    
+    }
+}
+
+#container {
+    @include inner;
+    position: relative;
+    top: $header-size;
+    min-height: 100%;
+    max-height: 100%;
+    padding-bottom: 30px;
+}
+
+.sub_container {
+    position: relative;
+}
+
+.contents {
+    background-color: $c-bg;
+    position: relative;
+    top: 110px;
+    padding-bottom: 50px;
+}
+
+#wrap.main {
+    position: relative;
+    .logo {
+        position: relative;
+        top: 60px;
+        margin-left: inherit;
+    }
+}
+.logo {
+    width: 100%;
+    background: url('#{$url}img_logo.svg') center/auto 23px no-repeat;
+    text-align: center;
+    height: 23px;
+    margin-left: 29px;
+}
+.profile {
+    padding: 100px 0 40px;
+    @include flex();
+    p {
+        @include fontset($ff: 'NotoKrM', $fs: 18px,  $fc: $c-bk);
+        margin-left: 10px;
+        span {
+            @include fontset($fs: 16px, $ff: 'NotokrR', $fc: $c-bk-light);
+            margin-left: 5px;
+        }
+    }
+    .img {
+        @include flex();
+        @include radius(50%);
+        width: 50px;
+        height: 50px;
+        overflow: hidden;       
+        img {
+            width: 100%;
+            height: 100%;
+        }
+        i {
+            color: $c-wt;
+            padding-top: 5px;
+            font-size: 55px;            
+            background-color: $c-sub;
+        }
+    }
+}
+
+.subtit {
+    @include fontset($ff: 'NotoKrM', $fs: 18px,  $fc: $c-bk);
+    max-width: 350px;
+    margin: 0 auto 10px;
+    text-align: left;
+}
+
+.link_area {
+    max-width: 390px;
+    margin: 0 auto;
+    padding: 20px 15px 30px;
+    ul { 
+        @include flex($jc: space-between);
+        margin-bottom: 30px;
+        li {
+            min-width: 70px;
+            text-align: center;
+            button {
+                @include radius(20%);
+                position: relative;
+                width: 60px;
+                height: 60px;
+                background-color: $c-main;
+                i {
+                    color: $c-wt;
+                    font-size: 30px;         
+                }
+            }  
+            p {
+                font-size: 16px;
+                color: $c-bk;
+                margin-top: 10px;
+                letter-spacing: -0.025em;
+            }
+            span {
+                @include radius($r: 50%);
+                @include absolute($t: -10px, $r: -10px);
+                display: inline-block;
+                font-size: 12px;
+                color: $c-wt;         
+                background-color: $c-red;
+                height: 30px;
+                line-height: 30px;
+                min-width: 30px;
+            }
+        }
+        &:last-child li button {
+            background-color: $c-sub;
+        }
+
+    }
+}
+
+.dropdown {
+    padding-bottom: 20px;
+    li.on {
+        .drop_title {
+            background-color: $c-sub;
+            font-family: "NotoKrB";
+            &:after {
+                @include transition();
+                @include rotate(-180);
+            }
+        }
+    }
+    .drop_title {
+        @include transition($f: ease-in-out);
+        @include flex($jc: flex-start);
+        position: relative;
+        color: $c-wt;
+        background-color: $c-sub;
+        font-size: 16px;
+        z-index: 15;
+        width: 100%;
+        cursor: pointer;
+        padding: 15px 15px;
+        border-radius: 5px 5px 0 0; 
+        font-family: "NotoKrB";
+        &:after {            
+            @include absolute($t: 13px, $r: 15px);
+            @include fontset($ff: 'Material Design Icons', $fs: 20px, $fc: $c-wt);
+            @include transition();
+            @include rotate(0);
+            content: "\F0140";
+        }
+    }
+    .drop_data {
+        @include border($bp: all);
+        display: block;
+        position: relative;
+        width: 100%;
+        background-color: $c-wt;
+        z-index: 20;
+        padding: 20px 15px;
+        li {    
+            position: relative;       
+            p {      
+                position: relative;          
+                a {
+                    @include flex($jc: space-between);
+                    @include fontset($fs: 15px, $fc: $c-bk, $lh: 120%);
+                    height: 20px;
+                    span {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        &:first-child {
+                            width: calc(100% - 100px);
+                        }
+                        &:last-child {
+                            min-width: 100px;
+                            text-align: right;
+                            @include fontset($fs: 13px); 
+                        }
+                    }                    
+                }
+            }
+
+            &.new {         
+                padding-left: 20px;   
+                position: relative; 
+                display: block;        
+                &:before {
+                    content: 'N';
+                    @include fontset($ff: 'NotoKrB', $fs: 9px, $fc: $c-wt);      
+                    margin-right: 3px;
+                    background-color: #ffb630;
+                    @include radius(100%);
+                    text-align: center;
+                    display: inline-block;
+                    vertical-align: middle;
+                    height: 17px;
+                    width: 17px;
+                    line-height: 17px;
+                    position: absolute;
+                    top: 1.5px;
+                    left: 0;
+                }
+            }
+        }
+        li:not(:last-child) {
+            margin-bottom: 15px;
+        }
+    }
+    
+}
+
+.schedule_area {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    @include border($bp: all);
+    @include radius();
+    .dropdown {
+        padding-bottom: 0;
+        li {
+            font-family: "NotoKrR";
+            &:not(:last-child) {
+                margin-bottom: 15px;
+            }
+        }
+        li.on {
+            .drop_title {
+                font-family: "NotoKrR";
+                background-color: $c-wt;
+                &:after {
+                    @include transition();
+                    @include rotate(-180);
+                }
+            }
+        }
+    }
+    .drop_title {
+        color: $c-bk;
+        background-color: $c-wt;
+        font-size: 15px;
+        @include border($bp: all);
+        @include radius();
+        padding: 10px 15px;
+        i {
+            font-size: 22px;
+            margin-right: 10px;
+        }
+        span {
+            display: inline-block;
+            color: $c-main;
+            margin-left: 5px;
+        }
+        &:after {
+            color: $c-bk-light;
+        }
+    }
+    .drop_data {
+        border: 0;
+        padding: 20px 15px 10px 20px;
+        max-height: 105px;
+        li {
+            a {
+                @include flex($jc: flex-start);
+                
+                p {
+                    font-size: 14px;
+                    color: $c-bk;
+                    &.time {
+                        color: $c-main;
+                        margin-right: 15px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.topbar {
+    @include fixed($t: 60px);
+    @include flex($jc: space-between);
+    @include inner();
+    z-index: 50;
+    width: 100%;
+    height: 50px;    
+    background-color: $c-bg;
+    .btn {
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        p {
+            margin-left: 0;
+            color: #fff;
+            font-size: 14px;
+        }
+    }
+    > div {
+        @include flex($jc: flex-start);
+    }
+    .arrowL {        
+        i {
+            font-size: 25px;
+            color: $c-sub;
+            margin-left: -10px;
+        }      
+    }
+    p {
+        @include fontset($ff: 'NotoKrB', $fs: 16px, $fc: $c-title);  
+        margin-left: 10px;
+        white-space:nowrap;
+    }
+    ul {
+        @include flex();
+        li {
+            button {
+                margin-left: 10px;
+                i {
+                    font-size: 18px;
+                    color: $c-wt;
+                }
+            }
+        }
+    }
+    .chek_ui {
+        margin-bottom: 0;
+    }
+}
+
+/* paging */
+.paging {
+    position: relative;
+    width: 100%;
+    margin: 20px 0 0 0;
+    ul {
+        @include flex();
+        li {
+            a {
+                display: inline-block;
+                font-size: 14px; 
+                width: 25px; 
+                height: 25px; 
+                border-radius: 100%; 
+                text-align: center; 
+                line-height: 25px; 
+                color: #888888; 
+                @include transition();
+                margin: 0 5px; 
+                position: relative;
+                &.current {
+                    background-color: $c-sub;
+                    color: #fff;
+                }
+                &:not(.current):hover {
+                    background-color: $c-sub;
+                    color: #fff;
+                }
+                &.icon {
+                    font-size: 0;
+                    i {
+                        font-size: 20px; 
+                        color: $c-sub 
+                    }
+                }
+                &:hover.icon i {
+                    color: #fff;
+                }    
+            }
+        }        
+    }
+}
+
+.btn_area {
+    @include flex($ai: center, $jc: center, $fw: wrap, $fd: row);    
+}
+
+.btn {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 0;
+    @include transition();
+    overflow: hidden;
+    vertical-align: middle;
+    z-index: 1;
+    padding: 17px ;
+    @include radius();
+    font-size: 16px;
+    line-height: 100%;
+    width: 100%;
+    i {
+        color: $c-wt; 
+    }
+    &.c-main {
+        background-color: $c-main;
+        color: $c-wt;
+        
+    }
+    &.c-sub {
+        background-color: $c-sub;
+        color: $c-wt;
+    }
+    &.c-red {
+        background-color: $c-red;
+        color: $c-wt;
+    }
+    &.c-grey {
+        background-color: #f0f6ff;
+        color: #424242;
+    }
+    &.c-disable {
+        background-color: #b2b2b2;
+        color: $c-wt;
+        cursor: default;
+    }
+
+    &.line.c-red {
+        background-color: inherit;
+        color: $c-red;
+        i {
+            color: $c-red; 
+        }
+    }
+    &.line.c-sub {
+        background-color: inherit;
+        color: $c-sub;
+        i {
+            color: $c-sub; 
+        }
+    }
+}
+
+.chek_ui {
+    @include flex($jc: flex-start);
+    height: 38px;
+    margin-bottom: 15px;
+    width: 100%;
+    li {
+        &:not(:first-child) {
+          margin-left: 20px
+        }
+        @include flex($jc: flex-end);
+        position: relative;
+        label {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 100%;
+            width: auto;
+            p {
+                display: inline-block;
+                vertical-align: middle;
+                line-height: 100%; 
+                @include fontset($fs: 15px);
+                width: auto;
+                padding-left: 5px;
+                position: relative;
+                top: 0;
+                margin-left: 0;
+                word-break: keep-all;
+            }
+        }       
+    }
+    .btn_radio, 
+    .btn_check {
+        position: absolute; 
+        width: 1px; 
+        height: 1px; 
+        padding: 0; 
+        margin: -1px; 
+        overflow: hidden; 
+        clip: rect(0,0,0,0); 
+        border: 0;
+        + label {
+            position: relative; 
+            cursor: pointer; 
+            display: block;
+            @include transition();
+            color: $c-bk;
+            &:before {
+                display: inline-block; 
+                font-family: "Material Design Icons"; 
+                vertical-align: middle; 
+                font-size: 20px; 
+                font-weight: normal; 
+                @include transition();
+            }
+        }
+        &:checked {
+            + label {
+                &:before {
+                    color: $c-bk;
+                }
+            }
+        }
+    }
+    .btn_check {
+        + label {            
+            &:before {
+                content: "\F0131";           
+            }
+        }        
+        &:checked {
+            + label {
+                &:before {
+                    content: "\F0856"; 
+                }
+            }
+        }
+    }
+    .btn_radio {
+        + label {
+            &:before {
+                content: "\F043D"; 
+            }
+        }
+        &:checked {
+            + label {
+                &:before {
+                    content: "\F043E"; 
+                }
+            }
+        }
+    }    
+    p.label {
+        @include fontset($fs: 15px);
+        word-break: keep-all;
+    }
+
+    &.a-c {
+        @include flex($jc: center);
+    }
+}
+ul.accordions {
+    &.sc {
+        max-height: 1280px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+    li {
+        width: 100%;
+        overflow: hidden;
+        margin-bottom: 15px;
+        .accordion-label {
+            @include flex($jc: space-between);      
+            @include border($bp: bottom, $bw: 2px, $bc: $c-sub);
+            @include fontset($fs: 15px);
+            padding: 10px 15px; 
+            cursor: pointer;      
+            &:after {
+                content: "\276F";
+                width: 24px;
+                height: 24px;
+                text-align: center;
+                // @include transition();
+                @include rotate(90);
+            }
+        }
+        .accordion-content {
+            max-height: 0;
+            padding: 0 15px;
+            color: #2c3e50;
+            // -webkit-transition: all .25s cubic-bezier(0, 1, 0, 1); 
+            // transition: all .25s cubic-bezier(0, 1, 0, 1);
+            .month_box {
+                @include border($bp: all);          
+                .today {
+                    a {
+                        color: #fff;
+                    }
+                    &:before {
+                        content: '';
+                        @include absolute($l: 50%, $t: 20px);
+                        transform: translateX(-50%);
+                        width: 30px; 
+                        height: 30px;
+                        padding: 0;
+                        border-radius: 100%;
+                        background: $c-main;
+                    }
+                }
+            }
+            .time_select {
+                @include flex($jc: flex-end, $fw: wrap);
+                .chek_text {      
+                    @include flex($jc: space-between);
+                    width: 100px;
+                    margin-bottom: 15px; 
+                    li { 
+                        margin-bottom: 0;
+                        p {
+                            position: relative;
+                            @include fontset($fs: 15px); 
+                            padding-left: 15px;
+                            &:before {
+                                content: "";
+                                @include absolute($l: 0, $t: 3px);
+                                width: 10px;
+                                height: 10px;
+                                background-color: $c-sub;
+                            }
+                            &.disable:before {
+                                background-color: $c-gry-dark;
+                            }                            
+                        }
+                    }                  
+                }
+                .list {
+                    width: 100%;
+                    p {
+                        @include fontset($fs: 15px);
+                        margin-bottom: 15px;
+                    }
+                    ul {
+                        @include flex($jc: flex-start);
+                        li {                            
+                            width: 99px;
+                            min-width: 99px;
+                            height: 40px;
+                            text-align: center;
+                            background-color: #dce9fa;
+                            @include fontset($fs: 15px, $lh: 40px); 
+                            @include border($bp: all, $bc: $c-sub);
+                            a {
+                                display: inline-block;
+                                width: 100%;
+                                @include fontset($fs: 15px, $lh: 40px);  
+                            }
+                            &.disable {
+                                background-color: #eeeeee;
+                                color: #9e9e9e;
+                                @include border($bp: all, $bc: $c-gry-dark);
+                            }
+                            &:not(:first-child) {
+                                margin-left: 15px;
+                            }  
+                            &.on {
+                                background-color: $c-sub;
+                                a {
+                                    color: #fff;
+                                }
+                            }                      
+                        }
+                    }
+                }
+            }
+        }
+        input {
+            position: absolute;
+            opacity: 0;
+            z-index: -1;
+            &:checked + .accordion-label {
+                &:after {
+                    @include rotate(-90);
+                }
+            }
+            &:checked ~ .accordion-content {
+                max-height: 100%;
+                padding: 15px 0;
+                // webkit-transition: all .35s ease;
+                // transition: all .35s ease;
+            } 
+        }
+    }
+    &.bg {
+        li {
+            margin-bottom: 0;
+            .accordion-label {
+                @include flex($jc: flex-start);  
+                background-color: $c-sub;
+                border-radius: 5px 5px 0 0;
+                color: #fff;
+                text-align: right;
+                position: relative;
+                &:after {
+                    position: absolute;
+                    right: 15px;
+                }
+                p {
+                    position: relative;
+                    top: -18px;
+                    left: 0;
+                    min-width: 110px;
+                    margin: 0 5px;
+                    z-index: 8;              
+                    > input {
+                        @include absolute($t: 5px, $l: 0);               
+                        color: #fff;
+                        width: 100%;
+                        padding-right: 8px;
+                        text-align: right;
+                        opacity: 1;
+                        z-index: 10;
+                        background-color: $c-sub;
+                        border: 0;
+                        border-radius: 0;
+                        height: inherit;
+                        @include border($bp: bottom, $bw: 2px, $bc: $c-wt);
+                        &::placeholder {
+                            color: $c-wt;
+                            opacity: 1
+                        }
+                    }
+                }
+            }
+            .accordion-content {
+                @include border($bp: all);
+                margin-top: -2px;
+                background-color: #fff;
+                .chek_ui {
+                    padding: 0 15px;
+                    height: 46px;
+                    margin-bottom: 0;
+                    li {
+                        @include flex($jc: flex-start);   
+                    }
+                }
+            }            
+        }
+        input {
+            &:checked ~ .accordion-content {
+                margin-top: 0;
+                padding: 0;
+            } 
+        }        
+    }
+    &.edit {
+       * {
+            transition: none;
+       }
+        li {
+            padding: 0;
+            .accordion-label {
+                @include flex($jc: flex-start);  
+                background-color: $c-wt;
+                color: $c-main;
+                @include border($bp: top, $bc: $c-line);
+                border-bottom: 0;
+                padding: 14px;
+                border-radius: 0;
+                &:after {
+                    content: "\F0419";
+                    font-family: "Material Design Icons";
+                    font-size: 20px;
+                    color: $c-sub;
+                    @include rotate(0);
+                }
+            }
+            .accordion-content {
+                margin-top: -4px;         
+            }
+        }
+        input {
+            &:checked ~ .accordion-content {
+                padding: 15px;
+                border: 0;
+                @include border($bp: top, $bc: $c-line);
+                ul {
+                    @include flex($jc: space-between);  
+                    &:not(:first-child) {
+                        margin-top: 10px;
+                    }
+                    li {
+                        &:not(:first-child) {
+                            margin-left: 10px;
+                        }
+                        p {
+                            @include fontset($fs: 13px, $fc: $c-bk-light);
+                        }
+                        input[type="text"] {
+                            margin-bottom: 0;
+                            @include border($bp: all, $bc: $c-line);
+                            position: inherit;
+                            opacity: 1;
+                            z-index: 1;
+                            margin-top: 10px;
+                            text-align: right;
+                            font-size: 13px;
+                            &::placeholder {
+                                color: $c-sub;
+                                opacity: 1;
+                                font-size: 13px;
+                            }
+                            &:focus {
+                                border-color: $c-main;
+                            }  
+                        }
+                        select {
+                            margin-top: 10px;
+                            margin-bottom: 0;
+                            font-size: 13px;
+                        }
+                    }
+                }
+            }
+            &:checked {
+                + .accordion-label:after {
+                    content: "\F0377";
+                    color: $c-red;
+                    @include rotate(0);
+                }
+            }
+        }
+    }
+}
+
+
+
+.ico {
+    position: relative; 
+    padding-left: 15px;
+    &:before {
+        content: ""; 
+        position: absolute; 
+        top: 10px; left: 0; 
+        width: 10px; 
+        height: 10px; 
+        border-radius: 100%;
+    }
+    &.ico-1 {
+        &:before {
+            background-color: #89cff0;
+        }
+    }
+    &.ico-2 {
+        &:before {
+            background-color: #8a86d6;
+        }
+    }
+    &.ico-3 {
+        &:before {
+            background-color: #29ccd3;
+        }
+    }
+    &.ico-4 {
+        &:before {
+            background-color: #f9c93c;
+        }
+    }
+    &.ico-5 {
+        &:before {
+            background-color: #f9993c;
+        }
+    }
+    &.ico-6 {
+        &:before {
+            background-color: #f191ab;
+        }
+    }
+    &.ico-7 {
+        &:before {
+            background-color: #c0c6db;
+        }
+    }
+}
+
+.fixed_footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    > .date {
+        background-color: $c-sub;
+        padding: 15px 20px;
+        p {
+            color: #fff;
+            font-size: 15px;
+        }
+    }
+    .btn_area {
+        padding: 20px;
+        background-color: #fff;
+        .btn {
+            width: 100%;
+            background-color: $c-main;
+            font-size: 16px;
+            color: #fff;
+            &.disable {
+                background-color: $c-gry-dark;
+                cursor: default;
+            }
+        }
+    }    
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    border-top: 1px solid $c-line;
+    @include border($bp: top);
+    z-index: 99;
+    width: 100%;
+    height: 30px;
+    background-color: $c-wt;   
+    p {
+        font-size: 12px;
+        color: #888888;
+        padding: 0 20px;
+        line-height: 30px;
+    }
+}

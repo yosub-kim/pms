@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.schedule.mapper.PersonalScheduleMapper">
+
+	<insert id="createPersonalSchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		INSERT INTO schedule(
+			ssn, [year], [month], [day], 
+			seq, 
+			startHour, startMin, endHour, endMin,
+			type, content, customerName, relationUser,
+			place, secretYN, googleSyncId, workType, createDate)
+		VALUES(
+			#{ssn}, #{year}, FORMAT(#{month}, '00'), FORMAT(#{day}, '00'),			
+			dbo.getScheduleSeq(#{ssn}, #{year}, #{month}, #{day}),
+			#{startHour}, #{startMin}, #{endHour}, #{endMin},
+			#{type}, #{content}, #{customerName}, #{relationUser},
+			#{place}, #{secretYN}, #{googleSyncId}, #{workType}, GETDATE()) 	
+	</insert>
+	
+	<select id="getPersonalScheduleByMonth" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		select YEAR, MONTH, Day, ssn, type, case when type in ('내부일정','외부일정','교육참석','기타') 
+then startHour + ':' + startMin+ ' ' else '' end +content as content, idx, MYSCHEDULE
+ 		from (
+			/**------------------------------------------------------------------------------------------**/
+			
+  			SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], CASE WHEN LEN(DATENAME(DAY, c.info_date)) = 1 THEN '0'+DATENAME(DAY, c.info_date) ELSE DATENAME(DAY, c.info_date) END as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject content, convert(bigint, idx) idx, '99' as startHour, '99' as startMin, '99' as endHour, '99' as endMin, 'Y' AS MYSCHEDULE
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+			<if test="keyword != null and keyword != '' ">
+				AND upper(subject) like upper('%${keyword}%')
+			</if>						
+			AND picker_ssn = '${ssn}'
+			AND DATENAME(YEAR, c.info_date) = ${year}				
+			AND DATENAME(month, c.info_date) = ${month}
+		
+			UNION ALL
+			
+			SELECT * FROM (
+				SELECT top(select count(*) from schedule) year, month, day, SD.SSN, 
+					(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+						(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+					end) type, content, convert(bigint, SD.idx) idx, startHour, startMin, endHour, endMin
+					, CASE WHEN SSL.IDX IS NULL THEN 'Y' ELSE 'N' END AS MYSCHEDULE		
+				FROM  Schedule SD 
+				LEFT JOIN (SELECT SSN,IDX FROM ScheduleShareList WHERE SSN = '${ssn}' AND OWNERSSN != '${ssn}') SSL
+				ON SD.IDX = SSL.IDX
+				where (SD.SSN = '${ssn}' OR SSL.SSN = '${ssn}')
+				<if test="secretYN != null and secretYN != '' ">	
+					AND (secretYN = '${secretYN}')
+				</if>
+				AND (year = ${year})        
+				AND (month = ${month})  
+				<if test="keyword != null and keyword != '' ">			
+					AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%${keyword}%') )
+				</if>
+				ORDER BY year, month, day, startHour, startMin, endHour, endMin, SD.idx
+			)q   	    
+			
+			UNION ALL
+
+			SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, projectName, convert(bigint, (projectCode+''+year+''+month+''+day)) as idx, '99' as startHour, '99' as startMin, '99' as endHour, '99' as endMin, 'Y' AS MYSCHEDULE
+			from (
+				SELECT  '1'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn          
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				AND (PRD.year = ${year})
+				AND (PRD.month = ${month})	
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if>  
+				UNION ALL
+				SELECT  '2'+PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn	              
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				AND (PRD.year = ${year})
+				AND (PRD.month = ${month}) 
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if>
+				UNION ALL
+				SELECT	'3'+BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+				<if test="keyword != null and keyword != '' ">
+					and upper(subject) like upper('%${keyword}%')
+				</if>
+				AND WRITERID = '${ssn}'
+				AND datename(YEAR, workDate) = ${year}
+				AND datename(MONTH, workDate) =  ${month}
+ 			) a
+			/**------------------------------------------------------------------------------------------**/
+ 		) res     
+        order by day, startHour, startMin, endHour, endMin,
+        case when type = '외부일정' then 1 
+					when type = '내부일정' then 2 
+					when type = '고객정보' then 3
+					when type = '교육참석' then 4 
+					when type = '재택근무' then 5 
+					when type = '프로젝트 투입' then 6
+					when type = '휴가' then 7 
+				end
+	</select>
+	
+	<select id="getPersonalScheduleSearchByMonth" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		select    
+ 			YEAR, MONTH, Day, ssn, (case type when 'Up-day' then '재택근무' else type end) as type, content, startHour, startMin, endHour, endMin, customerName, idx
+ 		from (
+			/**------------------------------------------------------------------------------------------**/
+			
+  			SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], DATENAME(DAY, c.info_date) as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject as content, '-' as startHour, '-' as startMin, '-' as endHour, '-' as endMin, '-' as customerName, convert(bigint, idx) idx
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+			<if test="keyword != null and keyword != '' ">
+				AND upper(subject) like upper('%${keyword}%')
+			</if>						
+			AND picker_ssn = '${ssn}'
+		
+			UNION ALL
+			
+			SELECT  year, month, day, ssn, 
+				(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+					(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+				end) type, content, startHour, startMin, endHour, endMin, customerName, convert(bigint, idx) idx		
+			FROM  Schedule 
+			where ssn = '${ssn}'
+			<if test="secretYN != null and secretYN != '' ">	
+				AND (secretYN = '${secretYN}')
+			</if>  
+			<if test="keyword != null and keyword != '' ">			
+				AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%${keyword}%') )
+			</if>   	    
+			
+			UNION ALL
+
+			SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, projectName, '-' as startHour, '-' as startMin, '-' as endHour, '-' as endMin, '-' as customerName, convert(bigint, (projectCode+''+year+''+month+''+day)) as idx
+			from (
+				SELECT  '1'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn          
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if>  
+				UNION ALL
+				SELECT  '2'+PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn	              
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if>
+				UNION ALL
+				SELECT	'3'+BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+				<if test="keyword != null and keyword != '' ">
+					and upper(subject) like upper('%${keyword}%')
+				</if>
+				AND WRITERID = '${ssn}'
+ 			) a
+			/**------------------------------------------------------------------------------------------**/
+ 		) res 
+ 		where
+ 	<![CDATA[	(YEAR+MONTH) BETWEEN '${startYear}' + (REPLICATE('0', 2 - LEN('${startMonth}')) + '${startMonth}')   AND '${endYear}' + (REPLICATE('0', 2 - LEN('${endMonth}')) + '${endMonth}') ]]>
+	
+        order by year desc, month desc, day desc, startHour desc, startMin desc, endHour desc, endMin desc, case when type = '외부일정' then 1 
+					when type = '내부일정' then 2 
+					when type = '고객정보' then 3
+					when type = '교육참석' then 4 
+					when type = '재택근무' then 5 
+					when type = '프로젝트 투입' then 6
+					when type = '휴가' then 7 
+				end, idx 
+	</select>
+	
+	<select id="getPersonalScheduleByDate" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		select    *
+ 		from (
+			/**------------------------------------------------------------------------------------------**/
+			
+  			SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], DATENAME(DAY, c.info_date) as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject content, idx,
+					null place, customerName, null startHour, null startMin, null endHour, null endMin, null relationUser, null seq, null secretYN, null googleSyncId,
+					null workType, 'N' as editable, 'Y' AS MYSCHEDULE, '' AS NAME, '' AS DEPTNAME
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+			<if test="keyword != null and keyword != '' ">
+				AND upper(subject) like upper('%${keyword}%')
+			</if>						
+			AND picker_ssn = '${ssn}'
+			AND DATENAME(YEAR, c.info_date) = ${year}				
+			AND DATENAME(month, c.info_date) = ${month}
+			AND DATENAME(day, c.info_date) = ${day}
+		
+			UNION ALL
+			
+			SELECT * FROM (
+				SELECT  top(select count(*) from schedule) year, month, day, SD.ssn, 
+				(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+					(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+				end) type, content, SD.idx, 
+				place, customerName, startHour, startMin, endHour, endMin, relationUser, SD.seq, secretYN, googleSyncId, 
+				(case when workType='E' then '외부일정' when workType='I' then '내부일정' end) workType, 'Y' as editable
+				, CASE WHEN SSL.IDX IS NULL THEN 'Y' ELSE 'N' END AS MYSCHEDULE, EP.NAME, EP.DEPTNAME	
+				FROM  Schedule SD 
+				LEFT JOIN (SELECT SSN,IDX FROM ScheduleShareList WHERE SSN = '${ssn}' AND OWNERSSN != '${ssn}') SSL
+				ON SD.IDX = SSL.IDX
+				LEFT JOIN EXPERTPOOL AS EP
+				ON SD.SSN = EP.SSN
+				where (SD.SSN = '${ssn}' OR SSL.SSN = '${ssn}')
+				<if test="keyword != null and keyword != '' ">				
+					AND (upper(content) like upper('%${keyword}%') or upper(customerName) like upper('%${keyword}%'))
+				</if>
+				<if test="secretYN != null and secretYN != '' ">	
+					AND (upper(secretYN) = upper('${secretYN}'))
+				</if>
+				AND (year = ${year})        
+				AND (month = ${month})     	    
+				AND (day = ${day})   
+				order by year, month, day, startHour, startMin, endHour, endMin, SD.idx
+			)q  	    
+			
+			UNION ALL
+
+			SELECT year, month, day, chargeSsn as ssn, type, projectName, projectCode as idx,
+					null place, customerName, null startHour, null startMin, null endHour, null endMin, null relationUser, null seq, null secretYN, null googleSyncId, 
+					null workType, 'N' as editable, 'Y' AS MYSCHEDULE, '' AS NAME, '' AS DEPTNAME
+			from (
+				SELECT  '프로젝트' as type, PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn, p.customerName          
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				AND (PRD.year = ${year})
+				AND (PRD.month = ${month})	 	    
+				AND (PRD.day = ${day})   
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if> 
+				UNION ALL
+				SELECT  '프로젝트' as type, PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn, p.customerName	              
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				AND (PRD.year = ${year})
+				AND (PRD.month = ${month})     
+				AND (PRD.day = ${day})  
+				<if test="keyword != null and keyword != '' ">
+					and upper(p.customerName) like upper('%${keyword}%')
+				</if>  
+				UNION ALL
+				SELECT	'프로젝트' as type, BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn, null as customerName
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+				<if test="keyword != null and keyword != '' ">
+					and upper(subject) like upper('%${keyword}%')
+				</if>
+				AND WRITERID = '${ssn}'
+				AND datename(YEAR, workDate) = ${year}
+				AND datename(MONTH, workDate) =  ${month}
+				AND datename(DAY, workDate) =  ${day}
+ 			) a
+			/**------------------------------------------------------------------------------------------**/
+ 		) res     
+        order by  day, case when type = '외부일정' then 1 
+					when type = '내부일정' then 2 
+					when type = '고객정보' then 3
+					when type = '교육참석' then 4 
+					when type = '재택근무' then 5 
+					when type = '프로젝트 투입' then 6
+					when type = '휴가' then 7 
+				end, startHour, startMin, endHour, endMin 
+	</select>
+
+	<select id="getPersonalSchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		SELECT 
+		SD.*
+		,ERP.NAME AS name
+		,ERP.DEPTNAME AS deptname 
+		, CASE WHEN (SELECT COUNT(*) FROM ScheduleShareList WHERE idx = #{idx}) > 0 THEN 'Y' ELSE 'N' END  AS ShareCheck
+		FROM schedule SD
+		INNER JOIN EXPERTPOOL ERP
+		ON SD.SSN = ERP.SSN
+			where 1=1
+			AND SD.idx = #{idx} 
+	</select>
+	<select id="getPersonalScheduleByProject" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+			SELECT year, month, day, chargeSsn as ssn, type, projectName content, projectCode+''+year+''+month+''+day  as idx,
+					null place, customerName, null startHour, null startMin, null endHour, null endMin, null relationUser, null seq, null secretYN, null googleSyncId, 
+					null workType, 'N' as editable
+			from (
+				SELECT  '프로젝트' as type, '1'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn, p.customerName          
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				UNION ALL
+				SELECT  '프로젝트' as type, '2'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn, p.customerName	              
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = '${ssn}'
+				UNION ALL
+				SELECT	'프로젝트' as type, '3'+BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn, null as customerName
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+				AND WRITERID = '${ssn}'
+ 			) a
+		   where projectCode+''+year+''+month+''+day	=	'${idx}'
+	</select>
+	<select id="getPersonalScheduleBycustomer_pickers" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+  			SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], DATENAME(DAY, c.info_date) as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject content, idx,
+					null place, customerName, null startHour, null startMin, null endHour, null endMin, null relationUser, null seq, null secretYN, null googleSyncId,
+					null workType, 'N' as editable
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+		   and idx		=	${idx} 
+		   and p.picker_ssn = '${ssn}'
+	</select>
+	
+	<update id="updatePersonalSchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		update	schedule 
+		   set	startHour		= #{startHour}, 
+				startMin		= #{startMin}, 
+				endHour			= #{endHour}, 
+				endMin			= #{endMin},
+				type			= #{type}, 
+				content			= #{content}, 
+				customerName	= #{customerName}, 
+				relationUser	= #{relationUser},
+				place			= #{place}, 
+				secretYN		= #{secretYN}, 
+				googleSyncId	= #{googleSyncId}, 
+				workType		= #{workType},
+				year			= #{year}, 
+				month			= FORMAT(#{month}, '00'), 
+				day				= FORMAT(#{day}, '00')
+		 where	idx	=	#{idx}
+	</update>
+	
+	
+
+	<delete id="removePersonalSchedule" parameterType="java.util.HashMap">
+		delete from schedule 
+		where	idx	=	#{idx}
+	</delete>
+	
+	<select id="searchScheduleIDX" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  		SELECT MAX(IDX) AS IDX FROM schedule WHERE SSN = #{OWNERSSN}
+	</select>
+	<delete id="shareListDelete" parameterType="java.util.HashMap" statementType="CALLABLE">
+		DELETE FROM ScheduleShareList WHERE idx = #{idx}
+	</delete>
+	<insert id="shareListInsert" parameterType="java.util.HashMap" statementType="CALLABLE">
+		INSERT INTO ScheduleShareList (idx,OWNERSSN,SSN,CREATEDATE) VALUES (#{idx},#{OWNERSSN},#{SSN},GETDATE())
+	</insert>
+	<select id="searchShareList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+  		SELECT 
+  			EP.SSN AS id
+			,EP.SSN AS SSN
+			,EP.NAME AS NAME
+			,EP.DEPTNAME AS DEPTNAME
+			,EP.EMAIL AS EMAIL
+  		FROM ScheduleShareList SSL
+  		INNER JOIN EXPERTPOOL EP
+  		ON SSL.SSN = EP.SSN 
+  		WHERE IDX = #{idx}
+	</select>
+	<select id="searchOwnerInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT * FROM EXPERTPOOL WHERE SSN = #{OWNERSSN}
+	</select>
+	<select id="searchScheduleList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], CASE WHEN LEN(DATENAME(DAY, c.info_date)) = 1 THEN '0'+DATENAME(DAY, c.info_date) ELSE DATENAME(DAY, c.info_date) END as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject content, convert(bigint, idx) idx, '08' as startHour, '30' as startMin, '17' as endHour, '30' as endMin, 'Y' AS MYSCHEDULE
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+				
+			AND picker_ssn = #{SSN}
+			AND DATENAME(YEAR, c.info_date) = #{year}			
+			AND DATENAME(month, c.info_date) = CASE WHEN LEN(#{month}) > 1 THEN #{month} ELSE '0'+#{month} END 
+			union All
+				SELECT top(select count(*) from schedule) year, month, day, SD.SSN, 
+					(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+						(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+					end) type, content, convert(bigint, SD.idx) idx
+					, CASE WHEN Rtrim(startHour) = '' THEN '08' ELSE startHour END AS startHour
+					, CASE WHEN Rtrim(startMin) = '' THEN '30' ELSE startMin END AS startMin
+					, CASE WHEN Rtrim(endHour) = '' THEN '17' ELSE endHour END AS endHour
+					, CASE WHEN Rtrim(endMin) = '' THEN '30' ELSE endMin END AS endMin
+					, CASE WHEN SSL.IDX IS NULL THEN 'Y' ELSE 'N' END AS MYSCHEDULE		
+				FROM  Schedule SD 
+				LEFT JOIN (SELECT SSN,IDX FROM ScheduleShareList WHERE SSN = #{SSN} AND OWNERSSN != #{SSN}) SSL
+				ON SD.IDX = SSL.IDX
+				where (SD.SSN = #{SSN} OR SSL.SSN = #{SSN})
+				AND (SD.year = #{year})
+				AND (SD.month = CASE WHEN LEN(#{month}) > 1 THEN #{month} ELSE '0'+#{month} END)	
+			union All
+			SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, projectName, convert(bigint, (projectCode+''+year+''+month+''+day)) as idx, '08' as startHour, '30' as startMin, '17' as endHour, '30' as endMin, 'Y' AS MYSCHEDULE
+			from (
+				SELECT  '1'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = #{SSN}
+				AND (PRD.year = #{year})
+				AND (PRD.month = CASE WHEN LEN(#{month}) > 1 THEN #{month} ELSE '0'+#{month} END )	
+
+				UNION ALL
+				SELECT  '2'+PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = #{SSN}
+				AND (PRD.year = #{year})
+				AND (PRD.month = CASE WHEN LEN(#{month}) > 1 THEN #{month} ELSE '0'+#{month} END ) 
+				UNION ALL
+				SELECT	'3'+BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+			
+				AND WRITERID = #{SSN}
+				AND datename(YEAR, workDate) = #{year}
+				AND datename(MONTH, workDate) =  CASE WHEN LEN(#{month}) > 1 THEN #{month} ELSE '0'+#{month} END 
+			) a
+	</select>
+	<select id="checkSchedule" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT COUNT(*) AS CNT FROM (
+		SELECT DATENAME(YEAR, c.info_date) as [year], DATENAME(MONTH, c.info_date) as [month], CASE WHEN LEN(DATENAME(DAY, c.info_date)) = 1 THEN '0'+DATENAME(DAY, c.info_date) ELSE DATENAME(DAY, c.info_date) END as [day], 		
+					p.picker_ssn as ssn, '고객정보' as type, subject content, convert(nvarchar, idx) idx, '08' as startHour, '30' as startMin, '17' as endHour, '30' as endMin, 'Y' AS MYSCHEDULE
+			FROM  Customer c, customer_pickers p				
+			WHERE 1=1							 				
+			AND	c.idx = p.customer_idx						
+			AND	c.embbsMethod = '1'	
+				
+			AND picker_ssn = #{SSN}
+			
+			union All
+				SELECT top(select count(*) from schedule) year, month, day, SD.SSN, 
+					(case when type in ('휴가','개인휴무', '교육참석', 'Up-day') then type  else 
+						(case when workType='E' then '외부일정' when workType='I' then '내부일정' end)
+					end) type, content, convert(nvarchar, SD.idx) idx
+					, CASE WHEN Rtrim(startHour) = '' THEN '08' ELSE startHour END AS startHour
+					, CASE WHEN Rtrim(startMin) = '' THEN '30' ELSE startMin END AS startMin
+					, CASE WHEN Rtrim(endHour) = '' THEN '17' ELSE endHour END AS endHour
+					, CASE WHEN Rtrim(endMin) = '' THEN '30' ELSE endMin END AS endMin
+					, CASE WHEN SSL.IDX IS NULL THEN 'Y' ELSE 'N' END AS MYSCHEDULE		
+				FROM  Schedule SD 
+				LEFT JOIN (SELECT SSN,IDX FROM ScheduleShareList WHERE SSN = #{SSN} AND OWNERSSN != #{SSN}) SSL
+				ON SD.IDX = SSL.IDX
+				where (SD.SSN = #{SSN} OR SSL.SSN = #{SSN})
+				
+			union All
+			SELECT year, month, day, chargeSsn as ssn, '프로젝트' as type, projectName, convert(nvarchar, (projectCode+''+year+''+month+''+day)) as idx, '08' as startHour, '30' as startMin, '17' as endHour, '30' as endMin, 'Y' AS MYSCHEDULE
+			from (
+				SELECT  '1'+PRD.projectCode projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn
+				FROM    ProjectReportDetail AS PRD 	              
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = #{SSN}
+				
+				UNION ALL
+				SELECT  '2'+PRD.projectCode, p.projectName, PRD.year, PRD.month, PRD.day, PRD.chargeSsn
+				FROM    ProjectManpowerDetail AS PRD
+				INNER JOIN Project AS P
+				ON PRD.projectCode = P.projectCode	
+				where chargeSsn = #{SSN}
+
+				UNION ALL
+				SELECT	'3'+BBSID as projectCode, subject as projectName, datename(yy,workDate) year, datename(mm, workDate) as month, right(workDate, 2) as day, WRITERID as chargeSsn
+				FROM standardbbs
+				WHERE refSchedule = 'Y'
+				AND WRITERID = #{SSN}
+			) a
+		) AA
+		WHERE CONVERT(nvarchar,AA.idx) = #{idx} AND AA.SSN = #{SSN}
+	</select>
+</mapper>

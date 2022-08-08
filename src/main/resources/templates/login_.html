@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<body onload="document.frm.submit();">
+Login in Progress
+	<form action="/_new/doLogin" method="POST" name="frm" style="display: none;">
+		<input type="hidden" name="username" th:value="${id}">
+		<input type="hidden" name="password" th:value="${pw}">
+		<input type="checkbox" id="remember-me" name="remember-me" checked/>
+	</form>
+
+	<div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
+		<span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></span>
+	</div>
+</body>
+
+</html>

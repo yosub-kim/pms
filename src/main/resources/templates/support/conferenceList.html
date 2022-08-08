@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+<link rel="stylesheet" href="/_new/css/jquery-ui.css" type="text/css" />	
+
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+<script src="/_new/SlickGrid/lib/jquery.event.drag-2.3.0.js"></script>
+
+<script type="text/javascript" src="/_new/SlickGrid/controls/slick.columnpicker.js"></script>
+<script src="/_new/SlickGrid/plugins/slick.checkboxselectcolumn.js"></script> 
+<script src="/_new/SlickGrid/plugins/slick.rowselectionmodel.js"></script>
+
+<script src="/_new/SlickGrid/slick.core.js"></script>
+<script src="/_new/SlickGrid/slick.grid.js"></script>
+<script src="/_new/SlickGrid/slick.dataview.js"></script>
+<link rel="shortcut icon" type="image/ico" href="favicon.ico" />
+<link rel="stylesheet" href="/_new/SlickGrid/slick.grid.css" type="text/css"/>
+<link rel="stylesheet" href="/_new/SlickGrid/css/smoothness/jquery-ui.css" type="text/css"/>
+<link rel="stylesheet" href="/_new/SlickGrid/controls/slick.columnpicker.css" type="text/css"/>
+<link rel="stylesheet" href="/_new/SlickGrid/examples/examples.css" type="text/css"/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+<link rel="stylesheet" href="/_new/SlickGrid/css/select2.css" type="text/css"/>
+<script src="/_new/SlickGrid/slick.editors.js"></script>
+<script src="/_new/SlickGrid/plugins/slick.resizer.js"></script>
+<script src="/_new/SlickGrid/lib/firebugx.js"></script>
+<script src="/_new/SlickGrid/lib/select2.js"></script>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+<style>
+.body{background: #fafafa !important;}
+.odd{background-color: #fcfcfc}
+.slick-viewport{overflow-x: hidden !important;overflow-y: auto !important;}
+
+.slick-viewport::-webkit-scrollbar-thumb { 
+	background-color: #ddd !important;
+	border-radius: 10px!important;
+	background-clip: padding-box!important;
+	}
+.slick-viewport::-webkit-scrollbar-track { 
+	background-color: #fff !important;
+	border-radius: 10px !important;
+}
+#mygrid {width: auto !important;}
+</style>	
+
+<style>
+	.slick-headerrow-column {
+		text-overflow: clip;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+
+	.slick-headerrow-column input {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+	.slick-headerrow-columns .r0 {
+		display: none
+	}
+	.select2-container {
+		border: 1px solid #64c1ed;
+	}
+    .select2-container .select2-selection--single {
+		height: 26px;
+	}  
+	  .cell-title {
+      font-weight: bold;
+    }
+
+    .cell-effort-driven {
+      text-align: center;
+    }
+
+    .toggle {
+      height: 9px;
+      width: 9px;
+      display: inline-block;
+    }
+
+    .toggle.expand {
+      background: url(/_new/SlickGrid/images/expand.gif) no-repeat center center;
+    }
+
+    .toggle.collapse {
+      background: url(/_new/SlickGrid/images/collapse.gif) no-repeat center center;
+    }
+	.slickRadio {
+	width: 15px;
+    height: 15px;
+    border: 1px solid #e1e1e1 !important;
+    border-radius: 50% !important;
+	}
+	
+	.active .slickRadio{
+    background: #555555;
+	}
+	.slick-headerrow-column{
+		background: #89cff0
+	}
+	.newRow{
+		background: yellow !important;
+	}
+</style>		
+<script>
+	var YNList = {
+		Y: 'Y',
+		N: 'N'
+	};
+	var yearList = {Y: 'Y',
+		N: 'N'}
+	
+	
+	
+	var checkboxSelector1;
+	var dataView;
+	var grid;
+	var data = [];
+	var options = {
+		editable: true,
+		enableCellNavigation: true,
+		enableColumnReorder: false,
+		enableAutoSizeColumns: true, 
+		showHeaderRow: true,
+		headerRowHeight: 38,
+		rowHeight: 38,
+		explicitInitialization: true
+	};
+	var columns = [];
+	var columnFilters = {};
+	var RadioFormatter = function (row, cell, value, columnDef, dataContext) {
+		return " <button>이동</button>";
+	};
+	columns = [
+				{id : "NAME", name : "구분", field : "NAME" , width: 200, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50, editor: Slick.Editors.Text },
+				{id : "YEAR", name : "연도", field : "YEAR" , width: 110, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50, editor: Slick.Editors.Text},
+				{id : "DATE", name : "일시", field : "DATE" , width: 150, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50, editor: Slick.Editors.Text },
+				{id : "AREA", name : "장소", field : "AREA", width:300, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 100, editor: Slick.Editors.Text },
+				{id : "CHARGE", name : "참가인원(유료)", field : "CHARGE", width:110, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50},
+				{id : "FREE", name : "참가인원(무료)", field : "FREE", width:110, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50},
+				{id : "CNT", name : "합계", field : "CNT", width:110, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50},
+				{id : "", name : "이동", field : "", width:80, cssClass : 'currency', headerCssClass: 'currency_header',minWidth: 50,formatter: RadioFormatter }
+					];
+	checkboxSelector1 = new Slick.CheckboxSelectColumn({
+		cssClass: "slick-cell-checkboxsel"
+	});
+	function toggleHideSelectAllCheckbox() {
+		isSelectAllCheckbox1Hidden = !isSelectAllCheckbox1Hidden;
+		checkboxSelector1.setOptions({ hideSelectAllCheckbox: isSelectAllCheckbox1Hidden });
+	}
+	function filter(item) {
+	
+		for (var columnId in columnFilters) {
+			if (columnId !== undefined && columnFilters[columnId] !== "") {
+				var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+				var fieldItem = item[c.field];
+				var filterItem = columnFilters[columnId];
+				if(item[c.field] != null){
+					if(isNaN(item[c.field])){
+						fieldItem = item[c.field].toLowerCase();
+					}else{
+						fieldItem = item[c.field].toString();
+					}
+				}
+				if(columnFilters[columnId] != null){
+					if(isNaN(columnFilters[columnId])){
+						filterItem = columnFilters[columnId].toLowerCase();
+					}else{
+						filterItem = columnFilters[columnId].toString();
+					}
+				}
+			if(fieldItem === null){
+			return false;
+			}
+			if (fieldItem.indexOf(filterItem) === -1) {
+				return false;
+				}
+			}
+		}
+	return true;
+	}
+	function PopulateSelect(select, dataSource, addBlank) {
+		var index, len, newOption;
+			if (addBlank) { select.appendChild(new Option('', '')); }
+			$.each(dataSource, function (value, text) {
+				newOption = new Option(text, value);
+				select.appendChild(newOption);
+			});
+	};
+	function Select2Editor(args) {
+		var $input;
+		var defaultValue;
+		var scope = this;
+		var calendarOpen = false;
+		this.keyCaptureList = [ Slick.keyCode.UP, Slick.keyCode.DOWN, Slick.keyCode.ENTER ];
+		this.init = function () {
+			$input = $('<select></select>');
+			$input.width(args.container.clientWidth + 3);
+			PopulateSelect($input[0], args.column.dataSource, true);
+			$input.appendTo(args.container);
+			$input.focus().select();
+			
+			$input.select2({
+				placeholder: '-',
+				allowClear: false
+			});
+		};
+		this.destroy = function () {
+			$input.select2('close');
+			$input.select2('destroy');
+			$input.remove();
+		};
+		this.show = function () {
+		};
+		this.hide = function () {
+		};
+		this.position = function (position) {
+		};
+		this.focus = function () {
+			$input.select2('input_focus');
+		};
+		this.loadValue = function (item) {
+			defaultValue = item[args.column.field];
+			$input.val(defaultValue);
+			$input[0].defaultValue = defaultValue;
+			$input.trigger("change.select2");
+		};
+		this.serializeValue = function () {
+			return $input.val();
+		};
+		this.applyValue = function (item, state) {
+			item[args.column.field] = state;
+		};
+		this.isValueChanged = function () {
+			return (!($input.val() == "" && defaultValue == null)) && ($input.val() != defaultValue);
+		};
+		this.validate = function () {
+			return {
+				valid: true,
+				msg: null
+			};
+		};
+		this.init();
+	}
+
+
+	$(function () {
+		setYearList();
+		initGrid();
+		searchConferenceList();
+	})
+  function setYearList(){
+  	var date = new Date();
+  	var year = date.getFullYear();
+  	var testList = new Array() ;
+  	for(var i=5;i>-1;i--){
+  		var data = new Object() ;
+			data.year = year - i ;
+			testList.push(data) ;
+  	}
+  	var jsonData = JSON.stringify(testList) ;
+
+  	yearList = jsonData;
+
+  }
+
+
+  function searchConferenceList(){
+		$.ajax({
+			type: "POST",
+			contentType: 'application/json',
+			url : "/_new/support/conference/searchConferenceList",
+			data: formToJsonString("#frm"),
+			dataType: "json",
+			cache: false,
+			timeout: 60000
+		})
+		.done(function(data, textStatus, jqXHR ) { 
+			dataView.setItems(data);
+		});
+ }
+  function initGrid(){
+		dataView = new Slick.Data.DataView();
+		columns.splice(0, 0, checkboxSelector1.getColumnDefinition());
+		grid = new Slick.Grid("#myGrid", dataView, columns, options);
+		grid.setSelectionModel(new Slick.RowSelectionModel({selectActiveRow: false}));
+		grid.registerPlugin(checkboxSelector1);
+		dataView.onRowCountChanged.subscribe(function (e, args) {
+			grid.updateRowCount();
+			grid.render();
+		});
+		
+		dataView.onRowsChanged.subscribe(function (e, args) {
+			grid.invalidateRows(args.rows);
+			grid.render();
+		});
+		
+		grid.onCellChange.subscribe(function (e, args) {
+			if(args.row > 0) {
+				if(!grid.getData().getItems()[args.row].CRUD && grid.getData().getItems()[args.row-1].CRUD != 'C'){
+					var data = dataView.getItem(args.row);
+					data.CRUD = "U";
+					dataView.updateItem(data.id,data);
+				}
+			}else{
+				if(!grid.getData().getItems()[args.row].CRUD){
+					var data = dataView.getItem(args.row);
+					data.CRUD = "U";
+					dataView.updateItem(data.id,data);
+				}
+			}
+		})
+		
+		
+		$(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
+			var columnId = $(this).data("columnId");
+			if (columnId != null) {
+				columnFilters[columnId] = $.trim($(this).val());
+				dataView.refresh();
+			}
+		});
+	
+		grid.onHeaderRowCellRendered.subscribe(function(e, args) {
+		if(args.column.name != "이동"){
+			args.getColumnIndex
+				$(args.node).empty();
+				$("<input type='text' placeholder=\""+args.column.name+" 검색\"  style=\"font-size:12px; text-align:center\" >" )
+					.data("columnId", args.column.id)
+					.val(columnFilters[args.column.id])
+					.appendTo(args.node);
+				}
+		});
+		
+		grid.onClick.subscribe(function(e, args) {
+			if(args.cell == 8){
+				var item = args.grid.getData().getItem(args.row).id;
+				location.href = "/_new/support/conference/conferenceDetail?CONFER_IDX="+item;
+			}
+			
+		});
+		
+		grid.init();
+
+		dataView.beginUpdate();
+		dataView.setItems(data);
+		dataView.setFilter(filter);
+		dataView.endUpdate();
+	}
+
+	function addRow(){
+		var data = grid.getData().getItems();
+		var timestamp = + new Date();
+		data.splice(data.length,0,{id:timestamp ,NAME: null, YEAR: null, DATE: null, AREA: null, CHARGE: null, FREE: '0', CHARGE: '0', CNT: '0', CRUD: 'C'});
+		dataView.beginUpdate();
+		dataView.setItems(data);
+		dataView.endUpdate();
+		grid.invalidateRow(data.length);
+		grid.updateRowCount();
+		grid.render();
+		grid.scrollRowIntoView(data.length-1);
+		$(".slick-row").eq(data.length-1).addClass("newRow");
+	}
+	
+	function saveConferenceList(){
+		grid.getEditController().commitCurrentEdit();
+		var data = grid.getData().getItems();
+		
+		var sendData = [];
+		for(var i=0;i<data.length;i++){
+			if(data[i].CRUD){
+				sendData.push(data[i]);
+				if(!data[i].NAME || !data[i].YEAR || !data[i].DATE || !data[i].AREA){
+					alert("빈 값이 있어 저장할수 없습니다. 모든 값을 입력하세요");
+					return;
+				}
+			}
+		}
+		if(sendData.length > 0){
+			sendAjaxData(sendData);
+		}else{
+			alert("저장할 내용이 없습니다.");
+		} 
+		
+	}
+	
+	function deleteConferenceList(){
+		var selectedItems = grid.getSelectedRows();
+		var dataViewData = dataView.getItems();
+		var data = grid.getData().getItems();
+		var sendData = [];
+		var deleteItems = [];
+		if(selectedItems.length < 1 ){
+			alert("선택 된 항목이 없습니다. \n삭제를 원하는 항목의 체크박스를 체크 후 진행해 주세요.");
+			return;
+		}
+		
+		
+		for(var i=0;i<selectedItems.length;i++){
+			var dataViewData = grid.getData().getItemByIdx(selectedItems[i]);
+
+			if(dataViewData.CRUD && dataViewData.CRUD == 'C'){
+				deleteItems.push(dataViewData.id);
+			}else{
+				sendData.push(dataViewData);
+			}
+		}
+			dataView.beginUpdate();
+			for(var j=0;j<deleteItems.length;j++){
+				dataView.deleteItem(deleteItems[j]);
+			}
+			
+		dataView.endUpdate();
+		grid.invalidateRow(data.length);
+		grid.updateRowCount();
+		grid.render();
+		grid.setSelectedRows([]);
+		
+		if(sendData.length > 0){
+			if(confirm("삭제 시 저장하지 않은 항목들은 모두 원래 상태로 돌아갑니다. \n정말로 삭제하시겠습니까?")){
+				for(var k=0;k<sendData.length;k++){
+					sendData[k].CRUD = "D";
+				}
+				sendAjaxData(sendData);
+				
+			}
+		
+		}
+		
+	}
+	
+	function sendAjaxData(sendData){
+		gridData.value = JSON.stringify(sendData);
+		$.ajax({
+			type: "POST",
+			contentType: 'application/json',
+			url : "/_new/support/conference/saveConferenceList",
+			data: JSON.stringify({data:sendData}),
+			dataType: "json",
+			cache: false,
+			traditional : true,
+			timeout: 60000
+			})
+		.done(function(data, textStatus, jqXHR ) { 
+			alert("처리되었습니다.");
+			location.reload();
+		}) 
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+		});
+	}
+	
+</script>
+
+</head>
+<body>
+	
+	<div class="location">
+		<p class="menu_title">컨퍼런스 참가인원 현황</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>업무지원</li>
+				<li>신청하기</li>
+				<li>컨퍼런스 현황</li>
+			</ul>
+	</div>
+		
+	<div class="contents sub">
+		<form id="frm" name="frm" method="post"> 
+				<div class="box">
+					<div class="search_box total">
+						<div class="select_group">
+						
+								<div class="label_group" style="flex: 0.23">
+									<p>연도</p>
+									<select class="select" name="YEAR" style="width: 100%;" onchange="searchConferenceList()">
+										<option th:each="rs : ${yearList}"
+										th:value="${rs?.YEARLIST}" th:text="${rs?.YEARLIST}"></option>
+									</select>				
+								</div>
+							
+						
+
+								<div class="label_group" style="flex: 0.23">
+									
+									
+								
+								</div>
+								<div class="label_group" style="flex: 0.23">
+								
+									
+								</div>
+						
+						</div>
+						<!-- <div><button type="button" class="btn btn_blue" onclick="javascript:do_search();">검색<i class="mdi mdi-magnify"></i></button></div> -->
+					</div>
+				</div>
+		
+			<input name="gridData" id="gridData" type="hidden"/>
+		</form>
+		<div class="box"   style="width: auto;height: 650px;min-width: 1200px"> 
+			<!-- <div class="title">
+				<div class="h1_area">
+					<p class="h1"><i class="mdi mdi-file-document-outline"></i>메뉴관리</p>
+				</div>
+			</div> -->
+			
+			<div class="a-both total">
+				<p></p>
+				<div>
+					<button type="button" class="btn btn_blue" style="min-width: 80px;height: 35px; line-height: 35px;padding: 0px" onclick="addRow()">추가</button>
+					<button type="button" class="btn btn_aqua" onclick="saveConferenceList()">저장</button>
+					<button type="button" class="btn btn_pink" onclick="deleteConferenceList()">삭제</button>
+				</div>
+			</div>
+			<div style="min-width:1210px;max-height:550px;max-width:1200px;min-height:550px;  margin:  auto;margin-bottom: 20px" id="myGrid">
+			
+			</div>
+		</div>
+
+				
+	</div>			
+</body>
+</html>	
+

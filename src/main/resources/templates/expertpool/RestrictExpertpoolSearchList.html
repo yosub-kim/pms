@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->		
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" /><!-- 셀렉트 박스 UI -->
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />
+
+<!--/* ====================== Renewal jQuery include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery.selectric.min.js"></script><!-- 셀렉트 박스 UI-->
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+
+
+
+
+<script type="text/javascript">
+	function doInit() {
+		document.location.href = "/_new/expertpool/restrict/searchList";
+	}
+	function doSearch() {
+		$("#pagingPage").val("1");
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/expertpool/restrict/searchList?" + query;
+	}
+	function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/expertpool/restrict/searchList?" + query;
+	}
+	function goProjectDetail() {
+		document.location.href = "/action/ProjectSearchAction.do";
+	}
+	function saveListToExcel() {
+		var surl = '/action/ExpertPoolManagerAction.do?mode=saveExpertPoolListToExcel';
+		surl += "&jobClass=" + document.expertpoolSearchListForm.jobClass.value;
+		document.location = surl;
+	}
+
+</script> 	
+</head>
+
+<body class="load"> 
+<form name="expertpoolSearchListForm" method="get">
+	<div style='display: none;'>
+		<input type="hidden" name="pagingPage" id="pagingPage" th:value="${searchParam.pagingPage}"/>
+	</div>
+	<div class="sub_location">
+		<div class="location">
+			<p class="menu_title">투입제한인력</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>경영관리</li>
+				<li>인력관리</li>
+				<li>투입제한인력</li>
+			</ul>
+		</div>	
+	</div>
+	
+	<div class="contents sub"><!-- 서브 페이지 .sub -->
+		<div class="box">
+			<div class="search_box"><!-- 셀렉트 박스 없을 경우 .select_none -->
+				<div class="select_group">
+					<div class="search_input_box">
+						<div class="search_input">
+							<label for="search"></label>
+							<input type="text" name="keyword" th:value="${searchParam.keyword}" id="search" placeholder="검색어를 입력하세요." 
+							onKeypress='javascript:if(event.keyCode==13) {doSearch();}'
+							/>
+							<!-- (프로젝트 명으로 과거 투입했던 인력 조회, 고객사 명으로 투입했던 프로젝트 인력 조회, 전문분야/스킬) -->
+						</div>
+					</div>
+				</div>
+				<div>
+					<button type="button" class="btn btn_blue" onclick="javascript:doSearch();">검색</button>	
+				</div>
+			</div>
+		</div>
+		<!-- // 검색 창 -->	
+		<div class="board_List_wrap">
+			<!-- 검색 조건 -->								
+			<div class="box search_detail">
+				<div class="title_area">
+					<p>검색조건</p>
+					<button type="button" class="btn btn_d_grey" onclick="javascript:doInit();">초기화</button>		
+				</div>
+
+				<div class="tbl-wrap sc">
+					<div class="search_list">
+						<ul class="dropdown">
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">투입제한인력</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="agg, index : ${restrictAgg}">
+											<div><input type="checkbox" name="restrictUser" th:id="'exp3_'+${index.index}" class="btn_check" th:value="${agg.restrictUser}" 
+												onclick="javascript:doSearch()" th:checked="${agg.checked}"/>
+                							<label th:for="'exp3_'+${index.index}"><p th:text="${agg.restrictUser}"></p></label></div><p th:text="${agg.cnt}"></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">구분</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="agg, index : ${jobClassAgg}">
+											<div><input type="checkbox" name="jobClass" th:id="'exp1_'+${index.index}" class="btn_check" th:value="${agg.jobClass}" 
+												onclick="javascript:doSearch()" th:checked="${agg.checked}"/>
+                							<label th:for="'exp1_'+${index.index}"><p th:text="${agg.jobClassName}"></p></label></div><p th:text="${agg.cnt}"></p>
+										</li>
+									</ul>
+								</div>
+							</li>	
+						</ul>
+					</div>
+
+				</div>
+				<!-- // tbl-wrap -->
+			</div>							
+			<!-- // 검색 조건 -->		
+			
+			<!-- 테이블 리스트 -->					
+			<div class="box board_detail">
+				<div class="a-both total">
+					<p>총<span th:text="${searchParam.totalNumberOfEntries}" th:remove="tag"></span>건</p>
+					<div class="btn_area">
+						<p><span style="color:#cc0000;">※ 투입제한 사유는 경영기획센터 문의 &nbsp&nbsp&nbsp</span></p>
+						<!-- <select class="tric_01" name="pagingNumberPer">
+							<option value="10" th:selected="${searchParam.pagingNumberPer}=='10'">10개 보기</option>
+							<option value="30" th:selected="${searchParam.pagingNumberPer}=='30'">30개 보기</option>
+							<option value="50" th:selected="${searchParam.pagingNumberPer}=='50'">50개 보기</option>
+						</select> -->
+						<!-- <button type="button" class="btn btn_a_grey" th:onclick="'location.href=\''+@{~/action/ExpertPoolManagerAction.do?mode=getExpertPoolExtList}+ '\''">과거 검색</button> -->
+						<!-- <button type="button" class="btn btn_a_grey" th:onclick="saveListToExcel()">EXCEL 다운</button> -->
+					</div>
+				</div>
+					
+				<div class="tbl-wrap sc">
+					<table class="tbl-list all"><!-- 전체현황 테이블 .all -->
+						<colgroup> 
+							<col width="13%">
+							<col width="13%">
+							<col width="13%">
+							<col width="13%">
+							<col width="13%">
+							<col width="*">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>구분</th>
+								<th>성명</th>
+								<th>소속</th>
+								<th>직위</th>
+								<th>부서</th>
+								<!-- <th>투입제한사유</th> -->
+							</tr>
+						</thead>
+												
+						<tbody>
+							<tr th:each="rs, iterState : ${mainList}" style="cursor: pointer;" th:onclick="'location.href=\''+ @{~/action/ExpertPoolManagerAction.do(mode=infoview, ssn=${rs.ssn})} + '\''">
+								<td th:text="${rs.jobClassName}"></td>
+								<td><a th:text="${rs.name}" th:href="@{~/action/ExpertPoolManagerAction.do(mode=infoview, ssn=${rs.ssn})}"></a></td>
+								<td th:text="${rs.company}" ></td>
+								<td th:text="${rs.companyPositionName}"></td>
+								<td th:text="${rs.deptName}"></td>
+								<!-- <td th:text="${rs.restrictContents}"></td> -->
+							</tr>
+							<tr th:if="${#lists.isEmpty(mainList)}">
+								<td colspan="5">검색된 데이터가 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="paging_area">
+					<SCRIPT LANGUAGE="JavaScript" th:inline="javascript">
+					/*<![CDATA[*/ 
+						var pagingPage = /*[[ ${searchParam.pagingPage} ]]*/; 
+						var totalNumberOfEntries = /*[[ ${searchParam.totalNumberOfEntries} ]]*/; 
+						var pagingNumberPer = /*[[ ${searchParam.pagingNumberPer} ]]*/; 
+					/*]]*/
+						document.write(makePageHtml2(pagingPage, 10, totalNumberOfEntries, pagingNumberPer)) ;
+					</SCRIPT>				
+				</div>
+				</div>
+			</div>			
+		</div>
+
+	</div>
+	
+
+</form>
+</body>
+</html>

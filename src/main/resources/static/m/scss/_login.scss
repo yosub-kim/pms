@@ -1,0 +1,81 @@
+@charset 'utf-8';
+
+.login_contents {
+    @include flex($ai: inherit, $fw: wrap, $fd: column);
+    width: 100%;
+    height: calc(100vh - 60px);
+    .title {
+        @include fontset ($ff: 'NotoKrB', $fs: 30px, $fc: $c-title);
+        margin-bottom: 30px; 
+        text-align: center;    
+    }
+    .form_box {
+        position: relative;
+        background-color: $c-wt;
+        padding: 0 15px 0 0px;
+        margin-bottom: 20px;
+        width: 100%;
+        @include border($bp: all, $bc: $c-line);
+        @include radius();
+        @include transition();
+        &:focus,
+        &:hover {
+            @include border($bp: all, $bc: $c-main);
+            @include transition();
+        }
+        div {
+            
+            @include flex($jc: space-between);
+        }
+        input[type="text"],
+        input[type="password"] {
+        border: 0;       
+        &:focus,
+        &:focus {
+            color: $c-bk;
+        }
+    }      
+    i {
+        font-size: 25px;
+        color: #aaaaaa;
+        &:focus,
+        &:hover {
+            color: $c-main;
+            @include transition();
+        }
+    }
+    &:focus i,
+    &:hover i {
+        color: $c-main;
+            @include transition();
+        }
+    }
+   .copyright {
+        margin-top: 50px;
+        p {
+            @include fontset($fs: 13px, $fc: $c-bk-light, $lh: 140%);
+            text-align: center;
+        a {
+            font-size: 13px;
+            color: $c-bk;
+            }
+        }
+    }   
+   .t-line {
+        text-align: right;
+        margin-top: 20px;
+        a {
+            display: inline-block;
+            font-size: 14px;
+            color: #888;
+            position: relative;
+            &:after {
+            content: '';
+            @include absolute($t: 20px, $l: 0);
+            background-color: #888;
+            height: 1px;
+            width: 100%;
+            }
+        }
+    } 
+}

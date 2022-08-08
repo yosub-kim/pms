@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=440, user-scalable=yes">
+	<title>KMAC 통합 인트라넷</title>
+
+	<script src="/_new/js/jquery-3.4.1.min.js"></script>
+	<script src="/_new/js/jquery-ui.min.js"></script>
+	<script src="/_new/js/common.js"></script>
+
+	<link href="/_new/m/css/jquery-ui.css" rel="stylesheet" />
+	<link href="/_new/m/css/kmac.css" rel="stylesheet" />
+
+	<script type="text/javascript">
+	function prevWeek(){
+		var prevDate = $("#prevDate").val();
+		var jobClass = $("#jobClass").val();
+		location.href = "/_new/schedule/m/summary/list?" 
+			+"date=" + prevDate
+			+"&jobClass="+jobClass;
+	}
+	function nextWeek(){
+		var nextDate = $("#nextDate").val();
+		var jobClass = $("#jobClass").val();
+		location.href = "/_new/schedule/m/summary/list?" 
+			+"date=" + nextDate
+			+"&jobClass="+jobClass;			
+	}
+	function dateChange(){
+		var date = $("#date").val();
+		var year = $("#year").val();
+		var month = $("#month").val();
+		if(month.length == 1) {
+			month = "0" + month;
+		}
+		var jobClass = $("#jobClass").val();
+		location.href = "/_new/schedule/m/summary/list?" 
+			+"date=" + year + "-" + month + "-" + "01"
+			+"&jobClass="+jobClass;
+	}
+	
+	function layer_open_summary(obj, el, ssn, date, userName, posName, labelName){
+		$("#pop_schedule_ul").html("");
+		//$("#pop_schedule_name").html("[" + labelName + "] "+ userName);
+		$("#pop_schedule_date").html(date.substr(0, 4)+"-"+date.substr(4, 2)+"-"+date.substr(6, 2));
+		
+		$.ajax({
+			type: "GET",
+			contentType: 'application/json',
+			url : "/_new/schedule/m/personal/date?ssn="+ssn+"&date="+date,
+			dataType: "json",
+	        cache: false,
+	        timeout: 60000
+		})
+		.done(function(data, textStatus, jqXHR ) { 
+			if(data.mainList.length > 0){
+				$(data.mainList).each (function (index, item) {
+					console.log(item);
+					
+					/*	
+					<li><div class="title"><p>외부일정</p><ul class="btn_edit"></ul></div><div class="detail">
+						<p><i class="mdi mdi-card-account-details-outline"></i>유지보수 계약: KT Bizworks (등록)</p>
+						<p><i class="mdi mdi-alarm-check"></i>2021년 8월 5일 10시 30분 ~ 11시 30분</p>
+						<p><i class="mdi mdi-map-marker-radius-outline"></i>(외근) 서울 종로</p>
+						<p><i class="mdi mdi-train-car"></i>현장 출근/ 현장 퇴근</p>
+					</div></li>
+					*/
+							
+					var str = "";
+					if(item.type == 'Up-day'){
+						str += '<li><div class="title"><p class="ico '+item.iconCodeShort+'">재택근무</p><ul class="btn_edit"></ul></div><div class="detail">';
+					}else{
+						str += '<li><div class="title"><p class="ico '+item.iconCodeShort+'">'+item.type+'</p><ul class="btn_edit"></ul></div><div class="detail">';
+					}
+					if(item.iconCodeShort == 'ico-1' || item.iconCodeShort == 'ico-2' || item.iconCodeShort == 'ico-3'){
+						str += '	<p><i class="mdi mdi-card-account-details-outline"></i>'
+										+ item.content+' : ' + item.customerName 
+										+ (item.googleSyncId != null ? ' (고객정보 등록여부: '+ item.googleSyncId + ')' : '') + '</p>';
+						if(item.place != null && item.place != '')
+							str += '	<p><i class="mdi mdi-map-marker-radius-outline"></i>' + item.place + '</p>';
+						if(item.relationUser != null && item.relationUser != 0)
+							str += '	<p><i class="mdi mdi-train-car"></i>'
+								+ (item.relationUser==3 ? '현장 출근/ 현장 퇴근' 
+									: (item.relationUser==1 ? '현장 출근' 
+										: (item.relationUser==2 ? '현장 퇴근' : ''))) +'</p>';
+						str += '	<p><i class="mdi mdi-alarm-check"></i>' + item.dateString +'</p>';
+
+					}
+					if(item.iconCodeShort == 'ico-4' || item.iconCodeShort == 'ico-5' || item.iconCodeShort == 'ico-6'|| item.iconCodeShort == 'ico-7'){
+						str += '	<p><i class="mdi mdi-card-account-details-outline"></i>' + item.content+' : ' + item.customerName  + '</p>';
+						str += '	<p><i class="mdi mdi-alarm-check"></i>' + item.dateString +'</p>';
+					}
+					str += '	<p><i class="mdi mdi-share-variant"></i>'+item.deptname+'_'+item.name+'</p>';
+					str += '</div></li>';
+					console.log(str );
+					$("#pop_schedule_ul").html($("#pop_schedule_ul").html()+str);
+				});
+			}
+			
+			var temp = $('#' + el);
+		    $(obj).addClass('is-focus');
+		    temp.addClass('show');
+		    temp.attr("tabindex","0").focus();
+		    $('.btn_close').on('focus', function(){
+		        $(this).keydown(function()  {
+		            if(event.which == 9) {
+		                temp.attr("tabindex","0").focus();
+		            }
+		        });
+		    });
+
+		    $('.popup_bg').on('scroll touchmove mousewheel click', function(event) {
+		        event.preventDefault();
+		        event.stopPropagation();
+		        return false;
+		    });
+		    
+		    $('.popup_bg').on('click', function(event) {
+		        $(obj).removeClass('is-focus');
+		        temp.removeClass('show');
+		    });
+		})
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+			alert("처리 중 오류가 발생하였습니다.1"+errorThrown+":"+status);
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+		});	
+	    
+	}
+	function goEmail(){
+		var ssn = '[[${searchParam.ssn}]]';
+		var email = '[[${searchParam.email}]]';
+		var win = window.open('https://webmail.kmac.co.kr/a_biz/m_login.nvd?user_account='+email);
+		if(win == null || typeof(win) == "undefined" || (win == null && win.outerWidth == 0) || (win != null && win.outerHeight == 0) || win.test == "undefined"){
+			alert("브라우저의 팝업 차단을 허용해주시기 바랍니다.");
+		}else{}
+	}
+	</script>
+</head>
+
+<body>
+	<div id="wrap">
+	
+		<div th:replace="fragments/common :: header"></div>
+
+		<!-- sub_container -->
+		<div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지" onclick="javascript:history.back()"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>일정관리</p>
+                </div>
+                <ul>
+                	<!--
+                    <li><button type="button" class="btn c-sub" title="검색 창 열기" onclick="javascript:layer_open(this,'pop_search');"><i class="mdi mdi-magnify"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="게시글 작성"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+					-->
+                </ul>
+                <!-- 검색 창 팝업 -->
+                <!--
+                <div id="pop_search" class="popup_layer pop_search">
+                    <div class="popup_bg"></div>
+                    <div class="popup_inner">
+                        <div class="pop_close">
+                            <input type="text" placeholder="검색어(제목/내용/작성자) 입력" />						
+                            <button type="button" class="btn-close" onclick="javascript:layer_close('pop_search');" title="닫기"><i class="mdi mdi-close"></i></button>
+                        </div>								
+                        <div class="write_group">
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                            <select name="" id="">
+                                <option value="정보유형 선택">정보유형 선택</option>
+                                <option value="정보유형 선택">정보유형 선택</option>
+                            </select>
+                        </div>
+                        <select name="" id="">
+                            <option value="정보유형 선택">정보유형 선택</option>
+                            <option value="정보유형 선택">정보유형 선택</option>
+                        </select>                        
+                        <button type="button" class="btn c-wt" title="검색">검색</button>
+                    </div>
+                </div>
+				-->
+                <!-- // 검색 창 팝업 -->
+            </div>
+
+			<!-- Contents -->
+			<div class="contents">
+
+               <div class="search_area">
+                    <div class="calendar">
+                        <button type="button" class="btn-close" title="previous Week" onclick="javascript:prevWeek();"><i class="mdi mdi-chevron-left"></i></button>
+                        <ul>
+                            <li>
+                            	<select name="year" id="year" onchange="javascript:dateChange()">
+									<option th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow())-3, #dates.year(#dates.createNow()) + 3)}" 
+									th:value="${year}"
+									th:text="${year}" th:selected="${year eq searchParam.year}" ></option>
+								</select>
+				
+                            </li>
+                            <li>
+								<select name="month" id="month" onchange="javascript:dateChange()">
+									<option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}" 
+									th:selected="${i eq searchParam.month}" ></option>
+								</select>
+                            </li>
+                            <li>
+								<select name="jobClass" id="jobClass" onchange="javascript:dateChange()">
+									<option value="A" th:selected="${'A' eq searchParam.jobClass}">상근</option>
+									<option value="J" th:selected="${'J' eq searchParam.jobClass}">상임</option>
+									<option value="N" th:selected="${'N' eq searchParam.jobClass}">RA</option>
+								</select>
+                            </li>
+                        </ul>
+                        <input type="hidden" name="date" id="date" th:value="${searchParam.date}">
+                        <input type="hidden" name="prevDate" id="prevDate" th:value="${searchParam.prevDate}">
+                        <input type="hidden" name="nextDate" id="nextDate" th:value="${searchParam.nextDate}">
+                        <button type="button" class="btn-close" title="Next Week" onclick="javascript:nextWeek();"><i class="mdi mdi-chevron-right"></i></button>
+                    </div>
+                </div>
+                <!-- // search_area -->
+                
+
+				<!-- 전사 스케줄 관리 -->
+
+                <div class="gantt_box">
+                    <div class="list">
+
+                        <div class="gantt_title">
+                            <p>소속부서<br />└ 성명</p>
+                        </div>
+
+						<div class="dropdown_list_wrap">
+							<ul class="dropdown_list">
+								<li th:each="rs : ${mainList}" class="on">
+									<div class="drop_title_list"><a href="javascript:;" title="메뉴 보이기/숨기기"><p th:text=${rs.labelName}></p></a></div>
+									<div class="drop_data_list sc">
+										<ul>
+											<li th:each="rs_ : ${rs.userForScheduleSummaries}"
+												th:onclick="javascript:goDetailCal( [[${rs_.ssn}]]);"
+												><a href="javascript:;" th:text="${rs_.userName}"></a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</div>
+                    </div>
+
+                    <div class="view">	
+                        
+                        <div class="week">
+                            <div th:each="rs : ${weekDays}" th:text="${rs.dayOfTheWeekKor}"
+								th:class="${rs.dayOfTheWeek}" 
+								th:classappend="${rs.today ? 'today'  : ''}"></div>
+                        </div>
+                        <!-- <div class="week">
+	                        <div th:each="rs1 : ${weekDays}" th:text="${rs1.day}"
+								th:class="${rs1.dayOfTheWeek}" 
+								th:classappend="${rs1.today ? 'today' : rs1.holiday ? 'holiday' : ''}" ></div>
+                        </div> -->
+
+                        <div class="dropdown_list_wrap">
+                        	<ul class="dropdown_list">
+                        		<li th:each="rs : ${mainList}" class="on">
+                        			<div class="drop_title_list">
+                        				<div class="task">
+                        					<div th:each="rs1 : ${weekDays}" th:text="${rs1.day}"
+												th:class="${rs1.dayOfTheWeek}"
+												 th:classappend="${rs1.today ? 'today' : ''}" ></div>
+                        				</div>
+                        			</div>
+                        			
+                        			<div th:each="rs_ : ${rs.userForScheduleSummaries}" class="drop_data_list sc">
+										<div class="task task_sub">
+											<div th:each="rs__, iterState : ${rs_.scheduleSummaryList}"
+											th:class="${rs__.idStr == (#calendars.format(#calendars.createNow(), 'yyyMMdd'))} ? 'today' : '' "
+											th:classappend="${rs__.iconCode}">
+												<a th:if="${rs__.totalCount > 0}"  href="javascript:;" th:id="${rs__.idStr}" 
+													th:onclick="javascript:layer_open_summary(this,'pop_schedule', [[${rs__.ssn}]], [[${rs__.idStr}]], [[${rs__.userName}]], [[${rs__.posName}]], [[${rs__.labelName}]], );"
+												><span th:if="${rs__.totalCount > 1}" th:text="|+${rs__.totalCount}|"></span></a></div>
+										</div>
+									</div>
+                        		</li>
+                        	</ul>
+                        </div>
+
+                    </div>
+                </div>						
+				<!-- // 전사 스케줄 관리 -->
+
+				<!-- 스케줄 상세, 수정 팝업 -->
+				<div id="pop_schedule" class="popup_layer pop_schedule">
+					<div class="popup_bg"></div>
+					<div class="popup_inner">
+						<div class="head">
+							<div>
+								<p id="pop_schedule_name"></p>
+								<p id="pop_schedule_date"></p>
+							</div>
+							<button type="button" class="btn-close" onclick="javascript:layer_close('pop_schedule');"
+								title="닫기"><i class="mdi mdi-close"></i></button>
+						</div>
+						<div class="view">
+							<ul id="pop_schedule_ul">
+							</ul>
+						</div>
+
+					</div>
+				</div>
+				<!-- // 스케줄 상세, 수정 팝업 -->
+
+			</div>
+			<!-- // Contents -->
+		</div>
+		<!-- // sub_container -->
+
+		<div th:replace="fragments/common :: footer"></div>
+		
+	</div>
+
+</body>
+</html>

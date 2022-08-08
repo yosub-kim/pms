@@ -1,0 +1,152 @@
+/* 공통 */
+.section_box {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: flex-start; align-items: flex-start; width: 100%;}
+.section_box .title {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; padding: 0 20px 0 15px; width: calc(100% - 35px); border-bottom: 1px solid #eee; background-color: #eaf1f4;}
+.section_box .title .h1 {height: 50px; line-height: 50px; font-size: 18px; color: #222222;}
+.section_box .title .h1 i {margin-right: 10px; font-size: 24px; color: #555555;}
+.section_box .title .more i {color: #555555; font-size: 25px;}
+.status_ui {width: calc(100% - 30px); margin: 0 auto; padding: 15px 0 0 0;}
+.status_ui i {font-size: 20px; text-align: center; margin-right: 0;}
+
+/* 나의 프로젝트 현황 */
+.section_box.project_status {width: inherit; width: 100%; height: 423px; margin-bottom: 25px;}
+.section_box.project_status .status_ui {width: calc(100% - 5px); padding-top: 0;}
+.section_box.project_status .status_ui .sc {height: 370px; padding: 0 12px;}
+.section_box.project_status .status_ui .sc .status_title {border: 0;}
+.section_box.project_status .status_ui .sc > ul {display: block;}
+.section_box.project_status .status_ui .sc > ul > li {border-radius: 5px; border: 1px solid #eee; padding: 8px 0px 8px 10px;}
+.section_box.project_status .status_ui .sc > ul > li:not(:last-child) {margin-bottom: 15px;}
+.section_box.project_status .status_ui .sc > ul > li:last-child {margin-bottom: 24px;}
+.section_box.project_status .status_ui .sc > ul > li:first-child {margin-bottom: 0px;}
+
+.project_status .status_ui .status_title .detail p {color: #222222; font-size: 14.5px;}
+.project_status .status_ui .status_title .detail > ul li:not(:last-child):after {display: none;}
+
+.project_status .status_ui ul li .status {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; position: relative; height: 30px;}
+.project_status .status_ui ul li .status > div {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center;}
+.project_status .status_ui ul li span {display: block; width: 32px; height: 32px; line-height: 32px; text-align: center; border-radius: 5px;}
+
+.project_status .status_ui ul li .status .subject {width: 45%; display: -webkit-box; display: flex; -webkit-justify-content: flex-start; justify-content: flex-start; -webkit-align-items: center; align-items: center;}
+.project_status .status_ui ul li .status .subject p {width: auto; text-align: left; padding-left: 20px; padding-right: 10px; width: 80%;}
+.project_status .status_ui ul li .status .subject p.head_title {text-align: center; padding-left: 0px; width: 100%;}
+.project_status .status_ui ul li .status .subject .status_ui i {display: inline-block;}
+
+.project_status .status_ui ul li .status .subject .working {background-color: #daf0fa;}
+.project_status .status_ui ul li .status .subject .working i {color: #64c1ed;}
+.project_status .status_ui ul li .status .subject .caution {background-color: #ffe8ee;}
+.project_status .status_ui ul li .status .subject .caution i {color: #f089a5;}
+.project_status .status_ui ul li .status .subject .finish {background-color: #eee;}
+.project_status .status_ui ul li .status .subject .finish i {color: #555555;}
+
+.project_status .status_ui ul li .status .value {background-color: #d2d9fd; color: #aab5f0;}
+.project_status .status_ui ul li .status .public {background-color: #e5f1dc; color: #9aca78;}
+.project_status .status_ui ul li .status .smart {background-color: #ffebdf; color: #fda671;}
+.project_status .status_ui ul li .status .hr {background-color: #ffeebd; color: #f9c93c;}
+.project_status .status_ui ul li .status .media {background-color: #ffe4e4; color: #fe8484;}
+
+.project_status .status_ui ul li .status .detail {width: 55%;}
+.project_status .status_ui ul li .status .detail > ul {display: -webkit-box; display: flex; -webkit-justify-content: flex-start; justify-content: flex-start; -webkit-align-items: center; align-items: center; height: inherit; width: 100%;}
+.project_status .status_ui ul li .status .detail > ul li {display: inline-block; width: 25%; text-align: center; position: relative; padding: 0 10px}
+.project_status .status_ui ul li .status .detail > ul li:not(:last-child):after {content: ""; position: absolute; right: 0; top: 7px; height: 15px; width: 1px; background-color: #eee;}
+.project_status .status_ui ul li .status .detail .ing a {color: #64c1ed;}
+.project_status .status_ui ul li .status .detail .change a {color: #c971d6}
+.project_status .status_ui ul li .status .detail .delay a {color: #f089a5}
+.project_status .status_ui ul li .status .detail .over a {color: #ffb730}
+.project_status .status_ui ul li .status .detail .voc a {color: #29ccd3}
+.project_status .status_ui ul li .status .detail .none a {color: #555555}
+
+/* 나의 프로젝트 현황 */
+.project_status.myproject .status_ui ul li .status .subject > p {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+/*.project_status.myproject .status_ui ul li .status .detail > ul li {width: 17%;}
+.project_status.myproject .status_ui ul li .status .detail > ul li:first-child {width: 30%;}*/
+.project_status.myproject .status_ui ul li .status .detail .working i {background-color: #daf0fa; color: #64c1ed;}
+.project_status.myproject .status_ui ul li .status .detail .caution i {background-color: #ffe8ee; color: #f089a5;}
+.project_status.myproject .status_ui ul li .status .detail .finish i {background-color: #eee; color: #555555;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p {color: #555555; font-size: 18px;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.date {color: #555555; font-size: 15px;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.voc {color: #c870d8;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.customer {color: #c870d8;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.finish {color: #555555;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.none {color: #555555;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p i {color: #64c1ed;}
+.project_status.myproject .status_ui ul li .status .detail.myproject p.none i {color: #555555;}
+
+.project_status p.date {color: #555555; font-size: 15px;}
+.project_status p i {color: #64c1ed;}
+.project_status p.none i {color: #555555;}
+.project_status .detail p {color: #555555; font-size: 18px;}
+.project_status .status_ui ul li .status .subject > p {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+
+/* 메일, 새 진척관리/레포트 */
+.my_status {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: space-between; align-items: space-between; -webkit-flex-direction: column; flex-direction: column; -webkit-flex-wrap: wrap; flex-wrap: wrap; width: 100%;}
+
+.my_status ul {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; margin-bottom: 25px; width: 100%;}
+.my_status ul a {display: inline-block;}
+.my_status ul a {flex: 1; border-radius: 5px; border: 1px solid #eee; background-color: #fff; text-align: center; -webkit-transition: all .35s ease; transition: all .35s ease; display: -webkit-box; display: flex; -webkit-align-items: center; align-items: center;  -webkit-flex-direction: column; flex-direction: column; width: 100%; height: 148px; padding: 25px 0;}
+.my_status ul a:nth-child(2) {margin-left: 29px;}
+.my_status ul a:hover {background-color: #89cff0; -webkit-transition: all .35s ease; transition: all .35s ease;}
+.my_status ul li i {font-size: 36px; color: #89cff0;}
+.my_status ul li .subject_kr {font-size: 18px; color: #222222; margin-bottom: 0;}
+.my_status ul li .subject_en {font-size: 12px; color: #222222; margin-bottom: 15px;}
+.my_status ul li .subject_count {font-size: 18px; color: #888888; margin-top: 15px;}
+.my_status ul li .subject_count span {font-size: 24px; color: #f089a5;}
+.my_status ul li .admin i {font-size: 26px; color: #888888;}
+.my_status ul li .admin i a {text-indent: -9999px;}
+.my_status ul a:hover i,
+.my_status ul a:hover .subject_kr,
+.my_status ul a:hover .subject_en,
+.my_status ul a:hover .subject_count {color: #fff;}
+.my_status ul a:hover .subject_count span {color: #fdec2d;}
+
+.my_status ul.line {margin-bottom: 15px;}
+.my_status ul.line a {position: relative; height: 80px; padding: 15.5px 0 0 0;}
+.my_status ul.line a:nth-child(2n) {margin-left: 15px;}
+.my_status ul.line li .subject_kr {margin-bottom: 10px;}
+.my_status ul.line li .subject_en {margin-bottom: 10px; margin-top: -13px;}
+.my_status ul.line li .ico {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center;}
+.my_status ul.line li i {position: relative; top: -8px; margin-right: 5px; font-size: 28px;}
+.my_status ul.line li .subject_count {position: relative; top: -22px;}
+
+/* 전자결재 */
+.box.confirm {height: 196px; margin-bottom: 25px;}
+.box.confirm .status_ui {width: calc(100% - 5px);}
+.box.confirm .status_ui .sc {height: 120px; padding: 0 13px 0 13px;}
+.confirm_status:not(:last-child) {margin-bottom: 9px;}
+.confirm_status .progress {display: -webkit-box; display: flex; height: 5px; overflow: hidden; background-color: #e3e7ed; border-radius: 30px;}
+.confirm_status .progress-bar {width: 0; display: -webkit-box; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; overflow: hidden; color: #fff; text-align: center; -webkit-transition: width 0.6s ease; transition: width 0.6s ease;}
+.confirm_status p {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; font-size: 14px; color: #555555;}
+.confirm_status .progress-label span {font-size: 18px;}
+.confirm_status .progress-tit {width: 70%; height: 20px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.confirm_status span.grey {font-size: 12px; color: #555555;}
+
+/* 게시글 */
+.section_L .section_box.board .box {width: calc(50% - 14.5px)}
+.section_R .section_box.board .box {width: 100%;}
+.section_box.board .box {height: 248px; width: auto;}
+.section_box.board .box .status_ui li {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center;}
+.section_box.board .box .status_ui li:not(:last-child) {margin-bottom: 10px;}
+.section_box.board .box .status_ui li a {display: block; font-size: 15px; color: #222222; max-width: 290px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; height: 23px;}
+.section_box.board .box .status_ui li a:before {content: " "; display: inline-block; position: absolute; top: 22px; left: 0px; width: 0; height: 1px; background: #222222; -webkit-transition: .3s ease-in-out; transition: .3s ease-in-out;}
+.section_box.board .box .status_ui li a:hover:before {width: 100%; text-align: left;}
+.section_box.board .box .status_ui li span {display: inline-block; color: #555555;}
+
+/* 하단 링크 영역 */
+.section_box.quick_menu {-webkit-justify-content: space-between; justify-content: space-between; margin-top: 25px;}
+.section_box.quick_menu > div {width: calc(50% - 12.5px); height: 100px; border-radius: 5px; display: -webkit-box; display: flex; -webkit-align-items: center; align-items: center;}
+.section_box.quick_menu > div a {color: #fff;}
+.section_box.quick_menu > .menu_link {background-color: #64c1ed;}
+.section_box.quick_menu > .menu_link ul {display: -webkit-box; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; height: 70px; width: 100%;}
+.section_box.quick_menu > .menu_link li {flex: 1; height: 70px; text-align: center;}
+.section_box.quick_menu > .menu_link li:not(:last-child) {border-right: 1px solid rgba(255, 255, 255, .3);}
+.section_box.quick_menu > .menu_link li a {display: block; width: 60%; height: 70px; margin: 0 auto; text-align: center; font-size: 15px; -webkit-transition: all .35s ease; transition: all .35s ease; display: -webkit-box; display: flex; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center;  -webkit-flex-direction: column; flex-direction: column;}
+.section_box.quick_menu > .menu_link li a:hover {background-color: #89cff0; border-radius: 5px; -webkit-transition: all .35s ease; transition: all .35s ease;}
+.section_box.quick_menu > .menu_link li a i {display: block; font-size: 25px;}
+.section_box.quick_menu > .menu_link li a span {display: block;}
+
+.section_box.quick_menu > .board_link {background-color: #3abec3;}
+.section_box.quick_menu > .board_link ul {display: -webkit-box; display: flex; -webkit-justify-content: flex-start; justify-content: flex-start; -webkit-align-items: center; align-items: center; -webkit-flex-wrap: wrap; flex-wrap: wrap; width: 85%; margin: 0 auto; padding-top: 10px;}
+.section_box.quick_menu > .board_link ul li {flex: 0 0 33%; margin-bottom: 10px;}
+.section_box.quick_menu > .board_link ul li a {display: inline-block; font-size: 15px; position: relative; padding-left: 8px;}
+.section_box.quick_menu > .board_link ul li a:before {content: " "; position: absolute; top: 10px; left: 0px; width: 2px; height: 2px; border-radius: 100%; background: #fff;}
+.section_box.quick_menu > .board_link ul li a:after {content: " "; display: inline-block; position: absolute; top: 22px; left: 8px; width: 0; height: 1px; background: #fff; -webkit-transition: .3s ease-in-out; transition: .3s ease-in-out;}
+.section_box.quick_menu > .board_link ul li a:hover:after {width: 100%; text-align: left;}

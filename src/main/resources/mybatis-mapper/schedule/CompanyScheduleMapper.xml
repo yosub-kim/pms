@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.schedule.mapper.CompanyScheduleMapper">
+
+	<insert id="createCompanySchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		INSERT INTO CompanySchedule(
+			[year], [month], [day], 
+			startHour, startMin, endHour, endMin,
+			content, place)
+		VALUES(
+			#{year}, FORMAT(#{month}, '00'), FORMAT(#{day}, '00'),
+			#{startHour}, #{startMin}, #{endHour}, #{endMin},
+			#{content}, #{place}) 	
+	</insert>
+	
+	<select id="getCompanyScheduleByMonth" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		select year, month, day, startHour, startMin, endHour, endMin, content, place, idx
+		FROM  CompanySchedule	
+		where 1=1
+		AND (year = #{year})        
+		AND (month = #{month})     	    			
+		order by  year, month, day, startHour
+	</select>
+	
+	<select id="getCompanySchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam" 
+		resultType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		select * from CompanySchedule
+		 where idx			=	#{idx}
+	</select>
+	
+	<update id="updateCompanySchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleDetail">
+		update	CompanySchedule 
+		   set	startHour = #{startHour}, 
+				startMin = #{startMin}, 
+				endHour = #{endHour}, 
+				endMin = #{endMin},
+				content = #{content}, 
+				place = #{place}
+		 where idx			=	#{idx}
+	</update>
+	
+	<delete id="removeCompanySchedule" parameterType="kr.co.kmac.pms.schedule.domain.ScheduleSearchParam">
+		delete from CompanySchedule 
+		 where idx			=	#{idx}
+	</delete>
+		
+</mapper>

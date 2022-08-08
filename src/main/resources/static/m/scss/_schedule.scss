@@ -1,0 +1,130 @@
+@charset 'utf-8';
+
+/* 달력 UI */
+.month_box {
+    background-color: $c-wt;
+    @include border($bp: bottom);
+
+    a.text_more {
+        display: inline-block;
+        width: 40px;
+        height: 30px;        
+        @include absolute($l: 50%, $t: 50%);
+        transform: translate(-50%, -50%);
+        margin-top: 20px;
+        p {
+            border-radius: 100%;
+            background-color: $c-sub;
+            width: 20px;
+            height: 20px;
+            padding: 4px 2px 0 0;
+            font-size: 12px;
+            color: $c-wt; 
+            position: absolute;
+            top: 4px;
+            left: 10px;
+        }       
+    }
+
+    .week, 
+    .month {      
+        display: -webkit-box;
+        display: flex;
+        > * {
+            flex: 1;
+            padding: 15px 0 45px;
+            text-align: center;
+            background-color: $c-wt;
+        }
+    } 
+    .month {
+        > div {
+            position: relative;
+            a {                
+                font-size: 15px;                        
+            }
+            ul {
+                // width: 100%;
+                @include flex();
+                @include absolute($l: 50%, $b: 0px);
+                transform: translateX(-50%);
+                li {
+                    margin: 2.5px;
+                    position: relative;                    
+                    a {
+                        display: inline-block;
+                        width: 5px;
+                        height: 5px;
+                        border-radius: 100%; 
+                        &.ico-1 {
+                            background-color: #89cff0;
+                        }
+                        &.ico-2 {
+                            background-color: #8a86d6;
+                        }
+                        &.ico-3 {
+                            background-color: #29ccd3;
+                        }
+                        &.ico-4 {
+                            background-color: #f9c93c;
+                        }
+                        &.ico-5 {
+                            background-color: #f9993c;
+                        }
+                        &.ico-6 {
+                            background-color: #f191ab;
+                        }
+                        &.ico-7 {
+                            background-color: #c0c6db;
+                        }              
+                    }
+                    button {
+                        font-size: 10px;
+                        color: $c-bk-light;
+                    }    
+                }
+            }
+        }        
+    }
+    .sun {
+        color: $c-red;
+        p, a {
+            color: $c-red;
+        }              
+    }
+    .sat {
+        color: $c-sub;
+        p, a {
+            color: $c-sub;
+        }  
+    }
+    .today {       
+        position: relative;
+        &:before {
+            content: '';
+            @include absolute($l: 50%, $t: 26px);
+            transform: translateX(-50%);
+            width: 30px; 
+            height: 10px;
+            padding: 0;
+            background: #ffee5f;
+        }
+        p {
+            position: relative;
+            top: 7px;
+            a {
+                @include absolute($l: 50%, $t: 50%);
+                transform: translate(-50%, -50%);
+            }
+        }
+        span {
+            display: block;            
+            @include fontset($fs: 10px, $fc: $c-main);
+            @include absolute($l: 50%, $t: 55px);
+            transform: translateX(-50%);
+        }              
+    }
+    .none {
+        opacity: 0.5;
+    }
+}

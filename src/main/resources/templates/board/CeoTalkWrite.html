@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+
+<script type="text/javascript">
+
+// 부서 코드 추가
+
+function wec_OnInitCompleted(){
+	document.Wec.Value = frm.content.value;
+}
+function btnSave_onclick() {
+
+	var result = 'CEOTALK';
+	
+	var today = new Date();
+	var sFrm = document.frm;
+	if(sFrm.subject.value == ""){
+		alert("제목을 입력하세요.");
+		sFrm.subject.focus();
+		return;
+	}
+	
+	// 에디터의 내용이 textarea에 적용됩니다.
+	//oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+	sFrm.content.value = jQuery('#summernote').summernote('code');
+	
+	// 에디터의 내용에 대한 값 검증은 이곳에서 document.getElementById("ir1").value를 이용해서 처리하면 됩니다.
+	if(sFrm.content.value == ""){
+		alert("내용을 입력하세요.");
+		return;
+	}
+	
+	jQuery.ajax({
+		 type : 'post',
+		url : '/_new/board/doCeoTalkWrite',
+		data : formToJsonString("#frm"),
+		dataType : 'json',
+		contentType: 'application/json',
+		error: function(xhr, status, error){				
+			alert("저장할 수 없습니다.");
+		},
+		success : function(json){
+			alert("등록되었습니다.");
+			location.href = "/_new/board/CeoTalk";
+			
+		}
+	});
+}
+
+
+</script>
+</head>
+<body>
+<form name="frm" id="frm" method="post">
+	<div class="location">
+		<p class="menu_title">공지사항</p>
+		<ul>
+			<li class="home">HOME</li>
+			<li>게시판</li>
+			<li>
+				<td width="100%" align="left"><span class="mainTitle">CEO 두드림</span></td>
+			</li>
+		</ul>
+	</div>
+	<!-- // location -->
+	
+	<div class="contents sub"><!-- 서브 페이지 .sub -->
+		<input type="hidden" name="projectCode" value="111" />
+		
+		<div class="fixed_box">
+			<div class="title">
+				<div class="h1_area">
+					<p class="h1"><i class="mdi mdi-file-document-outline"></i>내용 작성</p>
+				</div>
+				<div class="btn_area">
+					<button type="button" class="btn line btn_blue" onclick="location.href='javascript:btnSave_onclick();'"><i class="mdi mdi-content-save-outline"></i>저장</button>
+					<button type="button" class="btn line btn_grey" onclick="location.href='javascript:history.back()'"><i class="mdi mdi-backburger"></i>목록</button>
+				</div>
+			</div>
+				
+					
+			<div class="fixed_contents sc">
+				<!-- Table Write-->	
+				<table class="tbl-view write"><!-- 내용 작성 .write -->
+					<thead>
+						<colgroup>
+							<col style="width: 11%">
+							<col style="Width: 39%">
+							<col style="width: 11%">
+							<col style="Width: 39%">
+						</colgroup>
+						<tr>
+							<th><label for="subject">제목</label></th>
+							<td colspan="3">
+							
+							<input type="text" name="subject" class="subject" th:unless="${CeoTalkDetail} != NULL" value=""/>
+							<input type="text" name="subject" class="subject" th:if="${CeoTalkDetail} != NULL" th:value="${CeoTalkDetail.SUBJECT}" /></td>
+							<input type="hidden" name="SEQ" th:if="${CeoTalkDetail} != NULL" th:value="${CeoTalkDetail.SEQ}" />
+							
+							<input type="hidden" name="SEQ" th:unless="${CeoTalkDetail} != NULL" value="" />
+							
+							<input type="hidden" name="saveMode"  th:value="${saveMode}">
+							<input type="hidden" name="bbsId" value="CEOTALK">
+							
+		
+							<input type="hidden" name="ref"   value="">
+							<input type="hidden" name="step"  value="">
+							<input type="hidden" name="lev"   value="">	
+						</tr>
+					</thead>												
+					<tbody>
+						<tr>
+							<td colspan="4" style="padding: 0 1% 0 1% ">
+								<!-- 에이터 영역 .text_editor -->
+						<div class="text_editor sc">
+						<textarea id="summernote" name="content" th:if="${CeoTalkDetail} != NULL" th:text="${CeoTalkDetail.CONTENT}"></textarea>
+
+						<textarea id="summernote" name="content" th:unless="${CeoTalkDetail} != NULL"></textarea>
+						
+<!-- 웹에디터 시작-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Summernote</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+</head>
+<body>
+
+<script>
+	jQuery(document).ready(function() {
+		jQuery('#summernote').summernote({
+			height: 500,
+			focus : true,
+			placeholder : '게시글을 입력해 주세요.',
+			dialogsInBody: true,
+			fontNames: ['나눔고딕','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체','Arial', 'Arial Black', 'Comic Sans MS', 'Courier New'],
+	        toolbar: [
+	                  ['fontname', ['fontname']],
+	                  ['fontsize', ['fontsize']],
+	                  ['style', ['bold', 'underline','strikethrough']],
+	                  ['color', ['forecolor','color']],
+		  			  ['table', ['table']],
+					  ['para', ['ul', 'ol', 'paragraph']],
+					  ['height', ['height']],
+					  ['view', ['codeview']],
+	                  ['link', ['linkDialogShow', 'unlink']]
+	                ],
+              popover: {
+              	  image: [
+              	    ['image', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+              	    ['float', ['floatLeft', 'floatRight', 'floatNone']],
+              	    ['remove', ['removeMedia']]
+              	  ],
+              	  link: [
+              	    ['link', ['linkDialogShow', 'unlink']]
+              	  ],
+              	  table: [
+              	    ['add', ['addRowDown', 'addRowUp', 'addColLeft', 'addColRight']],
+              	    ['delete', ['deleteRow', 'deleteCol', 'deleteTable']],
+              	  ],
+              	  air: [
+              	    ['color', ['color']],
+              	    ['font', ['bold', 'underline', 'clear']],
+              	    ['para', ['ul', 'paragraph']],
+              	    ['table', ['table']],
+              	    ['insert', ['link', 'picture']]
+              	  ]
+              	}         
+		});
+		jQuery('#summernote').summernote('foreColor', 'black');
+	});
+</script>
+</body>
+</html>
+										<!--웹에디터 끝 -->
+								</div>
+								<!-- // 에이터 영역 .text_editor -->												
+							</td>
+						</tr>						
+					</tbody>
+				</table>
+				<!-- // Table Write-->
+			</div>		
+		</div>	
+		<!-- // fixed box -->
+	</div>
+</form>
+</body>
+</html>		

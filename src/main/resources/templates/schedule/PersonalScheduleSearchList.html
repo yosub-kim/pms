@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<!--/* ====================== Renewal jQuery include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery.selectric.min.js"></script><!-- 셀렉트 박스 UI-->
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+
+<script type="text/javascript">
+
+function personalScheduleDetail(){
+	var startYear = $("#startYear").val();
+	var startMonth = $("#startMonth").val();
+	var endYear = $("#endYear").val();
+	var endMonth = $("#endMonth").val();
+	var keyword = $("#keyword").val();
+	
+	location.href = "/_new/schedule/personal/search/list"+"?startYear="+parseInt(startYear)+"&startMonth="+parseInt(startMonth)+"&endYear="+parseInt(endYear)+"&endMonth="+parseInt(endMonth)+"&keyword="+keyword;
+}
+/*popup layout*/
+window.onload=function(){
+	layer_open(this, 'pop_register');
+}
+
+</script>
+</head>
+
+<body>
+<form name="frm" method="get">
+	<div style="display: none">
+		<input type="hidden" id="today" name="today" value="<c:out value="${today}" />" />
+	</div>
+	<div style="padding: 10 10 0 10">
+		<!-- <div class="popup_bg"></div> -->
+		<div id="pop_register" class="popup_layer pop_register">
+		<div class="fixed_contents sc">
+			<div class="popup_inner tbl-sc" style="width:900px; ">
+				<div class="board_box">
+					<div class="title_both">
+						<div class="h1_area">
+							<p class="term">
+								<i class="mdi mdi-file-document-outline"></i>
+								개인일정 검색
+							</p>
+						</div>
+						<div class="month_select">
+							<div class="select_area">
+								<select name="startYear" id="startYear" class="selectbox" >
+									<option th:each="startYear : ${#numbers.sequence(#dates.year(#dates.createNow())-3, #dates.year(#dates.createNow()) + 3)}" 
+									th:value="${startYear}" th:text="${startYear}" th:selected="${startYear eq searchParam.startYear}" ></option>
+								</select>
+								<select name="startMonth" id="startMonth" class="selectbox">
+									<option th:each="startMonth : ${#numbers.sequence(1, 12)}" 
+									th:value="${startMonth}" th:text="${startMonth}" th:selected="${startMonth eq searchParam.startMonth}" ></option>
+								</select>														
+							</div>
+							<span>~</span>
+							<div class="select_area">
+								<select name="endYear" id="endYear" class="selectbox" >
+										<option th:each="endYear : ${#numbers.sequence(#dates.year(#dates.createNow())-3, #dates.year(#dates.createNow()) + 3)}" 
+										th:value="${endYear}" th:text="${endYear}" th:selected="${endYear eq searchParam.endYear}" ></option>
+								</select>
+								<select name="endMonth" id="endMonth" class="selectbox">
+										<option th:each="endMonth : ${#numbers.sequence(1, 12)}"
+										th:value="${endMonth}" th:text="${endMonth}" th:selected="${endMonth eq searchParam.endMonth}" ></option>
+								</select>														
+							</div>
+							<input type="text" style="width: 200px;" name="keyword" id="keyword" placeholder=" 내용 / 고객사를 입력하세요." title=" 검색어를 입력하세요." th:value="${searchParam.keyword}"
+							onKeypress='javascript:if(event.keyCode==13) {personalScheduleDetail();}' />
+							<button type="button" class="btn btn_blue" onclick="javascript:personalScheduleDetail();">검색</button>
+						</div>
+					</div>
+				
+					<div class="board_contents sc">
+						<!-- Table View-->
+						<table class="tbl-list all">
+							<colgroup>
+								<col style="width: 10%" />
+								<col style="width: 15%" />
+								<col style="width: 15%" />
+								<col style="width: *%" />
+								<col style="width: 15%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>일정 타입</th>
+									<th>일자</th>
+									<th>시간</th>
+									<th>내용</th>
+									<th>고객사</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="rs : ${mainList}">
+									<td th:text="${rs.type}"></td>
+									<td th:text="${rs.year + '.' + rs.month + '.' + rs.day}"></td>
+									<td th:text="${rs.startHour + ':' + rs.startMin + '~' + rs.endHour + ':' + rs.endMin}"></td>
+									<td class="subject"><a th:text="${rs.content}"></a></td>
+									<td th:text="${rs.customerName}"></td>
+								</tr>
+								<tr th:if="${#lists.isEmpty(mainList)}">
+									<td colspan="5">검색된 데이터가 없습니다.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</form>
+</body>
+</html>

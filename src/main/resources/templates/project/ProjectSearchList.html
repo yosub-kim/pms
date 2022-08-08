@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->		
+<link rel="stylesheet" href="/_new/css/selectric.css" type="text/css" /><!-- 셀렉트 박스 UI -->
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />
+
+<!--/* ====================== Renewal jQuery include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery.selectric.min.js"></script><!-- 셀렉트 박스 UI-->
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+
+
+
+
+<script type="text/javascript">
+	function doInit() {
+		document.location.href = "/_new/project/searchList";
+	}
+	function doSearch() {
+		$("#pagingPage").val("1");
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/project/searchList?" + query;
+	}
+	function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/project/searchList?"+query;
+	}
+	function goProjectDetail() {
+		document.location.href = "/action/ProjectSearchAction.do"
+			+"?mode=getProjectInfoTab&viewMode=projectSearch&projectCode="+projectCode;
+	}
+
+</script> 	
+</head>
+
+<body class="load"> 
+<form name="projectSearchListForm" method="get">
+	<div style='display: none;'>
+		<input type="hidden" name="pagingPage" id="pagingPage" th:value="${searchParam.pagingPage}"/>
+	</div>
+	<div class="sub_location">
+		<div class="location">
+			<p class="menu_title">프로젝트 전체현황</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>PMS</li>
+				<li>프로젝트 현황</li>
+				<li>프로젝트 전체현황</li>
+			</ul>
+		</div>	
+	</div>
+	
+	<div class="contents sub"><!-- 서브 페이지 .sub -->
+		<div class="box">
+			<div class="search_box"><!-- 셀렉트 박스 없을 경우 .select_none -->
+				<div class="select_group">
+					<div class="search_input_box">
+						<div class="search_input">
+							<label for="search"></label>
+							<input type="text" name="keyword" th:value="${searchParam.keyword}" id="search" placeholder="검색어를 입력하세요. (프로젝트 정보 / 키워드 / 고객사)" 
+								onKeypress='javascript:if(event.keyCode==13) {doSearch();}'
+								/>
+						</div>
+					</div>
+				</div>
+				<div>
+					<button type="button" class="btn btn_blue" onclick="javascript:doSearch();">검색</button>	
+				</div>
+			</div>
+		</div>
+		<!-- // 검색 창 -->	
+		<div class="board_List_wrap">
+			<!-- 검색 조건 -->								
+			<div class="box search_detail">
+				<div class="title_area">
+					<p>검색조건</p>
+					<button type="button" class="btn btn_d_grey" onclick="javascript:doInit();">초기화</button>		
+				</div>
+
+				<div class="tbl-wrap sc">
+					<div class="search_list">
+						<p class="h1">기간선택</p>
+						<div class="month_check">
+							<div class="input_date">
+								<input type="text" style="width: 100%" title="조회 기간 선택" id="realStartDate" name="realStartDate" th:value="${searchParam.realStartDate}"/>
+								<script>
+								jQuery(function(){jQuery( "#realStartDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>								
+							</div>
+							&nbsp<!-- <span>~</span> -->
+							<div class="input_date">
+								<input type="text" style="width: 100%"  title="조회 기간 선택" id="realEndDate" name="realEndDate" th:value="${searchParam.realEndDate}"/>
+								<script>
+								jQuery(function(){jQuery( "#realEndDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>
+							</div>
+						</div>
+						<ul class="dropdown">
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">비즈니스 타입</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="bizType, index : ${bizTypeAgg}">
+											<div><input type="checkbox" name="businessTypeCode" th:id="'biz_'+${index.index}" class="btn_check" th:value="${bizType.businessTypeCode}" 
+												onclick="javascript:doSearch()" th:checked="${bizType.checked}" />
+                							<label th:for="'biz_'+${index.index}"><p th:text=${bizType.businessTypeCodeName}></p></label></div><p th:text="${bizType.cnt}"></p>
+										</li>
+									</ul>
+								</div>
+							</li>		
+														
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">조직단위</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="runningDept, index : ${runningDeptAgg}"><div><input type="checkbox" name="runningDeptCode" th:id="'runningDept_'+${index.index}" class="btn_check" th:value="${runningDept.runningDeptCode}" 
+											onclick="javascript:doSearch()" th:checked="${runningDept.checked}"  />
+                							<label th:for="'runningDept_'+${index.index}"><p th:text=${runningDept.runningDeptCodeName}></p></label></div><p th:text=${runningDept.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+													
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">상태</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="state, index : ${stateAgg}"><div><input type="checkbox" name="projectState" th:id="'state_'+${index.index}" class="btn_check" th:value="${state.projectState}" 
+											onclick="javascript:doSearch()" th:checked="${state.checked}"  />
+                							<label th:for="'state_'+${index.index}"><p th:text=${state.projectStateName}></p></label></div><p th:text=${state.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							
+							<li class="on">
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">프로젝트 유형</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="projectType, index : ${projectTypeAgg}"><div><input type="checkbox" name="projectTypeCode" th:id="'projectType_'+${index.index}" class="btn_check" th:value=${projectType.projectTypeCode} 
+											onclick="javascript:doSearch()" th:checked="${projectType.checked}"  />
+                							<label th:for="'projectType_'+${index.index}"><p th:text=${projectType.projectTypeCodeName}></p></label></div><p th:text=${projectType.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<!--/* 
+							<li>
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">Div</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="runningDiv, index : ${runningDivAgg}"><div><input type="checkbox" name="runningDivCode" th:id="'runningDiv_'+${index.index}" class="btn_check" th:value="${runningDiv.runningDivCode}"
+											onclick="javascript:doSearch()" th:checked="${runningDiv.checked}"  />
+                							<label th:for="'runningDiv_'+${index.index}"><p th:text=${runningDiv.runningDivCodeName}></p></label></div><p th:text=${runningDiv.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							*/-->
+							
+							<!--/* 
+							<li>
+								<div class="drop_title"><a href="javascript:;" title="메뉴 보이기/숨기기">고객사</a></div>
+								<div class="drop_data sc">
+									<ul class="chek_ui sc">
+										<li th:each="customer, index : ${customerAgg}"><div><input type="checkbox" name="customerCode" th:id="'customer_'+${index.index}" class="btn_check" th:value="${customer.customerCode}" 
+											onclick="javascript:doSearch()" th:checked="${customer.checked}"   />
+                							<label th:for="'customer_'+${index.index}"><p th:text=${customer.customerName}></p></label></div><p th:text=${customer.cnt}></p>
+										</li>
+									</ul>
+								</div>
+							</li>
+							*/-->
+							
+							
+						</ul>
+					</div>
+
+				</div>
+				<!-- // tbl-wrap -->
+			</div>							
+			<!-- // 검색 조건 -->		
+			
+			<!-- 테이블 리스트 -->					
+			<div class="box board_detail">
+				<div class="a-both total">
+					<p>총<span th:text="${searchParam.totalNumberOfEntries}" th:remove="tag"></span>건</p>
+					<div class="btn_area">
+						<select class="tric_01" name="pagingNumberPer" id="pagingNumberPer">
+							<option value="10" th:selected="${searchParam.pagingNumberPer}=='10'">10개 보기</option>
+							<option value="30" th:selected="${searchParam.pagingNumberPer}=='30'">30개 보기</option>
+							<option value="50" th:selected="${searchParam.pagingNumberPer}=='50'">50개 보기</option>
+						</select>
+						&nbsp
+						<button type="button" class="btn btn_a_grey" th:onclick="'location.href=\''+@{~/action/ProjectSearchAction.do?mode=getProjectSearchList}+ '\''">이전 프로젝트 검색</button>
+					</div>
+				</div>
+					
+				<div class="tbl-wrap sc">
+					<table class="tbl-list all"><!-- 전체현황 테이블 .all -->
+						<colgroup> 
+							<col width="10%">
+							<col width="10%">
+							<col width="*">
+							<col width="13%">
+							<col width="13%">
+							<col width="13%">
+							<col width="10%">
+						</colgroup>
+						<thead>
+							<tr>
+								<th rowspan="2">상태</th>
+								<th rowspan="2">구분</th>
+								<th rowspan="2">프로젝트 정보</th>
+								<th rowspan="2">고객사</th>
+								<th rowspan="2">조직단위</th>								
+								<th>시작일/종료일</th>
+								<th rowspan="2">상세정보</th>
+								<!-- <th>산출물</th> -->
+							</tr>
+						</thead>
+												
+						<tbody>
+							<tr th:each="rs, iterState : ${mainList}">
+								<td th:text="${rs.projectStateName}"></td>
+								<td th:text="${rs.businessTypeCodeName}"></td>
+								<td style="cursor: pointer; text-align:left;"><a th:href="@{~/action/ProjectSearchAction.do(mode=getProjectInfoTab, viewMode=projectSearch, projectCode=${rs.projectCode})}" th:text="${'[' + rs.projectCode+'] '+rs.projectName}"></a></td>
+								<!--<td style="cursor: pointer;" th:onclick="'location.href=\''+ @{~/action/ProjectSearchAction.do(mode=getProjectInfoTab, viewMode=projectSearch, projectCode=${rs.projectCode})} + '\''"><p th:text="${'[' + rs.projectCode+'] '+rs.projectName}"></p></td>-->
+								<td><p th:text="${rs.customerName}"></p></td>
+								<td th:text="${rs.runningDeptCodeName}"></td>
+								<td class="rowspan" style="font-size: 13px"><span th:text="${#temporals.createDate(rs.realStartDate, 'yyyyMMdd')}"></span>
+								<br><span th:text="${#temporals.createDate(rs.realEndDate, 'yyyyMMdd')}"></span></td>
+								<td><a th:href="@{~/action/ProjectSearchAction.do(mode=getProjectInfoTab, viewMode=projectSearch, projectCode=${rs.projectCode})}" th:class="ico-file"></a></td>
+								<!-- <td th:text="${rs.cnt}"></td> -->
+							</tr>
+							<tr th:if="${#lists.isEmpty(mainList)}">
+								<td colspan="7">검색된 데이터가 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+									<div class="paging_area">
+					<SCRIPT LANGUAGE="JavaScript" th:inline="javascript">
+					/*<![CDATA[*/ 
+						var pagingPage = /*[[ ${searchParam.pagingPage} ]]*/; 
+						var totalNumberOfEntries = /*[[ ${searchParam.totalNumberOfEntries} ]]*/; 
+						var pagingNumberPer = /*[[ ${searchParam.pagingNumberPer} ]]*/; 
+					/*]]*/
+						document.write(makePageHtml2(pagingPage, 10, totalNumberOfEntries, pagingNumberPer)) ;
+					</SCRIPT>				
+				</div>
+				</div>
+			</div>			
+		</div>
+
+	</div>
+
+</form>
+</body>
+</html>

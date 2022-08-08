@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<script type="text/javascript" src="/_new/js/common.js"></script>
+
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+
+
+</script> 
+<style type="text/css">
+.all_silver{
+background: #fcfcfc;
+}
+.all_white{
+background: #fff;
+}
+.all_white td{
+background: #fff !important;
+}
+.total p{
+margin-left: 0px;
+margin-bottom: 5px
+} 
+
+</style>
+</head>
+<script>
+	$(function () {
+		initDate();
+		searchManagementDoubleSaleList();
+	})
+	var projectCnt = 0;
+	var oddFlag = true;
+	
+	function searchManagementDoubleSaleList(){
+		$.ajax({
+			type: "POST",
+			contentType: 'application/json',
+			url : "/_new/admin/managementDoubleSaleList",
+			data: formToJsonString("#frm"),
+			dataType: "json",
+			cache: false,
+			//traditional : true,
+			timeout: 60000
+	})
+		.done(function(data, textStatus, jqXHR ) { 
+			var html = '';
+			projectCnt = 0;
+			oddFlag = true;
+			
+			for(var i=0;i<data.length;i++){
+				html += makeHtml(html, data[i],i+1, data[0].adminFlag);
+			}
+			if(html == ''){
+				html = `<tr class="all_white">
+							<td height="25" align="center" colspan='8'>조회된 데이터가 없습니다.</td>
+						</tr>`
+			}
+			$("#tbodyArea").html(html);
+		}) 
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+		});
+	}
+	function makeHtml(html,data,rownum, adminFlag){
+		// 홀수 짝수열 색 구분
+		var colorClass = "all_white";
+		if(oddFlag){
+			colorClass = "all_silver";
+		}
+		console.log(adminFlag);
+		// 프로젝트 메인부서인경우
+		if(data.GUBUN == 'main'){
+		
+		projectCnt = 1;
+			//  협업사업인경우
+				if(data.recordType == 'cprtn'){
+				html = `<tr class="${colorClass}">
+								<td height="25" align="center" rowspan='${data.ROWSPAN+1}'>${data.recordTypeNAME}</td>
+								
+								<td  align="right" rowspan='${data.ROWSPAN+1}'>${data.PJCode}</td>
+								<td  align="right" rowspan='${data.ROWSPAN+1}'>${data.SUBJECT}</td>
+								<td  align="right">[메인: ${data.DESCRIPTION}]</td>
+								
+								<td  align="right" rowspan='${data.ROWSPAN+1}'>${data.REGISTERDATE}</td>
+							
+								<td  align="right">${data.PER} %</td>
+									<td  align="right">` + priceToString(data.DEPTAMT) +` 원</td>
+								<td  align="right"  rowspan='${data.ROWSPAN+1}' style="display:${adminFlag ? '' : 'none'}">
+									<select style="height: 40px" onchange="saveAccountConfirmYN('${data.PJCode}',this.value,'${adminFlag}')" ${adminFlag ? '' : 'disabled'}>
+										<option value="Y" ${data.ACCOUNTCONFIRMYN == 'Y' ? 'selected' : ''}>완료</option>
+										<option value="N" ${data.ACCOUNTCONFIRMYN == 'N' ? 'selected' : '' }>미완료</option>
+									</select>
+								</td>
+						</tr>`
+				//  이중매출인경우
+				}else{
+				html = `<tr class="${colorClass}">
+							<td height="25" align="center" rowspan='2'>${data.recordTypeNAME}</td>
+							
+							<td  align="right" rowspan='2'>${data.PJCode}</td>
+							<td  align="right" rowspan='2'>${data.SUBJECT}</td>
+							<td  align="right">[메인: ${data.DESCRIPTION}]</td>
+							
+							<td  align="right" rowspan='2'>${data.REGISTERDATE}</td>
+							
+							<td  align="right">${data.PER} %</td>
+							<td  align="right">` + priceToString(data.DEPTAMT) +` 원</td>
+							<td  align="right"  rowspan='2' style="display:${adminFlag ? '' : 'none'}">
+								<select style="height: 40px" onchange="saveAccountConfirmYN('${data.PJCode}',this.value,'${adminFlag}')" ${adminFlag ? '' : 'disabled'}>
+									<option value="Y" ${data.ACCOUNTCONFIRMYN == 'Y' ? 'selected' : ''}>완료</option>
+									<option value="N" ${data.ACCOUNTCONFIRMYN == 'N' ? 'selected' : '' }>미완료</option>
+								</select>
+							</td>
+						</tr>`
+				
+				}
+		// 프로젝트 서브부서인경우
+		}else{
+		projectCnt = projectCnt + 1;
+				//  협업사업인경우
+				if(data.recordType == 'cprtn'){
+					html = `<tr class="${colorClass}">
+									<td  align="right">[서브: ${data.DESCRIPTION}]</td>
+									<td  align="right">${data.PER} %</td>
+									<td  align="right">` +priceToString(data.DEPTAMT)+` 원</td>
+									
+							</tr>`
+						if(projectCnt == data.ROWSPAN){
+					oddFlag = !oddFlag;
+						html += `<tr class="${colorClass}" style="font-weight:bolder;">
+								<td  align="right" style="color:#89cff0">소계</td>
+								<td  align="right" style="color:#89cff0">100 %</td>
+								<td  align="right" style="color:#89cff0">` +priceToString(data.SALESAMT)+` 원</td>
+								
+							</tr>
+							`
+						
+						}
+							
+				//  이중매출인경우
+				}else{
+				oddFlag = !oddFlag;
+					html = `<tr class="${colorClass}">
+									<td  align="right">[서브: ${data.DESCRIPTION}]</td>
+									<td  align="right">${data.PER} %</td>
+									<td  align="right">` +priceToString(data.DEPTAMT) +` 원</td>
+									
+							</tr>`
+				}
+		}
+		
+		return html;
+	}
+	// 금액 , 표시
+	function priceToString(price) {
+		return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	}
+	
+	function initDate(){
+		var date = new Date();
+		var firstDay = makeDateformat(new Date(date.getFullYear(), date.getMonth(), 1));
+		var lastDay = makeDateformat(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+		
+		$("#realStartDate").val(firstDay);
+		$("#realEndDate").val(lastDay);
+	}
+	function makeDateformat(date){
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var date = date.getDate();
+		if(date < 10){
+			date = '0'+date;
+		}
+		if(month < 10){
+			month = '0'+month;
+		}
+		return year+'-'+month+'-'+date;
+	}
+	function saveAccountConfirmYN(PJCode,ACCOUNTCONFIRMYN,adminFlag){
+		if(!adminFlag){
+			alert("관리자만 수정 가능합니다.");
+			return false;
+		}
+		$.ajax({
+			type: "POST",
+			contentType: 'application/json',
+			url : "/_new/admin/saveAccountConfirmYN",
+			data: JSON.stringify({PJCode:PJCode,ACCOUNTCONFIRMYN:ACCOUNTCONFIRMYN}),
+			dataType: "json",
+			cache: false,
+			//traditional : true,
+			timeout: 60000
+		})
+		.done(function(data, textStatus, jqXHR ) { 
+			if(data.result == 1){
+				alert("변경되었습니다.");
+			}else{
+				alert("오류가 발생했습니다.");
+			}
+		}) 
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+			alert("오류가 발생했습니다.");
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+			
+		});
+	}
+	
+</script>
+
+<body>
+	<div class="wrap">
+		<div class="location">
+			<p class="menu_title">이중매출/협업사업 현황</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>경영관리</li>
+				<li>사업관리</li>
+				<li>이중매출/협업사업 현황</li>
+			</ul>
+		</div> <!-- // location -->
+		 <div class="contents sub"> <!-- 서브 페이지 .sub -->
+			<form id="frm" name="frm" method="post"> 
+				<div class="box">
+					<div class="search_box total">
+						<div class="select_group">
+						
+								<div class="label_group" style="flex: 0.23">
+									<p>실적인정유형</p>
+									<select class="select" name="RECORDTYPE" style="width: 100%;" onchange="searchManagementDoubleSaleList()">
+										<option value="" >전체</option>
+										<option value="double" >이중매출</option>
+										<option value="cprtn" >협업사업</option>
+									</select>				
+								</div>
+								<div class="label_group" style="flex: 0.23">
+									<p>기간 (품의서)</p>
+									<div class="month_check">
+							<div class="input_date">
+								<input type="text" style="width: 100%;height: 41px;font-size: 14px" title="조회 기간 선택" id="realStartDate" name="realStartDate" onchange="searchManagementDoubleSaleList()"/>
+								<script>
+								jQuery(function(){jQuery( "#realStartDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>								
+							</div>
+							<span>~</span>
+							<div class="input_date">
+								<input type="text" style="width: 100%;height: 41px;font-size: 14px"  title="조회 기간 선택" id="realEndDate" name="realEndDate" onchange="searchManagementDoubleSaleList()"/>
+								<script>
+								jQuery(function(){jQuery( "#realEndDate" ).datepicker({dateFormat: 'yy-mm-dd'});});
+								</script>
+							</div>
+						</div>
+								</div>
+						
+
+								<div class="label_group" style="flex: 0.23">
+									<p>품의부서 (메인부서)
+									<span class="tooltip"><span class="aqua"><i class="mdi mdi-comment-question" style="font-size: 25px;position: absolute;bottom: -5px;"></i></span>
+									<span class="tooltip_box" style="z-index: 9999;min-width: 400px">
+									<span class="pink">[메인부서]</span> 
+									<span style="color: black">품의를 올리고, 거래처에 세금계산서를 발행하는 부서</span> <br>
+									<span class="pink">[이중매출 - 서브부서]</span> 
+									<span style="color: black">메인부서와 같이 100% 매출액을 인정받는 부서</span><br>
+									<span class="pink">[협업사업 – 서브부서]</span> 
+									<span style="color: black">총 매출액을 분배비율에 따라 배분받는 부서(들)</span>
+									</span>
+									</span>
+									</p>
+									
+									 <select class="select"name="deptcode" id="deptcode" style="width: 100%;" onchange="searchManagementDoubleSaleList()">
+										<option value='' >전체</option>
+										<option value="9390">Advisory Group</option>
+										<option value="2040">CSO</option>
+										<option value="2050">CCO</option>
+										<option value="9300">기업가치혁신부문 부문장</option>
+										<option value="9302">기업가치진단본부</option>
+										<option value="9303">사업가치진단본부</option>
+										<option value="9304">ESG혁신본부</option>
+										<option value="9310">고객가치혁신부문 부문장</option>
+										<option value="9312">리서치혁신본부</option>
+										<option value="9313">고객가치컨설팅센터</option>
+										<option value="9314">공공조사1본부</option>
+										<option value="9315">공공조사2본부</option>
+										<option value="9320">공공혁신1부문 부문장</option>
+										<option value="9321">공공혁신1부문 CPO그룹</option>
+										<option value="9322">공공혁신센터</option>
+										<option value="9323">공공컨설팅1본부</option>
+										<option value="9324">공공컨설팅2본부</option>
+										<option value="9330">공공혁신2부문 부문장</option>
+										<option value="9332">공공컨설팅3본부</option>
+										<option value="9333">공공컨설팅4본부</option>
+										<option value="9334">일터혁신센터</option>
+										<option value="9335">지자체평가센터</option>
+										<option value="9340">스마트혁신부문 부문장</option>
+										<option value="9342">스마트/PI본부</option>
+										<option value="9343">데이터사업센터</option>
+										<option value="9344">에너지/환경본부</option>
+										<option value="9345">글로벌사업센터</option>
+										<option value="9350">인재혁신부문 부문장</option>
+										<option value="9352">스마트교육본부</option>
+										<option value="9353">기업교육센터</option>
+										<option value="9354">공공교육본부</option>
+										<option value="9355">대학사업센터</option>
+										<option value="9356">정부정책사업본부</option>
+										<option value="9360">미디어콘텐츠혁신부문 부문장</option>
+										<option value="9361">미디어센터</option>
+										<option value="9362">지식혁신센터</option>
+										<option value="9370">전략사업센터 부문장</option>
+										<option value="9371">전략사업센터</option>
+										<option value="9380">경영기획실 부문장</option>
+										<option value="9381">경영기획센터</option>
+										<option value="9382">경영관리센터</option>
+										<option value="9383">Information</option>
+										<option value="9384">비즈니스스쿨</option>
+									</select>
+								</div>
+								<div class="label_group" style="flex: 0.23" th:if="${adminFlag}" >
+									<p>회계 처리여부</p>
+									<select class="select"name="ACCOUNTCONFIRMYN" id="ACCOUNTCONFIRMYN" style="width: 100%;" onchange="searchManagementDoubleSaleList()">
+										<option value='' >전체</option>
+										<option value='Y' >완료</option>
+										<option value='N' >미완료</option>
+									</select>
+								</div>
+						
+						</div>
+						<!-- <div><button type="button" class="btn btn_blue" onclick="javascript:do_search();">검색<i class="mdi mdi-magnify"></i></button></div> -->
+					</div>
+				</div>
+			</form>
+			
+				<!-- 표 -->
+				<div class="board_box">
+				<div class="title_both">
+					<div class="h1_area">
+						<p class="h1">이중매출/협업사업 현황</p>
+					</div>
+				</div>
+
+					<div class="board_contents">
+
+					<table class="tbl-edit td-c pd-none">
+							<colgroup>
+								<col style="width: 5%;" />
+								<col style="width: 7%;" />
+								<col style="width: 38%;" />
+								<col style="width: 14%;" />
+								
+								<col style="width: 8%;" />
+								<col style="width: 8%;" />
+								<col style="width: 12%;" />
+								<col style="width: 8%;" th:if="${adminFlag}" />
+							</colgroup>
+							<tr>
+								<th>구분</th>
+								<th>프로젝트코드</th>
+								<th>프로젝트명</th>
+								<th>메인/서브부서</th>
+								<th>품의년월</th>
+								<th>사업비중</th>
+								<th>예산매출액</th>
+								<th th:if="${adminFlag}">회계 처리여부</th>
+							</tr>
+							<tbody id="tbodyArea"> 
+							<!-- 반복1 -->
+							<!-- <tr class="all_silver">
+								<td height="25" align="center" rowspan='2'>이중매출</td>
+								<td  align="right">지식혁신센터</td>
+								<td  align="right" rowspan='2'>203144</td>
+								<td  align="right" rowspan='2'>프로젝트이름입니다.</td>
+								<td  align="right" rowspan='2'>2020-02-29</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+								<td  align="right"  rowspan='2'>
+									<select style="height: 40px">
+										<option>완료</option>
+										<option>미완료</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="all_silver">
+								<td  align="right">공공조사1본부</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+							</tr>
+							
+							
+							<tr class="all_white">
+								<td height="25" align="center" rowspan='2'>이중매출</td>
+								<td  align="right">지식혁신센터</td>
+								<td  align="right" rowspan='2'>203144</td>
+								<td  align="right" rowspan='2'>프로젝트이름입니다.</td>
+								<td  align="right" rowspan='2'>2020-02-29</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+								<td  align="right"  rowspan='2'>
+									<select style="height: 40px">
+										<option>완료</option>
+										<option>미완료</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="all_white">
+								<td  align="right">공공조사1본부</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+							</tr>
+							
+							
+							
+							
+							<tr class="all_silver">
+								<td height="25" align="center" rowspan='2'>이중매출</td>
+								<td  align="right">지식혁신센터</td>
+								<td  align="right" rowspan='2'>203144</td>
+								<td  align="right" rowspan='2'>프로젝트이름입니다.</td>
+								<td  align="right" rowspan='2'>2020-02-29</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+								<td  align="right"  rowspan='2'>
+									<select style="height: 40px">
+										<option>완료</option>
+										<option>미완료</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="all_silver">
+								<td  align="right">공공조사1본부</td>
+								<td  align="right">0</td>
+								<td  align="right">0</td>
+							</tr>
+							
+							반복1 끝
+							반복2
+							<tr class="all_white">
+								<td height="25" align="center" rowspan='3'>협업사업</td>
+								<td  align="right">지식혁신센터</td>
+								<td  align="right" rowspan='3'>203144</td>
+								<td  align="right" rowspan='3'>프로젝트이름입니다.</td>
+								<td  align="right" rowspan='3'>2020-02-29</td>
+								<td  align="right">10,000</td>
+								<td  align="right">30%</td>
+								<td  align="right"  rowspan='3'>
+									<select style="height: 40px">
+										<option>완료</option>
+										<option>미완료</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="all_white">
+								<td  align="right">공공조사1본부</td>
+								<td  align="right">20,000</td>
+								<td  align="right">70%</td>
+							</tr>
+							<tr class="all_white">
+								<td  align="right">소계</td>
+								<td  align="right">30,000</td>
+								<td  align="right">100%</td>
+							</tr> -->
+							<!-- 반복2 끝 -->
+						</tbody>	
+					</table>
+				</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

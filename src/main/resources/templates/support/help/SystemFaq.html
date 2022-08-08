@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=1600">
+<title>KMAC 통합 인트라넷</title>
+<script type="text/javascript" src="/_new/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/_new/js/jquery-ui.js"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+<link rel="stylesheet" href="/_new/css/common.css" type="text/css" />
+<link rel="stylesheet" href="/_new/css/board.css" type="text/css" /><!-- 서브페이지에서만 사용 -->	
+<link rel="stylesheet" href="/_new/css/dev.css" type="text/css" />	
+
+
+<script type="text/javascript" src="/_new/js/common.js"></script>
+<!--/* ====================== pagination js include jsp ============= */-->
+<script type="text/javascript" src="/_new/js/pagination.js"></script>
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../resources/js/html5shiv.js"></script>
+<![endif]-->
+
+<script type="text/javascript">
+function goPage(next_page) {
+		$("#pagingPage").val(next_page);
+		var query = $("input").serialize() + "&" + $("select").serialize();
+		document.location.href = "/_new/board/CeoTalk?"+query;
+	}
+
+
+function doSearch(){
+	 var url ="/_new/board/CeoTalk?keyword="+$("#keyword").val()+"&keyfield="+$("#keyfield").val()
+	 location.href = url;
+}
+
+function goTab(url){
+	var url = '/_new/support/help/'+url;
+	jQuery.ajax({
+			type : 'get',
+			url : url,
+			dataType : 'html',
+			error: function(xhr, status, error){				
+				alert("저장할 수 없습니다.");
+			},
+			success : function(json){
+				$("#tabContents").html(json)
+			}
+		});
+}
+
+$(document).ready(function () {
+	goTab('systemFaqAnswer');
+})
+</script> 
+<style type="text/css">
+.scrollhide::-webkit-scrollbar-thumb {
+    background-color: none;
+    border-radius: 10px;
+    background-clip: padding-box;
+}
+.scrollhide::-webkit-scrollbar {
+    width: 0px;
+    height: 10px;
+}
+.scrollhide::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 10px;
+}
+.weekly_list > ul > li {
+	justify-content: space-around;
+	cursor: pointer;
+}
+.weekly_detail > .on {
+	color: #64c1ed !important;
+}
+
+
+.tit { margin: 0 18px; font-size: 15px; color: #222; position: relative;margin: 0 -18px;padding: 16px 18px;display: flex;}
+.noti_wrap { padding: 0; }
+.noti_wrap li { border-top: solid 1px #e5e5e5; }
+.noti_wrap li .tit { margin: 0;padding-left: 0px;}
+.noti_wrap li .tit p { font-weight: 500; letter-spacing: -0.33px;word-wrap: break-word;word-break: keep-all;}
+.noti_wrap li .view { padding: 15px 18px; border-top: solid 1px #e5e5e5; }
+.noti_wrap li:last-child { border-bottom: solid 1px #e5e5e5; }
+.noti_wrap.accordion p, .noti_wrap.accordion2 a { width: calc(100% - 30px); color: #222222;}
+.point_bg2 {background-color: #f6f8fa;color: #555555;}
+.tit > span {display: flex;justify-content: space-between;width: 100%}
+.tit > span > .questionBox {flex:3;display: flex}
+.tit > span > .btn_area {flex:1}
+p > img {max-width: 900px}
+</style>
+</head>
+<body>
+	
+	<div id="sub_location">
+		<div class="location">
+			<p class="menu_title">
+				<td width="100%" align="left"><span class="mainTitle">시스템 FAQ</span></td>
+			</p>
+			<ul>
+				<li class="home">HOME</li>
+				<li>업무지원</li>
+				<li>
+					<td width="100%" align="left"><span class="mainTitle">시스템 FAQ</span></td>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- // location -->
+	<!-- 서브 페이지 .sub -->
+		
+	<div class="contents sub" style="width: 100%">
+		<div class="tab_menu_area" style="margin: 0px;position: inherit;">
+					<ul id="tab_menu" class="tab_ui" style="top: 140px;position: inherit;width: 100%">
+						<li onclick="goTab('systemFaqAnswer');" class="current"><a href="#" class="current" id="pane1">시스템 FAQ</a></li>
+						<li onclick="goTab('systemFaqQuestion');"><a href="#" id="pane2" >시스템 문의</a></li>
+						<li onclick="goTab('systemSuggestion');"><a href="#" id="pane3">시스템 개선제안</a></li>
+					</ul>
+					<div id="Process_container">
+						<div id="Process_overlay" class="overlay" style="display: none">
+							<img alt="" src="/images/loading.gif" align="middle">
+						</div>
+						<div id="Process" class="pane">
+
+		
+						</div>
+					</div>
+					<p></p>
+							
+		</div>
+		
+		<div id="tabContents">
+
+		
+		</div>
+	</div>
+</body>
+</html>	
+

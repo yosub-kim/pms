@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.kmac.pms.board.mapper.BoardMapper">
+
+
+	<select id="getCeoTalkList" resultType="map" parameterType="HashMap" >
+			DECLARE @PAGE_NO INT = #{pagingPage} -- 페이지 번호
+			DECLARE @PAGE_SIZE INT = 10 -- 한 페이지에 보여줄 row 수
+			SELECT * FROM (
+				 SELECT
+				 	ROW_NUMBER() OVER(ORDER BY SBS.SEQ DESC) AS ROWNUM
+					,SBS.SEQ
+					,SBS.BBSID
+					,SBS.REF
+					,SBS.STEP
+					,SBS.LEV
+					,SBS.WRITER
+					,SBS.WRITERID
+					,SBS.SUBJECT
+					,SBS.EMAIL
+					,SBS.CONTENT
+					,SBS.FILENAME
+					,SBS.MASKNAME
+					,SBS.FILESIZE
+					,SBS.DOWNLOAD
+					,CONVERT(CHAR(10), SBS.WTIME, 23) AS WTIME
+					,SBS.READCNT
+					,SBS.IP
+					,SBS.prjType
+					,SBS.topArticle
+					,SBS.refSchedule
+					,SBS.workDate
+					,SBS.bizTripYN
+					, EP.NAME AS NAME
+					,(SELECT COUNT(commentSeq) FROM CeoTalkBBSComment WHERE bbsid = SBS.bbsid AND seq = SBS.seq) AS COMMENTCNT
+				FROM CeoTalkBBS SBS
+				LEFT JOIN EXPERTPOOL EP
+				ON SBS.writerid = EP.SSN
+				WHERE SBS.BBSID = 'CEOTALK'
+				<if test="SSN != 'A000006'">
+					AND SBS.writerid = #{SSN}
+				</if>
+				<if test="keyfield == 'subject'">
+					AND SBS.SUBJECT LIKE CONCAT('%',#{keyword},'%')
+				</if>
+				<if test="keyfield == 'content'">
+					AND SBS.CONTENT LIKE CONCAT('%',#{keyword},'%')
+				</if>
+				<if test="keyfield == 'writer'">
+					AND EP.NAME  LIKE CONCAT('%',#{keyword},'%')
+				</if>
+				) AA
+				WHERE rownum  BETWEEN ((@PAGE_NO-1)*@PAGE_SIZE)+1 AND (@PAGE_NO*@PAGE_SIZE)
+	</select>
+	<select id="getBoardTotalCNT" resultType="map" parameterType="HashMap" >
+				 SELECT 
+					COUNT(*) AS TOTALCNT
+				FROM CeoTalkBBS SBS
+				LEFT JOIN EXPERTPOOL EP
+				ON SBS.writerid = EP.SSN
+				WHERE BBSID = #{BBSID}
+				<if test="BBSID == 'CEOTALK' and SSN != 'A000006'">
+				AND writerid = #{SSN}
+				</if>
+				<if test="keyfield == 'subject'">
+					AND SBS.SUBJECT LIKE CONCAT('%',#{keyword},'%')
+				</if>
+				<if test="keyfield == 'content'">
+					AND SBS.CONTENT LIKE CONCAT('%',#{keyword},'%')
+				</if>
+				<if test="keyfield == 'writer'">
+					AND EP.NAME  LIKE CONCAT('%',#{keyword},'%')
+				</if>
+	</select>
+	<insert id="doCeoTalkWrite"  parameterType="HashMap" >
+		INSERT INTO CeoTalkBBS (
+			SEQ
+			,BBSID
+			,REF
+			,STEP
+			,LEV
+			,WRITER
+			,WRITERID
+			,SUBJECT
+			,EMAIL
+			,CONTENT
+			,FILENAME
+			,MASKNAME
+			,FILESIZE
+			,DOWNLOAD
+			,WTIME
+			,READCNT
+			,IP
+			,prjType
+			,topArticle
+			,refSchedule
+			,workDate
+			,bizTripYN
+		
+			)
+			VALUES (
+			(SELECT CASE WHEN MAX(SEQ) IS NULL  THEN  0 ELSE MAX(SEQ) END FROM CeoTalkBBS) + 1 
+			,#{bbsId}
+			,#{ref}
+			,0
+			,0
+			,(SELECT NAME FROM EXPERTPOOL WHERE SSN = #{SSN})
+			,#{SSN}
+			,#{subject}
+			,#{EMAIL}
+			,#{content}
+			,#{FILENAME}
+			,#{MASKNAME}
+			,#{FILESIZE}
+			,0
+			,getDATE()
+			,0
+			,#{IP}
+			,#{prjType}
+			,#{topArticle}
+			,#{refSchedule}
+			,getDATE()
+			,'N'
+			)
+	</insert>
+	<select id="getCeoTalkDetail" resultType="map" parameterType="HashMap" >
+				 SELECT
+				 	ROW_NUMBER() OVER(ORDER BY SBS.WTIME) AS ROWNUM
+					,SBS.SEQ
+					,SBS.BBSID
+					,SBS.REF
+					,SBS.STEP
+					,SBS.LEV
+					,SBS.WRITER
+					,SBS.WRITERID
+					,SBS.SUBJECT
+					,SBS.EMAIL
+					,SBS.CONTENT
+					,SBS.FILENAME
+					,SBS.MASKNAME
+					,SBS.FILESIZE
+					,SBS.DOWNLOAD
+					,CONVERT(CHAR(10), SBS.WTIME, 23) AS WTIME
+					,SBS.READCNT
+					,SBS.IP
+					,SBS.prjType
+					,SBS.topArticle
+					,SBS.refSchedule
+					,SBS.workDate
+					,SBS.bizTripYN
+					,EP.DEPTNAME +' '+EP.COMPANYPOSITIONNAME+' '+EP.NAME AS NAME
+					,CASE WHEN SBS.WRITERID = #{SSN} THEN 'Y' ELSE 'N' END AS MYBoardYN
+				FROM CeoTalkBBS SBS
+				LEFT JOIN EXPERTPOOL EP
+				ON SBS.writerid = EP.SSN
+				WHERE SBS.SEQ = #{SEQ} 
+				<if test="SSN != 'A000006'">
+				AND SBS.WRITERID = #{SSN}
+				</if>
+	</select>
+	<select id="getCeoTalkComment" resultType="map" parameterType="HashMap" >
+				 SELECT
+				 	bbsid
+					,CBC.seq
+					,commentSeq
+					,CONTENT
+					,writer
+					,writerid
+					,ip
+					, CONVERT(CHAR(23), CBC.wtime, 25) AS WTIME
+					,EP.DEPTNAME +' '+EP.COMPANYPOSITIONNAME+' '+EP.NAME AS NAME
+					,CASE WHEN EPMY.SSN IS NULL THEN 'N' ELSE 'Y' END MYCOMMENT
+				FROM CeoTalkBBSComment CBC
+				LEFT JOIN EXPERTPOOL EP
+				ON CBC.writerid = EP.SSN
+				LEFT JOIN (SELECT SSN FROM EXPERTPOOL WHERE SSN = #{SSN}) EPMY
+				ON CBC.writerid = EPMY.SSN
+				WHERE CBC.SEQ = #{SEQ} 
+				ORDER BY WTIME DESC
+	</select>
+	<select id="getCeoBoardTotalCommentCNT" resultType="map" parameterType="HashMap" >
+				 SELECT COUNT(*) AS TOTALCNT FROM CeoTalkBBSComment WHERE SEQ = #{SEQ} 
+	</select>
+	<insert id="doCeoTalkCommentWrite"  parameterType="HashMap" >
+		INSERT INTO CeoTalkBBSComment (
+			bbsid
+			,seq
+			,content
+			,writer
+			,writerid
+			,ip
+			,WTIME
+			)
+			VALUES (
+			'CEOTALK'
+			,#{SEQ}
+			,#{commentContents}
+			,(SELECT NAME FROM EXPERTPOOL WHERE SSN = #{SSN})
+			,#{SSN}
+			,#{ip}
+			,GETDATE()
+			)
+	</insert>
+	<delete id="doDeleteBoard"  parameterType="HashMap" >
+		DELETE FROM CeoTalkBBS WHERE SEQ = #{SEQ} AND writerid = #{SSN} 
+	</delete>
+	<update id="doCeoTalkUpdate"  parameterType="HashMap" >
+		UPDATE CeoTalkBBS
+		SET SUBJECT = #{subject}
+			,CONTENT = #{content}
+		WHERE SEQ = #{SEQ} AND WRITERID = #{SSN}
+	</update>
+	<delete id="deleteCeoTalkComment"  parameterType="HashMap" >
+		DELETE FROM CeoTalkBBSComment WHERE SEQ = #{SEQ} AND writerid = #{SSN} AND commentSeq = #{commentSeq}
+	</delete>
+</mapper>

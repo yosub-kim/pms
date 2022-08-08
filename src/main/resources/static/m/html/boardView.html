@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=440, user-scalable=yes">
+    <title>MOBILE</title>
+
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="../js/jquery-ui-1.12.1.min.js"></script>
+    <script src="../js/common.js"></script>
+
+    <link href="../css/jquery-ui.css" rel="stylesheet" />
+    <link href="../css/kmac.css" rel="stylesheet" />
+</head>
+<body>
+    
+    <div id="wrap">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="gnb">
+                <div class="navbar">
+                    <div class="overlay"></div>
+                    <div class="conts_box">
+                        <div class="in_box">
+                            <section>
+                                <div class="scroll_box sc">
+                                    <div class="navbar_menu">
+                                        <p class="home"><a href="javascript:;"><i class="mdi mdi-home"></i>HOME</a></p>										
+                                        <ul>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 1</a>	
+                                                <ul class="noDepth">														
+                                                    <li>
+                                                        <p>															
+                                                            <span class="empty_star"><i class="mdi mdi-star"></i></span>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판 2</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_1" class="bookmark"><label for="menu_1"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-projector-screen-outline"></i>게시판 3</a>
+                                                <ul>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_1" class="bookmark"><label for="menu_2_1"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_1_1" class="bookmark"><label for="menu_2_1_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_2_2" class="bookmark"><label for="menu_2_2"></label>
+                                                            <a href="javascript:;">두번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                        <ul>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_1" class="bookmark"><label for="menu_2_2_1"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p>															
+                                                                    <input type="checkbox" id="menu_2_2_2" class="bookmark"><label for="menu_2_2_2"></label>
+                                                                    <a href="javascript:;">두번째 메뉴 3뎁스</a>
+                                                                </p>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:;"><i class="mdi mdi-bulletin-board"></i>게시판</a>	
+                                                <ul class="noDepth"><!-- 3뎁스가 없을 경우 .noDepth -->															
+                                                    <li>
+                                                        <p>															
+                                                            <input type="checkbox" id="menu_3" class="bookmark"><label for="menu_3"></label>
+                                                            <a href="javascript:;">첫번째 메뉴 2뎁스</a>
+                                                        </p>
+                                                    </li>
+                                                </ul>
+                                            </li>												
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <a class="btn_close" href="javascript:;"><span class="blind">창닫기</span></a>
+                </div>						
+                <!-- // navbar -->         
+            </div>      
+            <div class="util">
+                <ul>                    
+                    <li><button type="button" title="home"><i class="mdi mdi-home-outline"></i></button></li>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+        </header>
+        <!-- // Header -->
+
+        <!-- sub_container -->
+        <div class="sub_container">
+
+            <div class="topbar">
+                <div>
+                    <button type="button" class="btn arrowL" title="이전 페이지"><i class="mdi mdi-arrow-left"></i></button>
+                    <p>공지사항</p>
+                </div>
+                <ul>
+                    <li><button type="button" class="btn c-red" title="삭제"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                    <li><button type="button" class="btn c-sub" title="수정"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                    <li><button type="button" class="btn c-main" title="작성"><i class="mdi mdi-message-reply-text-outline"></i></button></li>
+                </ul>
+            </div>
+
+            <!-- Contents -->
+            <div class="contents">
+
+                <div class="tbl-wrap">
+                    <table class="tbl view">							
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div>
+                                            <div class="subject"><p><strong>[인사발령 공고]</strong> 2022년 정기 인사발령의 건[인사발령 공고] 2022년 정기 인사발령의 건[인사발령 공고] 2022년 정기 인사발령의 건[인사발령 공고] 2022년 정기 인사발령의 건[인사발령 공고] 2022년 정기 인사발령의 건 </p></div>
+                                            <ul class="info">
+                                                <li><i class="mdi mdi-clock-outline"></i><p>2022-01-21</p></li>
+                                                <li><i class="mdi mdi-account"></i><p>홍길동</p></li>
+                                                <li><i class="mdi mdi-eye"></i><p>555</p></li>
+                                                <li><i class="mdi mdi-cards-heart"></i><p>3333</p></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pd-10">
+                                    </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서 2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서2022년 정기 문서 문서 문서 문서 문서 문서 문서 문서문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                        <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 문서 문서 문서</p></a></li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>                                    
+                                    <div class="text_view">
+                                        첨부와 같이 2022년 정기 인사발령을 합니다.<br /><br /><br />
+                                        # 첨부<br />
+                                        1) 2022년 정기 인사발령문(KMAC)<br />
+                                        2) 2022년 정기 인사발령문(KMA 미디어)
+                                    </div>
+                                </td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                    <div class="inner">
+                        <div class="title_area">
+                            <p class="title">댓글<span>(33건)</span></p>
+                            <ul>
+                                <li><button type="button" class="btn c-main" title="작성"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+                            </ul>
+                        </div>
+                        <div class="write_box">
+                            <textarea name="" id="" cols="30" rows="10"></textarea>
+                        </div>
+                        <div class="write_list">
+                            <div class="list">
+                                <div class="writer">
+                                    <p>김요섭<span class="date">2020-12-07 09:40:29</span></p>
+                                </div>
+                                <p>
+                                    현재 문제사항 조치가 완료 된 상태이며,  확인 후 이상이 있을 시 회신 부탁드립니다. 감사합니다.
+                                </p>
+                            </div>
+                            <div class="list">
+                                <div class="writer">
+                                    <p>김요섭<span class="date">2020-12-07 09:40:29</span></p>
+                                    <ul class="btn_edit">
+                                        <li><button type="button" class="btn line c-red" title="삭제"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                        <li><button type="button" class="btn line c-sub" title="작성"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                    </ul>
+                                </div>
+                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                    <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 인사발령문 인사발령문인사발령문 인사발령문인사발령문(KMA 미디어).pdf</p></a></li>
+                                </ul>
+                                <p>
+                                    현재 문제사항 조치가 완료 된 상태이며,  확인 후 이상이 있을 시 회신 부탁드립니다. 감사합니다.
+                                </p>
+                            </div>
+                            <div class="list">
+                                <div class="writer">
+                                    <p>김요섭<span class="date">2020-12-07 09:40:29</span></p>
+                                </div>
+                                <p>
+                                    현재 문제사항 조치가 완료 된 상태이며,  확인 후 이상이 있을 시 회신 부탁드립니다. 감사합니다.
+                                </p>
+                            </div>
+                            <div class="list">
+                                <div class="writer">
+                                    <p>김요섭<span class="date">2020-12-07 09:40:29</span></p>
+                                    <ul class="btn_edit">
+                                        <li><button type="button" class="btn line c-red" title="삭제"><i class="mdi mdi-trash-can-outline"></i></button></li>
+                                        <li><button type="button" class="btn line c-sub" title="작성"><i class="mdi mdi-circle-edit-outline"></i></button></li>
+                                    </ul>
+                                </div>
+                                </div>      
+            <div class="util">
+                <ul>
+                    <li><button type="button" title="PC버전"><i class="mdi mdi-monitor"></i></button></li>
+                    <li><button type="button" title="새로고침"><i class="mdi mdi-refresh"></i></button></li>
+                    <li><button type="button" title="로그아웃"><i class="mdi mdi-logout"></i></button></li>
+                </ul>            
+            </div>
+                                    <li><a href="javascript;"><i class="mdi mdi-paperclip"></i><p>2022년 정기 인사발령문 인사발령문인사발령문 인사발령문인사발령문(KMA 미디어).pdf</p></a></li>
+                                </ul>
+                                <p>
+                                    현재 문제사항 조치가 완료 된 상태이며,  확인 후 이상이 있을 시 회신 부탁드립니다. 감사합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>                                
+                </div>
+
+            </div>
+            <!-- // Contents -->
+        </div>
+        <!-- // sub_container -->
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p>Copyright  ⓒ 2021 KMAC. All rights reserved</p>
+        </footer>
+        <!-- // Footer -->
+    </div>
+   
+</body>
+</html>

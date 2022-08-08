@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=440, user-scalable=yes">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=440, user-scalable=yes">
+	<title>KMAC 통합 인트라넷</title>
+
+	<script src="/_new/js/jquery-3.4.1.min.js"></script>
+	<script src="/_new/js/jquery-ui.min.js"></script>
+	<script src="/_new/js/common.js"></script>
+
+	<link href="/_new/m/css/jquery-ui.css" rel="stylesheet" />
+	<link href="/_new/m/css/kmac.css" rel="stylesheet" />
+
+	<script type="text/javascript">
+	function checkAllDay(){
+		if($("#check_day").is(":checked") == true ) {
+			$("#stime_edit").val("08:30");
+			$("#etime_edit").val("17:30");
+			/* $("#ss_edit").val("오전");
+			$("#ee_edit").val("오후"); */
+		} else {
+			$("#stime_edit").val("");
+			$("#etime_edit").val("");
+			/* $("#ss_edit").val("");
+			$("#ee_edit").val(""); */
+		}
+	}
+
+	function insertSchedule(){
+		var action;
+	
+		if($("#idx_edit").val() > 0 ){
+			action = "update";
+		} else {		
+			action = "create";
+		}
+	
+		// 스케줄 시간 chk
+		//if($('#stime_edit').val() > $('#etime_edit').val().length) {alert("시작시간이 종료시간 이후가 될 수 없습니다.");return false;}
+		if($('#stime_edit').val().length != 5){alert("시작 시간을 정확히 입력하세요. "); return false;}
+		if($('#etime_edit').val().length != 5){alert("종료 시간을 정확히 입력하세요. "); return false;}
+		
+		
+		// 외/내근 유형 chk
+		var workTypeFlag = false;
+		for(var i=0; i<frm.workType.length; i++){
+			if(frm.workType[i].checked){
+				workTypeFlag = true;
+			}
+		}
+		if(($('#type_edit').val() != "휴가" && $('#type_edit').val() != "개인휴무" && $('#type_edit').val() != "교육참석" && $('#type_edit').val() != "Up-day" && $('#type_edit').val() != "전사행사" && $('#type_edit').val() != "기타") && !workTypeFlag){
+			alert("외/내근 유형을 선택하세요.");frm.workType[0].focus();return false;
+		}
+		
+		// 업무 내용 chk
+		if(frm.content.value == ""){
+			alert("업무내용을 입력하세요.");frm.content.focus();return false;
+		}
+		
+		// 고객사 입력 chk
+		if(($('#type_edit').val() != "휴가" && $('#type_edit').val() != "개인휴무" && $('#type_edit').val() != "교육참석" && $('#type_edit').val() != "Up-day" && $('#type_edit').val() != "전사행사" && $('#type_edit').val() != "기타") && frm.customerName.value == ""){
+			alert("관련회사를 입력하세요.");frm.customerName.focus();return false;
+		}
+		
+		// 장소 입력 chk
+		if(($('#type_edit').val() != "휴가" && $('#type_edit').val() != "개인휴무" && $('#type_edit').val() != "교육참석" && $('#type_edit').val() != "Up-day" && type_edit != "전사행사" && $('#type_edit').val() != "기타") && frm.place.value == ""){
+			if(frm.place.value == ""){
+				alert("장소를 입력하세요.");frm.place.focus();return false;
+			}
+		}
+		
+		//현장 출/퇴근 chk
+		//$("#relationUser_edit").val(parseInt($("#relationUser_1_edit").val()) + parseInt($("#relationUser_2_edit").val()));
+		var chkbox = document.getElementsByName('relationUser_chk');
+		var chk = false;
+		var chk_result="0";
+		
+		for(var i=0; i<chkbox.length; i++){
+			if(chkbox[0].checked && chkbox[1].checked){
+				chk = false;
+			}else{
+				chk = true;
+			}
+			break;
+		}
+		if (frm.workType[1].checked){
+			chk_result="0";
+		}else{
+			if(!chk){
+				chk_result="3";
+			}else{
+				if(chkbox[0].checked){
+					chk_result="1";
+				}else if(chkbox[1].checked){
+					chk_result="2"; }
+			}
+		}
+		$("#relationUser_edit").val(parseInt(chk_result));
+		
+		$.ajax({
+			type: "POST",
+			contentType: 'application/json',
+			url : "/_new/schedule/personal/"+action,
+			data: formToJsonString("#frm"),
+			dataType: "json",
+	        cache: false,
+	        timeout: 60000
+		})
+		.done(function(data, textStatus, jqXHR ) { 
+			$("#frm")[0].reset();
+			alert("저장하였습니다.");
+				var year = parseInt($("#year_edit").val());
+				var month = parseInt($("#month_edit").val());
+	
+			location.href = "/_new/schedule/m/personal/list?"
+				+"year=" + parseInt(year) + "&month=" + parseInt(month);
+			
+		}) 
+		.fail(function(jqXHR, textStatus, errorThrown ) {
+			alert("오류가 발생하였습니다. 1.");
+		}) 
+		.always(function(jqXHR, textStatus, errorThrown ) { 
+		});
+	}
+	
+	
+	function setWorkType(){
+		
+		if ($('#type_edit').val() == "교육참석") {
+			alert("'교육참석'은 조직주도교육 및 개인주도학습(집합교육) 등에 참여하는 경우에만 해당합니다.\n교육과정 오픈 시에는 '사업관리'를 선택하시기 바랍니다.");		
+		}
+		
+		if ($('#type_edit').val() == "휴가" || $('#type_edit').val() == "개인휴무" || $('#type_edit').val() == "Up-day") {
+			$('#place_edit').hide();
+			$('#customerName_edit').hide();
+			$('#customer_chk').hide();
+			$('#workType_chk').hide();
+			$('#relationUser_chk').hide();
+			$('#secretYN_chk').hide();
+			
+		} else {
+			$('#place_edit').show()
+			$('#customerName_edit').show()
+			$('#customer_chk').show()
+			$('#workType_chk').show()
+			$('#relationUser_chk').show()
+			$('#secretYN_chk').show()
+		}
+	}
+	function goEmail(){
+		var ssn = '[[${searchParam.ssn}]]';
+		var email = '[[${searchParam.email}]]';
+		window.open('https://webmail.kmac.co.kr/a_biz/m_login.nvd?user_account='+email);
+		var win = window.open('https://webmail.kmac.co.kr/a_biz/m_login.nvd?user_account='+email);
+		if(win == null || typeof(win) == "undefined" || (win == null && win.outerWidth == 0) || (win != null && win.outerHeight == 0) || win.test == "undefined"){
+			alert("브라우저의 팝업 차단을 허용해주시기 바랍니다.");
+		}else{}
+	}
+	</script>
+</head>
+
+<body>
+	<div id="wrap">
+
+		<div th:replace="fragments/common :: header"></div>
+
+		<!-- sub_container -->
+		<div class="sub_container">
+			<form name="frm" id="frm" method="post">
+				
+				<input type="hidden" name="year" value="0" id="year_edit" th:value="${detail.year}"/>
+				<input type="hidden" name="month" value="0" id="month_edit" th:value="${detail.month}"/>
+				<input type="hidden" name="idx" value="0" id="idx_edit" th:value="${detail.idx}"/>
+				
+				<div class="topbar">
+					<div>
+						<button type="button" class="btn arrowL" title="이전 페이지" onclick="javascript:history.back();"><i class="mdi mdi-arrow-left"></i></button>
+						<p>개인일정</p>
+					</div>
+					<ul>
+						<li><button type="button" class="btn c-main" title="등록" onclick="javascript:insertSchedule();"><i class="mdi mdi-pencil-plus-outline"></i></button></li>
+					</ul>
+				</div>
+	
+				<!-- Contents -->
+				<div class="contents">
+	
+					<div class="inner">
+						<div class="write info">
+							<div class="write_group">
+								<select name="type" id="type_edit" onchange="setWorkType()">
+									<option value="사업관리" th:selected="${'사업관리' eq detail.type}">사업관리</option>
+									<option value="전사행사" th:selected="${'전사행사' eq detail.type}">전사행사</option>
+									<option value="교육참석" th:selected="${'교육참석' eq detail.type}">교육참석</option>
+									<option value="회의일정" th:selected="${'회의일정' eq detail.type}">회의일정</option>
+									<option value="Up-day" th:selected="${'Up-day' eq detail.type}">재택근무</option>
+									<option value="개인휴무" th:selected="${'개인휴무' eq detail.type}">개인휴무</option>
+									<option value="휴가" 	   th:selected="${'휴가' eq detail.type}">휴가</option>
+									<option value="기타"    th:selected="${'기타' eq detail.type}">기타</option>
+								</select>
+								<input type="text" title="장소 입력" placeholder="장소 입력" name="place" id="place_edit" th:value="${detail.place}"/>
+							</div>
+	
+							<div class="write_group">
+								<input type="text" title="업무내용 입력" placeholder="업무내용 입력" name="content" id="content_edit" th:value="${detail.content}"/>
+							</div>
+							<div class="write_group">
+								<input type="text" title="고객사 입력" placeholder="고객사 입력" name="customerName" id="customerName_edit" th:value="${detail.customerName}"/>
+								<ul class="chek_ui" id="customer_chk">
+									<p class="label"><b>고객정보</b></p>
+									<li>
+										<input type="radio" id="googleSyncId_1_edit" name="googleSyncId" class="btn_radio"  value="Y" th:selected="${'Y' eq detail.googleSyncId}"/>
+										<label for="googleSyncId_1_edit"><p><b>Y</b></p></label>
+									</li>
+									<li>
+										<input type="radio" id="googleSyncId_2_edit" name="googleSyncId" class="btn_radio"  value="N" th:checked="${'N' eq detail.googleSyncId}"/>
+										<label for="googleSyncId_2_edit"><p><b>N</b></p></label>  
+									</li>
+								</ul>
+							</div>
+							</br>
+							<ul class="chek_ui">
+								<li>
+									<input type="checkbox" name="check_day" id="check_day" class="btn_check"  onclick="javascript:checkAllDay();" />
+									<label for="check_day"><p><b>하루 종일</b></p></label>
+								</li>
+								<input type="hidden" name="multiYN" id="multiYN" class="btn_check" value="Y" th:checked="${'Y' eq detail.multiYN}"/>
+								<li>
+									<input type="checkbox" name="holidayYN" id="holidayYN" class="btn_check" value="Y" th:checked="${'Y' eq detail.holidayYN}"/>
+									<label for="holidayYN"><p><b>주말 제외</b></p></label><!-- TO-DO: 스트립트 추가 -->
+								</li>
+							</ul>
+							<div class="write_group">
+								<p class="title"><b>시작 시간</b></p>
+								<div class="datepicker">
+									<input type="text" title="시작일" placeholder="시작일" name="sdate" id="sdate_edit"  readonly
+										th:value="${detail.dateString2}"
+										/>
+									<script>
+										jQuery(function(){jQuery( "#sdate_edit" ).datepicker({dateFormat: 'yy-mm-dd'});});
+									</script>	
+									
+								</div>
+								<input type="text" title="" placeholder="12:00" class="time" name="stime" id="stime_edit"
+									oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" 
+									onkeyup="javascript:inputTimeColon(this)" 	th:value="${detail.startTimeString}"
+									/>
+							</div>
+							<div class="write_group">
+								<p class="title"><b>종료 시간</b></p>
+								<div class="datepicker">
+									<input type="text" title="종료일" placeholder="종료일" name="edate" id="edate_edit"  readonly
+										th:value="${detail.dateString2}"
+										 />
+									<script>
+										jQuery(function(){jQuery( "#edate_edit" ).datepicker({dateFormat: 'yy-mm-dd'});});
+									</script>	
+								</div>
+								<input type="text" title="" placeholder="12:00" class="time" name="etime" id="etime_edit"
+									oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" 
+									onkeyup="javascript:inputTimeColon(this)" 	th:value="${detail.endTimeString}"
+									/>
+							</div>
+	
+							<ul class="chek_ui" id="workType_chk">
+								<p class="label"><b>외/내근 유형</b></p>
+								<li>
+									<input type="radio" id="workType_I_edit" name="workType" class="btn_radio" value="I" th:checked="${'I' eq detail.workType}"/>
+									<label for="workType_I_edit"><p><b>내근</b></p></label> 
+								</li>
+								<li>
+									<input type="radio" id="workType_E_edit" name="workType" class="btn_radio"  value="E" th:checked="${'E' eq detail.workType}"/>
+									<label for="workType_E_edit"><p><b>외근</b></p></label> 
+								</li>
+							</ul>
+							<ul class="chek_ui" id="relationUser_chk">
+								<p class="label"><b>현장 출/퇴근</b></p>
+								<li>
+									<input type="checkbox" class="btn_check" name="relationUser_chk" value="" id="relationUser_1_edit" th:checked="${('1' eq detail.relationUser) or ('3' eq detail.relationUser)}"/>
+									<label for="relationUser_1_edit"><p><b>출근</b></p></label>
+								</li>
+								<li>
+									<input type="checkbox" class="btn_check" name="relationUser_chk" value="" id="relationUser_2_edit" th:checked="${('2' eq detail.relationUser) or ('3' eq detail.relationUser)}"/>
+									<label for="relationUser_2_edit"><p><b>퇴근</b></p></label>
+								</li>
+								<input type="hidden" name="relationUser" value="0" id="relationUser_edit"/>
+							</ul>
+							<ul class="chek_ui a-c" id="secretYN_chk">
+								<!-- 가운데 정렬 .a-c -->
+								<li>
+									<input type="checkbox" name="secretYN" id="secretYN_edit" value="Y" class="btn_check" th:checked="${'Y' eq detail.secretYN}"/>
+									<label for="secretYN_edit"><p><b>비공개로 설정시 체크해 주세요.</b></p></label>
+								</li>
+							</ul>
+						</div>
+					</div>
+	
+				</div>
+				<!-- // Contents -->
+
+			</form>
+		</div>
+		<!-- // sub_container -->
+
+		<div th:replace="fragments/common :: footer"></div>
+
+	</div>
+
+</body>
+
+</html>
